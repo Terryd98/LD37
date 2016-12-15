@@ -1,11 +1,12 @@
-package Terry.dev.main.gfx.entity.mob;
+package Terry.dev.main.entity.mob;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.Entity;
+import Terry.dev.main.entity.Emitter.Emitter.Type;
+import Terry.dev.main.entity.Emitter.ProjectileEmitter;
+import Terry.dev.main.entity.gun.Projectile;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.DefaultGun;
-import Terry.dev.main.gfx.entity.Entity;
-import Terry.dev.main.gfx.entity.Projectile;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
 
@@ -56,9 +57,9 @@ public class Mob extends Entity {
 	}
 
 	protected void shoot(double x, double y, double dir) {
-		Projectile p = new DefaultGun(x, y, dir);
+		// Projectile p = new DefaultGun(x, y, dir);
+		level.add(new ProjectileEmitter((int) x, (int) y, 50, dir, Type.DEFAULT_BULLET, level, Sprite.particle));
 		Game.playSound("/sounds/Shoot.wav", -20.0f);
-		level.add(p);
 	}
 
 	public void clear() {
@@ -73,7 +74,7 @@ public class Mob extends Entity {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
 			double xt = (((x + xa) + c % 2 * 15 - 7) / Sprite.TSIZE);
-			double yt = (((y + ya) + c / 2 * 9 +6) / Sprite.TSIZE);
+			double yt = (((y + ya) + c / 2 * 9 + 6) / Sprite.TSIZE);
 			if (y < 0) y = 0;
 			if (x <= 0) x = 0;
 			if (level.getTile((int) xt, (int) yt).solid()) {
@@ -87,15 +88,15 @@ public class Mob extends Entity {
 	}
 
 	public void render(Render render) {
-		
+
 	}
-	
+
 	public void findStartPos(Level level) {
 		while (true) {
 			int x = random.nextInt(level.width);
 			int y = random.nextInt(level.height);
 			if (!level.getTile(x, y).solid()) {
-				this.x = (x * 16)+7;
+				this.x = (x * 16) + 7;
 				this.y = (y * 16);
 				return;
 			}

@@ -1,14 +1,13 @@
-package Terry.dev.main.gfx.entity.mob;
+package Terry.dev.main.entity.mob;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.gun.DefaultGun;
+import Terry.dev.main.entity.gun.Projectile;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.DefaultGun;
-import Terry.dev.main.gfx.entity.Projectile;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
-import Terry.dev.main.level.OneLevel;
 
 public class Player extends Mob {
 
@@ -81,7 +80,7 @@ public class Player extends Mob {
 
 			if (Input.getButton() == 1 && fireRate == 0) {
 				reload = false;
-				//AMMO--;
+				 AMMO--;
 				if (AMMO <= 0) {
 					AMMO = 0;
 				}

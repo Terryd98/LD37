@@ -2,7 +2,6 @@ package Terry.dev.main.level.tiles;
 
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.level.Level;
 import Terry.dev.main.level.Tile;
 
 public class WaterTile extends Tile {

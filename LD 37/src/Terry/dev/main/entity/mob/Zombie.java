@@ -1,12 +1,12 @@
-package Terry.dev.main.gfx.entity.mob;
+package Terry.dev.main.entity.mob;
 
 import java.util.List;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.level.Level;
 
 public class Zombie extends Mob {
@@ -18,7 +18,7 @@ public class Zombie extends Mob {
 	private int cCol;
 	private int col;
 	public int damage = 1;
-	public boolean debug = false;
+	public boolean debug = true;
 
 	public Zombie(Level level) {
 		findStartPos(level);
@@ -140,7 +140,7 @@ public class Zombie extends Mob {
 	}
 
 	public void hurt(int damage) {
-		health -= damage*20;
+		health -= damage;
 		Game.playSound("/sounds/hurt.wav", -10.0f);
 		level.add(new ParticleEmitter((int) x, (int) y, 50, 2000, level, Sprite.bloodParticle));
 		if (health <= 0) {

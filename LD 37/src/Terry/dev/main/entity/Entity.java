@@ -1,4 +1,4 @@
-package Terry.dev.main.gfx.entity;
+package Terry.dev.main.entity;
 
 import java.util.Random;
 

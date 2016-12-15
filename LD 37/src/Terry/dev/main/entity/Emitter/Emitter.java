@@ -1,12 +1,12 @@
-package Terry.dev.main.gfx.entity.Emitter;
+package Terry.dev.main.entity.Emitter;
 
-import Terry.dev.main.gfx.entity.Entity;
+import Terry.dev.main.entity.Entity;
 import Terry.dev.main.level.Level;
 
 public class Emitter extends Entity {
 
 	public enum Type {
-		MOB, PARTICLE
+		MOB, PARTICLE, DEFAULT_BULLET, PISTOL_BULLET
 
 	}
 

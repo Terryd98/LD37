@@ -1,7 +1,7 @@
-package Terry.dev.main.gfx.entity.Emitter;
+package Terry.dev.main.entity.Emitter;
 
+import Terry.dev.main.entity.particle.Particle;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.particle.Particle;
 import Terry.dev.main.level.Level;
 
 public class ParticleEmitter extends Emitter {

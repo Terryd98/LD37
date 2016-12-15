@@ -1,9 +1,8 @@
-package Terry.dev.main.gfx.entity.particle;
+package Terry.dev.main.entity.particle;
 
+import Terry.dev.main.entity.Entity;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.Entity;
-import Terry.dev.main.level.Level;
 
 public class Particle extends Entity {
 

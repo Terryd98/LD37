@@ -3,13 +3,14 @@ package Terry.dev.main.level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import Terry.dev.main.entity.Entity;
+import Terry.dev.main.entity.gun.Projectile;
+import Terry.dev.main.entity.mob.Player;
+import Terry.dev.main.entity.mob.Zombie;
+import Terry.dev.main.entity.particle.Particle;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gfx.entity.Entity;
-import Terry.dev.main.gfx.entity.Projectile;
-import Terry.dev.main.gfx.entity.mob.Player;
-import Terry.dev.main.gfx.entity.mob.Zombie;
-import Terry.dev.main.gfx.entity.particle.Particle;
 
 public class Level {
 
@@ -182,7 +183,7 @@ public class Level {
 		if (e instanceof Player) {
 			players.remove((Player) e);
 		} else if (e instanceof Zombie) {
-			zombies.remove(e);
+			zombies.remove((Zombie) e);
 		} else if (e instanceof Projectile) {
 			projectiles.remove((Projectile) e);
 		} else if (e instanceof Particle) {
@@ -213,7 +214,6 @@ public class Level {
 		for (int i = 0; i < entities.size(); i++) {
 			entities.get(i).render(render);
 		}
-
 		for (int i = 0; i < particles.size(); i++) {
 			particles.get(i).render(render);
 		}
@@ -236,7 +236,6 @@ public class Level {
 	// 322015 = wood;
 	public Tile getTile(int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height) return Tile.water;
-
 		if (tiles[x + y * width] == 0xff526B4A) tiles[x + y * width] = Tile.grass.id;
 		if (tiles[x + y * width] == 0xff638200) tiles[x + y * width] = Tile.grassCornerTL.id;
 		if (tiles[x + y * width] == 0xff4A6000) tiles[x + y * width] = Tile.grassCornerTR.id;
