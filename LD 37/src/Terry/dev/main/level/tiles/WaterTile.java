@@ -17,15 +17,15 @@ public class WaterTile extends Tile {
 	protected void tick() {
 
 	}
-
+//TODO: FIX FIX FIX FIX problem with coords rounding and block placing with collision
 	public void render(int x, int y, Render render) {
 		tickCount++;
 		if (tickCount >= 1000000) tickCount = 0;
 		if (time >= 1000000) time = 0;
-		if ((tickCount % 1200) == 110) time++;
-		if (time % 200 > 100) {
+		if ((tickCount % 1200) == 80) time++;
+		if (time % 70 > 35) {
 			sprite = Sprite.water0;
-		} else if (time % 200 > 100)  {
+		} else if (time % 100 > 180)  {
 			sprite = Sprite.water1;
 		} else {
 			sprite = Sprite.water2;

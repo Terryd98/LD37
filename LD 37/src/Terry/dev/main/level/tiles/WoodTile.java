@@ -17,9 +17,8 @@ public class WoodTile extends Tile {
 	public void render(int x, int y, Render render) {
 		render.render(x << 4, y << 4, Sprite.wood, false, false);
 	}
-
 	public boolean solid() {
-		return false;
+		return solid;
 	}
 
 	public boolean Entitysolid() {

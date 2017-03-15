@@ -24,7 +24,28 @@ public class Render {
 	public void render(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip) {
 		xp -= xOffset;
 		yp -= yOffset;
+		for (int y = 0; y < sprite.SIZE; y++) {
+			int ya = y + yp;
+			int ys = y;
+			if (yFlip) ys = (sprite.SIZE - 1) - y;
+			for (int x = 0; x < sprite.SIZE; x++) {
+				int xa = x + xp;
+				int xs = x;
+				if (xFlip) xs = (sprite.SIZE - 1) - x;
+				if (xa < -sprite.SIZE || xa >= width || ya < 0 || ya >= height) break;
+				if (xa < 0) xa = 0;
+				int col = sprite.pixels[xs + ys * sprite.SIZE];
+				if (col != 0xffff00ff) pixels[xa + ya * width] = col;
+			}
+		}
+	}
 
+	public void renderIcon(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip, boolean fixed) {
+		if (fixed) {
+			xp -= xOffset;
+			yp -= yOffset;
+
+		}
 		for (int y = 0; y < sprite.SIZE; y++) {
 			int ya = y + yp;
 			int ys = y;
@@ -102,6 +123,25 @@ public class Render {
 			}
 		}
 	}
+	
+	public void renderPlayer(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip) {
+		xp -= xOffset;
+		yp -= yOffset;
+		for (int y = 0; y < sprite.SIZE; y++) {
+			int ya = y + yp;
+			int ys = y;
+			if (yFlip) ys = (sprite.SIZE - 1) - y;
+			for (int x = 0; x < sprite.SIZE; x++) {
+				int xa = x + xp;
+				int xs = x;
+				if (xFlip) xs = (sprite.SIZE - 1) - x;
+				if (xa < -sprite.SIZE || xa >= width || ya < 0 || ya >= height) break;
+				if (xa < 0) xa = 0;
+				int col = sprite.pixels[xs + ys * sprite.SIZE];
+				if (col != 0xffff00ff) pixels[xa + ya * width] = col;
+			}
+		}
+	}
 
 	public void renderZombie(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip, int cCol) {
 		xp -= xOffset;
@@ -118,7 +158,7 @@ public class Render {
 				if (xa < -sprite.SIZE || xa >= width || ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
 				int col = sprite.pixels[xs + ys * sprite.SIZE];
-				// if (col == 0xff76A07B) col = cCol;
+				if (col == 0xff416144) col = cCol;
 				if (col != 0xffff00ff) pixels[xa + ya * width] = col;
 			}
 		}

@@ -10,6 +10,7 @@ public class Particle extends Entity {
 	protected Sprite sprite;
 	protected double xa, ya, za;
 	protected double xx, yy, zz;
+	private boolean xFlip, yFlip;
 	private int time = 0;
 
 	public Particle(int x, int y, int lifeTime, Sprite sprite) {
@@ -19,6 +20,8 @@ public class Particle extends Entity {
 		this.y = y;
 		this.xx = x;
 		this.yy = y;
+		xFlip = random.nextBoolean();
+		yFlip = random.nextBoolean();
 
 		this.xa = random.nextGaussian();
 		this.ya = random.nextGaussian();
@@ -61,7 +64,7 @@ public class Particle extends Entity {
 	public boolean Collision(double x, double y) {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
-			double xt = ((x - c % 2 * Sprite.TSIZE + 2) / Sprite.TSIZE);
+			double xt = ((x - c % 2 * Sprite.TSIZE + 1.5) / Sprite.TSIZE);
 			double yt = ((y - c / 2 * Sprite.TSIZE) / Sprite.TSIZE);
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
@@ -77,7 +80,7 @@ public class Particle extends Entity {
 	}
 
 	public void render(Render render) {
-		render.renderParticle((int) xx + 1, (int) (yy  - (int) zz)+2, sprite, false, false);
+		render.renderParticle((int) xx + 1, (int) (yy - (int) zz) + 1, sprite, xFlip, yFlip);
 	}
 
 }

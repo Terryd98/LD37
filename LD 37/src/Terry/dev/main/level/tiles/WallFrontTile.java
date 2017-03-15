@@ -22,6 +22,6 @@ public class WallFrontTile extends Tile {
 		return true;
 	}
 	public boolean Entitysolid() {
-		return true;
+		return false;
 	}
 }

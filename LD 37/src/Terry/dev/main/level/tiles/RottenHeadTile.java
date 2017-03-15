@@ -15,7 +15,7 @@ public class RottenHeadTile extends Tile {
 	}
 
 	public void render(int x, int y, Render render) {
-		render.render(x << 4, y << 4, Sprite.rottenHead, false, false);
+		render.render(x << 4, y << 4, Sprite.rottenHead, random.nextBoolean(), random.nextBoolean());
 	}
 
 	public boolean solid() {

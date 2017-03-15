@@ -1,7 +1,10 @@
 package Terry.dev.main.level;
 
+import java.util.Random;
+
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.level.tiles.BasementFloorTile;
+import Terry.dev.main.level.tiles.FlowerTile;
 import Terry.dev.main.level.tiles.GrassCornerBLTile;
 import Terry.dev.main.level.tiles.GrassCornerBRTile;
 import Terry.dev.main.level.tiles.GrassCornerTLTile;
@@ -22,7 +25,9 @@ import Terry.dev.main.level.tiles.WoodTile;
 public class Tile {
 
 	public static Tile[] tiles = new Tile[120];
-	protected int id;
+	public int id;
+	public boolean solid = false;
+	public Random random = new Random();
 
 	public static Tile voidTile = new VoidTile(0);
 	public static Tile wall = new WallTile(2);
@@ -32,9 +37,9 @@ public class Tile {
 	public static Tile water = new WaterTile(6);
 
 	public static Tile grass = new GrassTile(1);
+	public static Tile flower = new FlowerTile(17);
 	public static Tile rottenHead = new RottenHeadTile(15);
 	public static Tile basementFloor = new BasementFloorTile(16);
-
 
 	public static Tile grassCornerTL = new GrassCornerTLTile(7);
 	public static Tile grassCornerTR = new GrassCornerTRTile(8);
@@ -60,7 +65,7 @@ public class Tile {
 	public boolean solid() {
 		return false;
 	}
-	
+
 	public boolean Entitysolid() {
 		return false;
 	}

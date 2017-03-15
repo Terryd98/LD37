@@ -6,13 +6,12 @@ import Terry.dev.main.level.Tile;
 
 public class GrassTile extends Tile {
 
-
 	public GrassTile(int id) {
 		super(id);
 	}
 
 	protected void tick() {
-		
+
 	}
 
 	public void render(int x, int y, Render render) {
@@ -22,6 +21,7 @@ public class GrassTile extends Tile {
 	public boolean solid() {
 		return false;
 	}
+
 	public boolean Entitysolid() {
 		return false;
 	}

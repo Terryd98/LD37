@@ -8,20 +8,33 @@ import java.awt.event.MouseMotionListener;
 
 public class Input implements KeyListener, MouseListener, MouseMotionListener {
 
-	private static int mouseX = -1;
-	private static int mouseY = -1;
-	private static int mouseB = -1;
+	public static int mouseX = -1;
+	public static int mouseY = -1;
+	public static int mouseB = -1;
 
 	public boolean[] keys = new boolean[5555];
-	public boolean up, down, left, right, reload,space;
+	public boolean up, down, left, right, reload, space, shift, upArrow, downArrow, leftArrow, rightArrow, volUp, volDown, trap, esc, use, one, two;
 
 	public void tick() {
+
+		trap = keys[KeyEvent.VK_E];
 		up = keys[KeyEvent.VK_W];
 		down = keys[KeyEvent.VK_S];
 		left = keys[KeyEvent.VK_A];
 		right = keys[KeyEvent.VK_D];
 		reload = keys[KeyEvent.VK_R];
 		space = keys[KeyEvent.VK_SPACE];
+		shift = keys[KeyEvent.VK_SHIFT];
+		upArrow = keys[KeyEvent.VK_UP];
+		downArrow = keys[KeyEvent.VK_DOWN];
+		leftArrow = keys[KeyEvent.VK_LEFT];
+		rightArrow = keys[KeyEvent.VK_RIGHT];
+		volUp = keys[KeyEvent.VK_PAGE_UP];
+		volDown = keys[KeyEvent.VK_PAGE_DOWN];
+		esc = keys[KeyEvent.VK_ESCAPE];
+		use = keys[KeyEvent.VK_F];
+		one = keys[KeyEvent.VK_1];
+		two = keys[KeyEvent.VK_2];
 	}
 
 	public void keyPressed(KeyEvent e) {

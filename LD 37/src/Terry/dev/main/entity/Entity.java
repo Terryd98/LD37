@@ -32,12 +32,19 @@ public class Entity {
 		this.level = level;
 	}
 
-	public int getX() {
-		return (int) x;
+	public double getX() {
+		return x;
+	}
+	
+	public double getXForChaser() {
+		return x+10;
+	}
+	public double getY() {
+		return y;
 	}
 
-	public int getY() {
-		return (int) y;
+	public void hurt(int damage) {
+		
 	}
 
 }

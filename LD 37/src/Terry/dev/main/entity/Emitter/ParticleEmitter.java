@@ -10,6 +10,7 @@ public class ParticleEmitter extends Emitter {
 		super(x, y, Type.PARTICLE, amount, level);
 		for (int i = 0; i < amount; i++) {
 			level.add(new Particle(x, y, lifeTime, sprite));
+			level.remove(this);
 		}
 	}
 

@@ -19,7 +19,7 @@ public class GrassCornerTLTile extends Tile {
 	}
 
 	public boolean solid() {
-		return true;
+		return solid;
 	}
 	public boolean Entitysolid() {
 		return false;

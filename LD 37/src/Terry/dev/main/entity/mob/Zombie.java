@@ -8,37 +8,64 @@ import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.level.Level;
+import Terry.dev.main.level.Tile;
 
 public class Zombie extends Mob {
 
 	public double speed;
+	public final double START_SPEED;
 	private int time = 0;
 	double xa = 0, ya = 0;
-	public int health = 70;
+	public int health;
 	private int cCol;
+	public static boolean moving = false;
 	private int col;
 	public int damage = 1;
-	public boolean debug = true;
+	public boolean debug = false;
 
 	public Zombie(Level level) {
-		findStartPos(level);
-		speed = Math.abs(random.nextDouble() - 0.1);
+		health = random.nextInt(100) + 50;
+		findZombieStartPos(level);
+		START_SPEED = Math.abs(random.nextDouble() + 0.1);
+		cCol = random.nextInt(4);
+		if (cCol == 0) col = 0x76A07B;
+		if (cCol == 1) col = 0x94837C;
+		if (cCol == 2) col = 0x676975;
+		if (cCol == 3) col = 0x60534B;
+
+	}
+
+	public Zombie(int x, int y, Level level) {
+		this.x = x;
+		this.y = y;
+		health = random.nextInt(100) + 50;
+
+		START_SPEED = Math.abs(random.nextDouble() - 0.1);
 		cCol = random.nextInt(4);
 		if (cCol == 0) col = 0x76A07B;
 		if (cCol == 1) col = 0x770039;
 		if (cCol == 2) col = 0x64A07B;
-		if (cCol == 3) col = 0x77A02B;
+		if (cCol == 3) col = 0xC2C2C2;
 
 	}
 
+	private boolean playerInRange = false;
+
 	public void tick() {
+
 		time++;
 		anim++;
 		if (!debug) {
 			damage = 1;
 
-			List<Player> players = level.getPlayers(this, 120);
+			if (level.getTile((int) (x) / 16, (int) (y + 16) / 16) == Tile.flower) {
+				level.setTile((int) x / 16, (int) ((y + 16) / 16), Tile.grass);
+				if (playerInRange) Game.playSound("/sounds/flower.wav", -10.0f);
+			}
+			List<Player> players = level.getPlayers(this, 150);
+			if(players.size()<=0)playerInRange= false;
 			if (players.size() > 0) {
+				playerInRange = true;
 				Player player = players.get(0);
 				xa = 0;
 				ya = 0;
@@ -47,11 +74,12 @@ public class Zombie extends Mob {
 				if ((int) x > (int) player.getX()) xa -= speed;
 				if ((int) y > (int) player.getY()) ya -= speed;
 
-				if (time % (random.nextInt(2000) + 540) == 0) {
-					Game.playSound("/sounds/zombie.wav", -10.0f);
+				speed = START_SPEED;
+				if (time % (random.nextInt(5000) + 540) == 0) {
+					Game.playSound("/sounds/zombie.wav", -13.0f);
 				}
-				if (time % (random.nextInt(2000) + 540) == 0) {
-					Game.playSound("/sounds/zombie2.wav", -10.0f);
+				if (time % (random.nextInt(5000) + 540) == 0) {
+					Game.playSound("/sounds/zombie2.wav", -13.0f);
 				}
 			} else if (time % (random.nextInt(60) + 30) == 0) {
 				xa = random.nextInt((int) 2.5) - 0.5;
@@ -66,10 +94,12 @@ public class Zombie extends Mob {
 		attack();
 		if (xa != 0 || ya != 0) {
 			walking = true;
-
-			move(xa, 0);
-			move(0, ya);
+			if (!debug) {
+				move(xa, 0);
+				move(0, ya);
+			}
 		} else {
+			moving = false;
 			walking = false;
 
 		}
@@ -141,12 +171,10 @@ public class Zombie extends Mob {
 
 	public void hurt(int damage) {
 		health -= damage;
-		Game.playSound("/sounds/hurt.wav", -10.0f);
-		level.add(new ParticleEmitter((int) x, (int) y, 50, 2000, level, Sprite.bloodParticle));
+		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
+		level.add(new ParticleEmitter((int) x, (int) y, 10, 100000, level, Sprite.bloodParticle));
 		if (health <= 0) {
-			if (Player.CLIPS != 100) {
-				Player.CLIPS += 5;
-			}
+			level.add(new ParticleEmitter((int) x, (int) y, 1, 100000, level, Sprite.rottenHead));
 			Player.score += 10;
 			level.remove(this);
 		}
