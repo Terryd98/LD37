@@ -3,6 +3,8 @@ package Terry.dev.main.entity.mob;
 import java.util.List;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.AmmoEntity;
+import Terry.dev.main.entity.CashEntity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -20,11 +22,12 @@ public class Zombie extends Mob {
 	private int cCol;
 	public static boolean moving = false;
 	private int col;
+	private int counter = 0;
 	public int damage = 1;
 	public boolean debug = false;
 
 	public Zombie(Level level) {
-		health = random.nextInt(100) + 50;
+		health = random.nextInt(40) + 20;
 		findZombieStartPos(level);
 		START_SPEED = Math.abs(random.nextDouble() + 0.1);
 		cCol = random.nextInt(4);
@@ -49,7 +52,9 @@ public class Zombie extends Mob {
 
 	}
 
-	private boolean playerInRange = false;
+	public static boolean playerInRange = false;
+	double playerX;
+	double playerY;
 
 	public void tick() {
 
@@ -57,36 +62,43 @@ public class Zombie extends Mob {
 		anim++;
 		if (!debug) {
 			damage = 1;
-
 			if (level.getTile((int) (x) / 16, (int) (y + 16) / 16) == Tile.flower) {
 				level.setTile((int) x / 16, (int) ((y + 16) / 16), Tile.grass);
 				if (playerInRange) Game.playSound("/sounds/flower.wav", -10.0f);
 			}
 			List<Player> players = level.getPlayers(this, 150);
-			if(players.size()<=0)playerInRange= false;
+			if (players.size() <= 0) playerInRange = false;
 			if (players.size() > 0) {
-				playerInRange = true;
-				Player player = players.get(0);
-				xa = 0;
-				ya = 0;
-				if ((int) x < (int) player.getX()) xa += speed;
-				if ((int) y < (int) player.getY()) ya += speed;
-				if ((int) x > (int) player.getX()) xa -= speed;
-				if ((int) y > (int) player.getY()) ya -= speed;
-
-				speed = START_SPEED;
-				if (time % (random.nextInt(5000) + 540) == 0) {
-					Game.playSound("/sounds/zombie.wav", -13.0f);
-				}
-				if (time % (random.nextInt(5000) + 540) == 0) {
-					Game.playSound("/sounds/zombie2.wav", -13.0f);
-				}
-			} else if (time % (random.nextInt(60) + 30) == 0) {
-				xa = random.nextInt((int) 2.5) - 0.5;
-				ya = random.nextInt((int) 2.5) - 0.5;
-				if (random.nextInt(4) == 0) {
+				counter++;
+				if (counter >= 70) {
+					playerInRange = true;
+					Player player = players.get(0);
 					xa = 0;
 					ya = 0;
+					if (anim % 30 == 0) {
+						playerX = player.getX();
+						playerY = player.getY();
+					}
+					if ((int) x < (int) playerX) xa += speed;
+					if ((int) y < (int) playerY) ya += speed;
+					if ((int) x > (int) playerX) xa -= speed;
+					if ((int) y > (int) playerY) ya -= speed;
+
+					speed = START_SPEED;
+					if (time % (random.nextInt(5000) + 540) == 0) {
+						Game.playSound("/sounds/zombie.wav", -13.0f);
+					}
+					if (time % (random.nextInt(5000) + 540) == 0) {
+						Game.playSound("/sounds/zombie2.wav", -13.0f);
+					}
+				} else if (time % (random.nextInt(60) + 30) == 0) {
+					counter = 0;
+					xa = random.nextInt((int) 2.5) - 0.5;
+					ya = random.nextInt((int) 2.5) - 0.5;
+					if (random.nextInt(4) == 0) {
+						xa = 0;
+						ya = 0;
+					}
 				}
 			}
 		}
@@ -172,10 +184,27 @@ public class Zombie extends Mob {
 	public void hurt(int damage) {
 		health -= damage;
 		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
-		level.add(new ParticleEmitter((int) x, (int) y, 10, 100000, level, Sprite.bloodParticle));
+		level.add(new ParticleEmitter((int) x, (int) y, 10, 10000, level, Sprite.bloodParticle));
 		if (health <= 0) {
-			level.add(new ParticleEmitter((int) x, (int) y, 1, 100000, level, Sprite.rottenHead));
+			if (random.nextInt(3) == 0) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenHead));
+			} else if (random.nextInt(3) == 2) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenArm));
+			} else {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
+			}
 			Player.score += 10;
+			if (random.nextInt(3) < 2) {
+				CashEntity cash = new CashEntity(x + random.nextInt(20), y + random.nextInt(20), level);
+				level.add(cash);
+			}
+
+			if (random.nextInt(3) < 1) {
+				AmmoEntity ammo = new AmmoEntity(x + random.nextInt(20), y + random.nextInt(20), level);
+				level.add(ammo);
+			}
+			Game.ZCount--;
 			level.remove(this);
 		}
 

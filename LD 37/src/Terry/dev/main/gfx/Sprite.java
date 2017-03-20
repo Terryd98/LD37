@@ -25,9 +25,10 @@ public class Sprite {
 	public static Sprite command_centre_off = new Sprite(16, 8, 0, SpriteSheet.tiles_sheet);
 	public static Sprite command_centre_shadow = new Sprite(16, 6, 1, SpriteSheet.tiles_sheet);
 	public static Sprite command_centre_legs = new Sprite(16, 7, 1, SpriteSheet.tiles_sheet);
-
 	public static Sprite f_indicator = new Sprite(16, 9, 0, SpriteSheet.tiles_sheet);
 
+	public static Sprite drawer = new Sprite(16, 10, 0, SpriteSheet.tiles_sheet);
+	
 	public static Sprite selector = new Sprite(16, 0, 3, SpriteSheet.tiles_sheet);
 	public static Sprite spikes = new Sprite(16, 1, 3, SpriteSheet.tiles_sheet);
 	public static Sprite spikesBlood = new Sprite(16, 1, 4, SpriteSheet.tiles_sheet);
@@ -39,13 +40,23 @@ public class Sprite {
 	public static Sprite pistolIconOn = new Sprite(16, 3, 4, SpriteSheet.tiles_sheet);
 	public static Sprite assaultRifleIconOn = new Sprite(16, 4, 4, SpriteSheet.tiles_sheet);
 
+	public static Sprite CashEntity = new Sprite(16, 5, 3, SpriteSheet.tiles_sheet);
+	public static Sprite AmmoEntity = new Sprite(16, 6, 3, SpriteSheet.tiles_sheet);
 	
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
+	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
+	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);
+
 	public static Sprite shadow = new Sprite(16, 0, 2, SpriteSheet.tiles_sheet);
 	public static Sprite wall = new Sprite(16, 1, 0, SpriteSheet.tiles_sheet);
 	public static Sprite wallFront = new Sprite(16, 0, 1, SpriteSheet.tiles_sheet);
 	public static Sprite wallIso = new Sprite(16, 0, 0, SpriteSheet.tiles_sheet);
 	public static Sprite wood = new Sprite(16, 1, 1, SpriteSheet.tiles_sheet);
+
+	public static Sprite stone = new Sprite(16, 5, 1, SpriteSheet.tiles_sheet);
+	
+	public static Sprite bridgeWallTop = new Sprite(16, 5, 2, SpriteSheet.tiles_sheet);
+	public static Sprite bridgeWallBottom = new Sprite(16, 6, 2, SpriteSheet.tiles_sheet);
 
 	public static Sprite flowers = new Sprite(16, 3, 1, SpriteSheet.tiles_sheet);
 	public static Sprite grass_Snow = new Sprite(16, 2, 1, SpriteSheet.tiles_sheet);

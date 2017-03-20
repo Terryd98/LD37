@@ -31,7 +31,6 @@ public class Level {
 	public static List<Projectile> projectiles = new ArrayList<Projectile>();
 	public static List<Particle> particles = new ArrayList<Particle>();
 
-
 	private Comparator<Entity> entitySorter = new Comparator<Entity>() {
 		public int compare(Entity e0, Entity e1) {
 			if (e1.y < e0.y) return +1;
@@ -127,7 +126,8 @@ public class Level {
 
 		int xft = random.nextInt((width) * 16);
 		int yft = random.nextInt((height) * 16);
-		//if (time % 60 == 0) System.out.println(random.nextInt((width * height) / 16));
+		// if (time % 60 == 0) System.out.println(random.nextInt((width *
+		// height) / 16));
 		if (getTile(xft, yft) == Tile.grass) {
 			setTile(xft, yft, Tile.flower);
 		}
@@ -163,7 +163,7 @@ public class Level {
 		List<Node> closedList = new ArrayList<Node>();
 		Tile goala = getTile(goal.x, goal.y);
 		Node current = new Node(start, null, 0, getDistance(start, goal));
-		if(!goala.solid()) openList.add(current);
+		if (!goala.solid()) openList.add(current);
 		while (openList.size() > 0) {
 			Collections.sort(openList, nodeSorter);
 			current = openList.get(0);
@@ -210,7 +210,7 @@ public class Level {
 
 	private double getDistance(Vector2i tile, Vector2i goal) {
 		double dx = tile.x - goal.x;
-		double dy = tile.y- goal.y;
+		double dy = tile.y - goal.y;
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
@@ -346,7 +346,6 @@ public class Level {
 			particles.get(i).render(render);
 		}
 
-
 		for (int i = 0; i < projectiles.size(); i++) {
 			projectiles.get(i).render(render);
 		}
@@ -358,7 +357,7 @@ public class Level {
 			Collections.sort(zombies, zombieSorter);
 			zombies.get(i).render(render);
 		}
-		
+
 		for (int i = 0; i < chasingZombies.size(); i++) {
 			Collections.sort(chasingZombies, chaserSorter);
 			chasingZombies.get(i).render(render);
@@ -395,6 +394,9 @@ public class Level {
 		if (tiles[x + y * width] == 0xffFAFA37) tiles[x + y * width] = Tile.flower.id;
 		if (tiles[x + y * width] == 0xff3A607D) tiles[x + y * width] = Tile.water.id;
 		if (tiles[x + y * width] == 0xffA0A4A3) tiles[x + y * width] = Tile.wall.id;
+		if (tiles[x + y * width] == 0xff676666) tiles[x + y * width] = Tile.stone.id;
+		if (tiles[x + y * width] == 0xff161616) tiles[x + y * width] = Tile.bridgeWallTop.id;
+		if (tiles[x + y * width] == 0xffD3D3D3) tiles[x + y * width] = Tile.bridgeWallBottom.id;
 		if (tiles[x + y * width] == 0xff404040) tiles[x + y * width] = Tile.wallIso.id;
 		if (tiles[x + y * width] == 0xff808080) tiles[x + y * width] = Tile.wallFront.id;
 		if (tiles[x + y * width] == 0xff322015) tiles[x + y * width] = Tile.wood.id;

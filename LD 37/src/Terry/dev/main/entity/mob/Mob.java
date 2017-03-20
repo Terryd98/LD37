@@ -67,13 +67,13 @@ public class Mob extends Entity {
 		if (gun == 1) {
 			Projectile p = new PistolBullet(x, y, dir);
 			level.add(p);
-			Game.playSound("/sounds/Shoot.wav", -10.0f);
+			Game.playSound("/sounds/Shoot.wav", -15.0f);
 		}
 
 		if (gun == 3) {
 			Projectile p = new AssaultRifle(x, y, dir);
 			level.add(p);
-			Game.playSound("/sounds/Shoot_old.wav", -10.0f);
+			Game.playSound("/sounds/Shoot_old.wav", -15.0f);
 		}
 	}
 

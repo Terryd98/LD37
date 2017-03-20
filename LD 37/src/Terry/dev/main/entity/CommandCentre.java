@@ -24,43 +24,38 @@ public class CommandCentre extends Entity {
 	public boolean activated = false;
 	private int time = 15;
 	private boolean powered = false;
-	private int health = 100;
 	private int tick = 0;
 	public boolean inRange = false;
 	public boolean inAir = false;
 	private Input input;
-//add fuel
+
+	// add fuel
 	public CommandCentre(double x, double y, Level level, Input input) {
 		this.input = input;
 		this.x = x;
 		this.y = y;
 		sprite = Sprite.command_centre_off;
-		Game.playSound("/sounds/hit.wav", -5.0f);
 	}
 
 	public CommandCentre(Vector2i vector, Level level, Input input) {
 		this.x = vector.x;
 		this.y = vector.y;
 		this.input = input;
-		sprite = Sprite.spikes;
-		Game.playSound("/sounds/hit.wav", -5.0f);
+		sprite = Sprite.command_centre_off;
 	}
 
 	public boolean beep = false;
 	public boolean pickupRange = false;
 
 	public void tick() {
-		if(level.getTile((int)x/16,(int) y/16)== Tile.wood && level.getTile((int)x/16,(int) y/16+1)== Tile.wood){
+		if (level.getTile((int) x / 16, (int) y / 16) == Tile.wood) {
+			
 			powered = true;
 		} else {
 			powered = false;
 		}
-		
+
 		tick++;
-		if (health <= 0) {
-			Game.playSound("/sounds/break.wav", -5.0f);
-			level.remove(this);
-		}
 		List<Player> players = level.getPlayers(this, 50);
 
 		List<Player> ps = level.getPlayers(this, 23);
@@ -69,7 +64,7 @@ public class CommandCentre extends Entity {
 		} else {
 			pickupRange = false;
 		}
-		if (players.size() > 0&& powered) {
+		if (players.size() > 0 && powered) {
 			inRange = true;
 			if (tick % 100 < 50) {
 				sprite = Sprite.command_centre_on;
@@ -90,30 +85,6 @@ public class CommandCentre extends Entity {
 			sprite = Sprite.command_centre_off;
 		}
 
-		List<Zombie> zombies = level.getZombies((int) (x * 16) + 10, (int) (y * 16), 16);
-		List<ChasingZombie> chaser = level.getChaserZombies((int) (x * 16) + 10, (int) (y * 16), 16);
-		if (zombies.size() > 0) {
-			Zombie zombie = zombies.get(0);
-			zombie.speed = zombie.START_SPEED / 2;
-			if (time >= 0) time--;
-			if (time == 0) {
-				sprite = Sprite.spikesBlood;
-				health -= 5;
-				time = 15;
-			}
-		}
-
-		if (zombies.size() > 0) {
-			Zombie zombie = zombies.get(0);
-			zombie.speed = zombie.START_SPEED / 2;
-			if (time >= 0) time--;
-			if (time == 0) {
-				sprite = Sprite.spikesBlood;
-				health -= 5;
-				zombie.hurt(5);
-				time = 15;
-			}
-		}
 	}
 
 	public static boolean canAfford = false;
@@ -138,7 +109,7 @@ public class CommandCentre extends Entity {
 			selectTime = SELECT_TIME;
 
 		}
-		
+
 		if (Player.cash >= trap_price && selected == 2 && input.space && selectTime == 0) {
 			Player.cash -= trap_price;
 			Player.traps++;
@@ -163,7 +134,7 @@ public class CommandCentre extends Entity {
 
 		}
 		if (selectTime > 0) selectTime--;
-		render.renderRect(5, 11, 6 * 16, 9 * 16, 0x808080);
+		render.renderRect(5, 11, 6 * 16, 9 * 16, 0x808080, false);
 		if (yp <= 32) yp = 32;
 		if (yp >= 9 * 16) yp = 9 * 16;
 		if (selected <= 1) selected = 1;
@@ -210,8 +181,8 @@ public class CommandCentre extends Entity {
 
 		Font.draw("SHOP", render, (16 * 2 + 10), 25, 0x5E3F4E, false);
 		Font.draw("SHOP", render, 16 * 2 + 10, 25 - 1, 0xDB76A5, false);
-		
-		int ammoY= 23 + 16;
+
+		int ammoY = 23 + 16;
 		if (Player.cash >= ammo_price) {
 			Font.draw("AMMO$" + Integer.toString(ammo_price), render, 16 * 1, ammoY, 0x363636, false);
 			Font.draw("AMMO$" + Integer.toString(ammo_price), render, 16 * 1, (ammoY) - 1, 0xFFD400, false);
@@ -221,14 +192,14 @@ public class CommandCentre extends Entity {
 
 		}
 
-		int trapY= 23 + 32;
+		int trapY = 23 + 32;
 		if (Player.cash >= trap_price) {
 			Font.draw("Trap$" + Integer.toString(trap_price), render, 16 * 1, trapY, 0x363636, false);
 			Font.draw("TRAP$" + Integer.toString(trap_price), render, 16 * 1, (trapY) - 1, 0xFFD400, false);
 		} else {
 			Font.draw("TRAP$" + Integer.toString(trap_price), render, 16 * 1, trapY, 0x191919, false);
 			Font.draw("TRAP$" + Integer.toString(trap_price), render, 16 * 1, (trapY) - 1, 0x363636, false);
-			
+
 		}
 		int arY = 23 + 48;
 		if (Player.cash >= ar_price) {
@@ -239,7 +210,6 @@ public class CommandCentre extends Entity {
 			Font.draw("A-Rifle$" + Integer.toString(ar_price), render, 16 * 1, (arY) - 1, 0x363636, false);
 
 		}
-		
 
 	}
 
@@ -254,8 +224,8 @@ public class CommandCentre extends Entity {
 		if (inAir) {
 			render.render((int) x, (int) y + 15, Sprite.command_centre_shadow, false, false);
 		}
-		render.render((int) x, (int) y, sprite, false, false);
-		render.render((int) x, (int) y + 16, Sprite.command_centre_legs, false, false);
+		render.render((int) x, (int) y-16, sprite, false, false);
+		render.render((int) x, (int) y , Sprite.command_centre_legs, false, false);
 
 	}
 }

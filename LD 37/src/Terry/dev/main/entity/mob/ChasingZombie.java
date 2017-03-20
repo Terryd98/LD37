@@ -3,6 +3,8 @@ package Terry.dev.main.entity.mob;
 import java.util.List;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.AmmoEntity;
+import Terry.dev.main.entity.CashEntity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -23,6 +25,7 @@ public class ChasingZombie extends Mob {
 	private int col;
 	private List<Node> path = null;
 	public int damage = 1;
+	private int counter =0;
 	public boolean debug = false;
 
 	public ChasingZombie(Level level) {
@@ -30,10 +33,10 @@ public class ChasingZombie extends Mob {
 		START_SPEED = 1;// Math.abs(random.nextDouble() - 0.1);
 		health = random.nextInt(75);
 		cCol = random.nextInt(4);
-		if (cCol == 0) col = 0xD164C3;
-		if (cCol == 1) col = 0xD164C3;
-		if (cCol == 2) col = 0xD164C3;
-		if (cCol == 3) col = 0xD164C3;
+		if (cCol == 0) col = 0x4D8254;
+		if (cCol == 1) col = 0x0E3012;
+		if (cCol == 2) col = 0x4D8254;
+		if (cCol == 3) col = 0x0E3012;
 
 	}
 
@@ -45,10 +48,10 @@ public class ChasingZombie extends Mob {
 		health = random.nextInt(100) - 70;
 		START_SPEED = 1;// Math.abs(random.nextDouble() - 0.1);
 		cCol = random.nextInt(4);
-		if (cCol == 0) col = 0x76A07B;
-		if (cCol == 1) col = 0x770039;
-		if (cCol == 2) col = 0x64A07B;
-		if (cCol == 3) col = 0xC2C2C2;
+		if (cCol == 0) col = 0x0E3012;
+		if (cCol == 1) col = 0x4D8254;
+		if (cCol == 2) col = 0x0E3012;
+		if (cCol == 3) col = 0x4D8254;
 
 	}
 
@@ -57,44 +60,54 @@ public class ChasingZombie extends Mob {
 			level.setTile((int) x / 16, (int) ((y + 16) / 16), Tile.grass);
 			if (playerInRange) Game.playSound("/sounds/flower.wav", -10.0f);
 		}
-		List<Player> players = level.getPlayers(this, 100);
+		List<Player> players = level.getPlayers(this, 150);
 		time++;
 		anim++;
 		if (!debug) {
 			damage = 1;
 			if (players.size() <= 0) playerInRange = false;
 			if (players.size() > 0) {
-				playerInRange = true;
-				xa = 0;
-				ya = 0;
-				int px = (int) level.getPlayerAt(0).x;
-				int py = (int) level.getPlayerAt(0).y;
-				Vector2i start = new Vector2i((int) x >> 4, (int) y >> 4);
-				Vector2i dest = new Vector2i(px >> 4, py >> 4);
-				path = level.findPath(start, dest);
-				if (path != null) {
-					if (path.size() > 0) {
-						Vector2i vec = path.get(path.size() - 1).tile;
-						if (x < vec.x * 16) xa += speed;
-						if (x > vec.x * 16) xa -= speed;
-						if (y < vec.y * 16) ya += speed;
-						if (y > vec.y * 16) ya -= speed;
+				counter++;
+				if (counter > 70) {
+					playerInRange = true;
+					xa = 0;
+					ya = 0;
+					int px = (int) level.getPlayerAt(0).x;
+					int py = (int) level.getPlayerAt(0).y;
+					Vector2i start = new Vector2i((int) x >> 4, (int) y >> 4);
+					Vector2i dest = new Vector2i(px >> 4, py >> 4);
+					path = level.findPath(start, dest);
+					if (path != null) {
+						if (path.size() > 0) {
+							Vector2i vec = path.get(path.size() - 1).tile;
+							if (x < vec.x * 16) xa += speed;
+							if (x > vec.x * 16) xa -= speed;
+							if (y < vec.y * 16) ya += speed;
+							if (y > vec.y * 16) ya -= speed;
+						}
+					}
+					speed = START_SPEED;
+
+					if (time % (random.nextInt(2000) + 540) == 0) {
+						Game.playSound("/sounds/zombie.wav", -8.0f);
+					}
+					if (time % (random.nextInt(2000) + 540) == 0) {
+						Game.playSound("/sounds/zombie2.wav", -8.0f);
 					}
 				}
-				speed = START_SPEED;
-
-				if (time % (random.nextInt(2000) + 540) == 0) {
-					Game.playSound("/sounds/zombie.wav", -8.0f);
+			} /*else {
+				counter =0;
+				if (time % (random.nextInt(60) + 30) == 0) {
+					xa = random.nextInt((int) 2.5) - 0.5;
+					ya = random.nextInt((int) 2.5) - 0.5;
+					if (random.nextInt(4) == 0) {
+						xa = 0;
+						ya = 0;
+					}
 				}
-				if (time % (random.nextInt(2000) + 540) == 0) {
-					Game.playSound("/sounds/zombie2.wav", -8.0f);
-				}
-			} /*
-				 * else if (time % (random.nextInt(60) + 30) == 0) { xa =
-				 * random.nextInt((int) 2.5) - 0.5; ya = random.nextInt((int)
-				 * 2.5) - 0.5; if (random.nextInt(4) == 0) { xa = 0; ya = 0; } }
-				 */
+			}*/
 		}
+
 		attack();
 		if (xa != 0 || ya != 0) {
 			walking = true;
@@ -156,11 +169,11 @@ public class ChasingZombie extends Mob {
 		}
 
 		if (dir == 0) {
-			if ( walking && anim % 20 > 10) {
+			if (walking && anim % 20 > 10) {
 				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
-			} else if ( walking && anim % 20 > 3) {
+			} else if (walking && anim % 20 > 3) {
 				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
-			} else if ( walking) {
+			} else if (walking) {
 				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
 			} else {
 				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
@@ -174,13 +187,26 @@ public class ChasingZombie extends Mob {
 	public void hurt(int damage) {
 		health -= damage;
 		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
-		level.add(new ParticleEmitter((int) x, (int) y, 10, 100000, level, Sprite.bloodParticle));
+		level.add(new ParticleEmitter((int) x, (int) y, 10, 10000, level, Sprite.bloodParticle));
 		if (health <= 0) {
-			level.add(new ParticleEmitter((int) x, (int) y, 1, 100000, level, Sprite.rottenHead));
-			if (Player.PISTOL_AMMO != 100) {
-				Player.PISTOL_AMMO += 5;
+			if (random.nextInt(3) == 0) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenHead));
+			} else if (random.nextInt(3) == 1) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenArm));
+			} else {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
 			}
-			Player.score += 10;
+			if (random.nextInt(3) < 2) {
+				CashEntity cash = new CashEntity(x+random.nextInt(20), y+random.nextInt(20), level);
+				level.add(cash);
+			}
+			
+			if (random.nextInt(3) < 1) {
+				AmmoEntity ammo = new AmmoEntity(x+random.nextInt(20), y+random.nextInt(20), level);
+				level.add(ammo);
+			}
+			Player.score += 15;
+			Game.ZCount--;
 			level.remove(this);
 		}
 

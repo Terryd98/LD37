@@ -1,7 +1,9 @@
 package Terry.dev.main.entity.mob;
 
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.CashEntity;
 import Terry.dev.main.entity.CommandCentre;
+import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.Trap;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.entity.gun.AssaultRifle;
@@ -20,7 +22,11 @@ public class Player extends Mob {
 	public boolean dead = false;
 	public double speed = WALKING_SPEED;
 	private static int energy = 100;
-	public static int cash = 1000;
+	public static int cash = 0;
+	public static int addedCash = 3000;
+	public static int addedAmmo= 3000;
+
+	public int tickCount = 0;
 	private static boolean armed = true;
 	private static final double WALKING_SPEED = 1;
 	private static final double RUNNING_SPEED = 1.5;
@@ -34,11 +40,12 @@ public class Player extends Mob {
 	private final int SHAKE_TIME = 10;
 	private int shakeTime = SHAKE_TIME;
 	Projectile p;
-
+	public int cashPickupTime = 10;
+	public int ammoPickupTime = 10;
 	public static boolean pistol = true;
 	public static boolean shotgun = false;
 	public static boolean assaultRifle = false;
-	
+
 	public static boolean hasPistol = true;
 	public static boolean hasShotgun = false;
 	public static boolean hasAssaultRifle = false;
@@ -56,6 +63,8 @@ public class Player extends Mob {
 		findStartPos(level);
 		cCentre = new CommandCentre((int) x + 8, (int) y, level, input);
 		level.add(cCentre);
+		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		level.add(drawer);
 	}
 
 	public Player(int x, int y, Input input, Level level) {
@@ -64,6 +73,8 @@ public class Player extends Mob {
 		this.y = y;
 		cCentre = new CommandCentre((int) x + 8, (int) y, level, input);
 		level.add(cCentre);
+		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		level.add(drawer);
 	}
 
 	public Player(Vector2i vector, Input input, Level level) {
@@ -73,6 +84,8 @@ public class Player extends Mob {
 		vector.x += 8;
 		cCentre = new CommandCentre(vector, level, input);
 		level.add(cCentre);
+		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		level.add(drawer);
 	}
 
 	private int keyT = 20;
@@ -81,13 +94,23 @@ public class Player extends Mob {
 	private int useCooldown = 20;
 
 	public void tick() {
-		if(input.up && input.down && input.shift) cash++;
-		if(input.one&& useCooldown ==0){
+		if (anim % 10 == 1) tickCount++;
+		if (DrawerEntity.inRange) {
+			if (input.space) {
+				DrawerEntity.looting = true;
+			} else {
+				DrawerEntity.looting = false;
+			}
+
+		}
+		if (input.up && input.down && input.shift) cash++;
+
+		if (hasPistol && input.one && useCooldown == 0) {
 			assaultRifle = false;
 			shotgun = false;
 			pistol = true;
 			useCooldown = 20;
-		}else if(input.two&& useCooldown ==0){
+		} else if (hasAssaultRifle && input.two && useCooldown == 0) {
 			assaultRifle = true;
 			shotgun = false;
 			pistol = false;
@@ -434,19 +457,47 @@ public class Player extends Mob {
 		Font.draw("Energy:", render, (render.width - 82), render.height - 10, 0x363636, false);
 		Font.draw("Energy:", render, (render.width - 82), render.height - 11, 0xEFF589, false);
 
-		Font.draw(Integer.toString(energy), render, (render.width - 25), render.height - 10, 0x7E305C, false);
-		Font.draw(Integer.toString(energy), render, (render.width - 25), render.height - 11, 0xEF358C, false);
+		Font.draw(Integer.toString(energy), render, (render.width - 26), render.height - 10, 0x7E305C, false);
+		Font.draw(Integer.toString(energy), render, (render.width - 26), render.height - 11, 0xEF358C, false);
 
 		Font.draw("Cash:", render, (render.width - 82), render.height - 20, 0x363636, false);
 		Font.draw("Cash:", render, (render.width - 82), render.height - 21, 0xEFF589, false);
 
 		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 20, 0x7E305C, false);
 		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 21, 0xEF358C, false);
+		if (addedCash > 0) {
+			if (cashPickupTime == 0) {
+				tickCount = 0;
+				cashPickupTime = 3000;
+			}
+			if (cashPickupTime > 0) cashPickupTime--;
+			if (cashPickupTime > 0) {
+				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 20, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 21, 0xEF358C, false);
+			} else {
+				cashPickupTime = 0;
+				addedCash = 0;
+			}
+		}
+		
+		if (addedAmmo > 0) {
+			if (ammoPickupTime == 0) {
+				tickCount = 0;
+				ammoPickupTime = 3000;
+			}
+			if (ammoPickupTime > 0) ammoPickupTime--;
+			if (ammoPickupTime > 0) {
+				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 240, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 241, 0xEF358C, false);
+			} else {
+				ammoPickupTime = 0;
+				addedAmmo= 0;
+			}
+		}
 
 		render.render(xx - 8, yy + 5, Sprite.shadow, false, false);
-		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030);
-		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484);
-
+		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
+		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
 
 		if (pistol) {/////////////////////////////////////////
 			if (PISTOL_CLIP > 0) {
@@ -744,16 +795,16 @@ public class Player extends Mob {
 				}
 			}
 		}
-		if(hasPistol){
-			render.renderIcon(render.width - 19, render.height-40, Sprite.pistolIconOff, false, false, false);
-			if(pistol) {
-				render.renderIcon(render.width - 19, render.height-40, Sprite.pistolIconOn, false, false, false);
+		if (hasPistol) {
+			render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOff, false, false, false);
+			if (pistol) {
+				render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOn, false, false, false);
 			}
-			
+
 		}
-		if(hasAssaultRifle){
+		if (hasAssaultRifle) {
 			render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOff, false, false, false);
-		if(assaultRifle) {
+			if (assaultRifle) {
 				render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOn, false, false, false);
 			}
 		}

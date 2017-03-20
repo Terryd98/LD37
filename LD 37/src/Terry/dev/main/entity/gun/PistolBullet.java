@@ -20,7 +20,7 @@ public class PistolBullet extends Projectile {
 	public PistolBullet(double x, double y, double dir) {
 		super(x, y, dir);
 		range = random.nextInt(300) + 50;
-		speed = 10;
+		speed = 8;
 		damage = 15;
 
 		nx = speed * Math.cos(angle);
@@ -35,7 +35,6 @@ public class PistolBullet extends Projectile {
 			remove();
 			Zombie zombie = zombies.get(0);
 			zombie.hurt(damage);
-			Player.cash+= 5;
 			Game.playSound("/sounds/hit.wav", -15.0f);
 		}
 
@@ -43,7 +42,6 @@ public class PistolBullet extends Projectile {
 			remove();
 			ChasingZombie chaser = chasers.get(0);
 			chaser.hurt(damage);
-			Player.cash+= 5;
 			Game.playSound("/sounds/hit.wav", -15.0f);
 		}
 

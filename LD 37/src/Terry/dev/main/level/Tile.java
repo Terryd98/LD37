@@ -4,6 +4,8 @@ import java.util.Random;
 
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.level.tiles.BasementFloorTile;
+import Terry.dev.main.level.tiles.BridgeWallTileBottom;
+import Terry.dev.main.level.tiles.BridgeWallTileTop;
 import Terry.dev.main.level.tiles.FlowerTile;
 import Terry.dev.main.level.tiles.GrassCornerBLTile;
 import Terry.dev.main.level.tiles.GrassCornerBRTile;
@@ -15,6 +17,7 @@ import Terry.dev.main.level.tiles.GrassRightTile;
 import Terry.dev.main.level.tiles.GrassTile;
 import Terry.dev.main.level.tiles.GrassUpTile;
 import Terry.dev.main.level.tiles.RottenHeadTile;
+import Terry.dev.main.level.tiles.StoneTile;
 import Terry.dev.main.level.tiles.VoidTile;
 import Terry.dev.main.level.tiles.WallFrontTile;
 import Terry.dev.main.level.tiles.WallIsoTile;
@@ -35,11 +38,13 @@ public class Tile {
 	public static Tile wallIso = new WallIsoTile(4);
 	public static Tile wood = new WoodTile(5);
 	public static Tile water = new WaterTile(6);
-
 	public static Tile grass = new GrassTile(1);
 	public static Tile flower = new FlowerTile(17);
 	public static Tile rottenHead = new RottenHeadTile(15);
 	public static Tile basementFloor = new BasementFloorTile(16);
+	public static Tile stone = new StoneTile(18);
+	public static Tile bridgeWallTop = new BridgeWallTileTop(19);
+	public static Tile bridgeWallBottom = new BridgeWallTileBottom(20);
 
 	public static Tile grassCornerTL = new GrassCornerTLTile(7);
 	public static Tile grassCornerTR = new GrassCornerTRTile(8);

@@ -17,7 +17,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.swing.JFrame;
 
-import Terry.dev.main.entity.CommandCentre;
+import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.entity.mob.Zombie;
@@ -27,7 +27,6 @@ import Terry.dev.main.gfx.SpriteSheet;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
 import Terry.dev.main.level.OneLevel;
-import Terry.dev.main.util.Vector2i;
 
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +52,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean running = false;
 	private boolean canChangeLevel = false;
 	private String title = "LD37 - Death Room";
-	private int ZCount = 0;
+	public static int ZCount = 0;
 	private boolean dayNightCycle = false;
 
 	BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -73,7 +72,7 @@ public class Game extends Canvas implements Runnable {
 		level = new OneLevel("/levels/level1.png");
 		//Vector2i pp = new Vector2i(5 * 16, 5 * 16);
 		player = new Player(input, level);
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 10; i++) {
 			zombie = new Zombie(level);
 			level.add(zombie);
 		}
@@ -177,7 +176,6 @@ public class Game extends Canvas implements Runnable {
 	private int expo = 0;
 
 	public void tick() {
-
 		if (Input.getButton() == 2) {
 			zombie = new Zombie(input.mouseX, input.mouseY, level);
 			level.add(zombie);
@@ -279,7 +277,7 @@ public class Game extends Canvas implements Runnable {
 
 	private void levelTick() {
 		if (!menu) {
-			if (time % (60 * (random.nextInt(15)+5)) == 0) {
+			if (time % (60 * (random.nextInt(20)+2)) == 0) {
 				expo++;
 				if (finalLevel) {
 					expo += 2;
@@ -291,11 +289,11 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 				for (int i = 0; i < expo - (expo / 3); i++) {
-					if(ZCount<100) {
+					if(ZCount<40) {
 					chasingZombie = new ChasingZombie(level);
 					level.add(chasingZombie);
 					zombie = new Zombie(level);
-					 level.add(zombie);
+					  level.add(zombie);
 					 if(random.nextInt(10)==2)Game.playSound("/sounds/zombie2.wav", -20.0f);
 						ZCount += 2;
 					}

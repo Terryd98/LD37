@@ -35,7 +35,6 @@ public class AssaultRifle extends Projectile {
 			remove();
 			Zombie zombie = zombies.get(0);
 			zombie.hurt(damage);
-			Player.cash+=2;
 
 			Game.playSound("/sounds/hit.wav", -15.0f);
 		}
@@ -44,7 +43,6 @@ public class AssaultRifle extends Projectile {
 			remove();
 			ChasingZombie chaser = chasers.get(0);
 			chaser.hurt(damage);
-			Player.cash+= 2;
 
 			Game.playSound("/sounds/hit.wav", -15.0f);
 		}
