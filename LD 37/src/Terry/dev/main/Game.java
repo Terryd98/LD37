@@ -46,7 +46,7 @@ public class Game extends Canvas implements Runnable {
 	private Level level;
 	public static boolean finalLevel = false;
 	public static boolean infiniLevel = false;
-	private static Input input;
+	private Input input;
 	public static boolean menu = false;
 	public boolean paused = false;
 	private boolean running = false;
@@ -66,18 +66,18 @@ public class Game extends Canvas implements Runnable {
 		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		render = new Render(WIDTH, HEIGHT, pixels, SpriteSheet.tiles_sheet);
 		input = new Input();
-		addKeyListener(input);
 		addMouseListener(input);
 		addMouseMotionListener(input);
+		addKeyListener(input);
 		level = new OneLevel("/levels/level1.png");
-		//Vector2i pp = new Vector2i(5 * 16, 5 * 16);
+		// Vector2i pp = new Vector2i(5 * 16, 5 * 16);
 		player = new Player(input, level);
 		for (int i = 0; i < 10; i++) {
 			zombie = new Zombie(level);
 			level.add(zombie);
 		}
 		level.add(player);
-		
+
 	}
 
 	public void setLevel(Level level) {
@@ -108,8 +108,6 @@ public class Game extends Canvas implements Runnable {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-
-		requestFocus();
 	}
 
 	public void run() {
@@ -120,11 +118,12 @@ public class Game extends Canvas implements Runnable {
 		int frames = 0;
 		int updates = 0;
 		init();
+		requestFocus();
 		while (running) {
-			//if (input.esc) {
-			//	System.out.println("EXITING..... NO ERROR");
-			//	System.exit(0);
-			//}
+			// if (input.esc) {
+			// System.out.println("EXITING..... NO ERROR");
+			// System.exit(0);
+			// }
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
@@ -240,7 +239,7 @@ public class Game extends Canvas implements Runnable {
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15 + 1, (3), 0x363636, false);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15, (2), 0xEFF589, false);
 			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 1 + 55 - 15, (3), 0x363636, false);
-			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 55- 15, (2), 0xEF358C, false);
+			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 55 - 15, (2), 0xEF358C, false);
 		}
 
 		Graphics g = bs.getDrawGraphics();
@@ -252,7 +251,6 @@ public class Game extends Canvas implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		if (menu) {
 			String msg = "Can anyone hear me?  i need Help! im in the basement!";
 			String msg1 = "Kill all of these zombies to clear the path and please try rescue me!";
@@ -260,14 +258,15 @@ public class Game extends Canvas implements Runnable {
 			g.drawImage(main, 0, 0, main.getWidth(), main.getHeight(), null);
 
 		}
+		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		// BRIGHTNESS
 		if (dayNightCycle) {
 			if (alpha >= 100 * 2) alpha = 100 * 2;
 			tickCount++;
 			if (tickCount % 1000 == 10) alpha++;
-			Color col = new Color(10, 10, 10, alpha);
+			Color col = new Color(10, 10, 10, 0);
 			g.setColor(col);
-			g.fillRect(0, 36, getWidth(), getHeight());
+			g.fillRect(0, 0, getWidth(), getHeight());
 		}
 		g.dispose();
 		bs.show();
@@ -277,24 +276,24 @@ public class Game extends Canvas implements Runnable {
 
 	private void levelTick() {
 		if (!menu) {
-			if (time % (60 * (random.nextInt(20)+2)) == 0) {
+			if (time % (60 * (random.nextInt(20) + 2)) == 0) {
 				expo++;
 				if (finalLevel) {
 					expo += 2;
 					for (int i = 0; i < expo - (expo / 3); i++) {
 						zombie = new Zombie(level);
-						 level.add(zombie);
-						 Game.playSound("/sounds/zombie2.wav", -20.0f);
+						level.add(zombie);
+						Game.playSound("/sounds/zombie2.wav", -20.0f);
 
 					}
 				}
 				for (int i = 0; i < expo - (expo / 3); i++) {
-					if(ZCount<40) {
-					chasingZombie = new ChasingZombie(level);
-					level.add(chasingZombie);
-					zombie = new Zombie(level);
-					  level.add(zombie);
-					 if(random.nextInt(10)==2)Game.playSound("/sounds/zombie2.wav", -20.0f);
+					if (ZCount < 40) {
+						//chasingZombie = new ChasingZombie(level);
+						//level.add(chasingZombie);
+						//zombie = new Zombie(level);
+						//level.add(zombie);
+						if (random.nextInt(10) == 2) Game.playSound("/sounds/zombie2.wav", -20.0f);
 						ZCount += 2;
 					}
 					// Game.playSound("/sounds/zombie2.wav", -20.0f);

@@ -94,6 +94,18 @@ public class Player extends Mob {
 	private int useCooldown = 20;
 
 	public void tick() {
+		if (addedCash > 0 || addedAmmo>0) {
+		if (cashPickupTime == 0) {
+			tickCount = 0;
+			cashPickupTime = 50;
+		}
+		if (cashPickupTime > 0) cashPickupTime--;
+		if (ammoPickupTime == 0) {
+			tickCount = 0;
+			ammoPickupTime = 50;
+		}
+		if (ammoPickupTime > 0) ammoPickupTime--;
+		
 		if (anim % 10 == 1) tickCount++;
 		if (DrawerEntity.inRange) {
 			if (input.space) {
@@ -101,7 +113,7 @@ public class Player extends Mob {
 			} else {
 				DrawerEntity.looting = false;
 			}
-
+		}
 		}
 		if (input.up && input.down && input.shift) cash++;
 
@@ -465,12 +477,9 @@ public class Player extends Mob {
 
 		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 20, 0x7E305C, false);
 		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 21, 0xEF358C, false);
+		
+		
 		if (addedCash > 0) {
-			if (cashPickupTime == 0) {
-				tickCount = 0;
-				cashPickupTime = 3000;
-			}
-			if (cashPickupTime > 0) cashPickupTime--;
 			if (cashPickupTime > 0) {
 				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 20, 0x7E305C, false);
 				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 21, 0xEF358C, false);
@@ -481,11 +490,6 @@ public class Player extends Mob {
 		}
 		
 		if (addedAmmo > 0) {
-			if (ammoPickupTime == 0) {
-				tickCount = 0;
-				ammoPickupTime = 3000;
-			}
-			if (ammoPickupTime > 0) ammoPickupTime--;
 			if (ammoPickupTime > 0) {
 				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 240, 0x7E305C, false);
 				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 241, 0xEF358C, false);

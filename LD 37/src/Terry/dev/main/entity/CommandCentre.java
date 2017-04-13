@@ -28,6 +28,8 @@ public class CommandCentre extends Entity {
 	public boolean inRange = false;
 	public boolean inAir = false;
 	private Input input;
+	private boolean tutorial = true;
+	private int tutLength = 100;
 
 	// add fuel
 	public CommandCentre(double x, double y, Level level, Input input) {
@@ -49,10 +51,14 @@ public class CommandCentre extends Entity {
 
 	public void tick() {
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.wood) {
-			
 			powered = true;
 		} else {
 			powered = false;
+		}
+
+		if (tutorial) {
+			
+			if (tutLength > 0) tutLength--;
 		}
 
 		tick++;
@@ -214,18 +220,26 @@ public class CommandCentre extends Entity {
 	}
 
 	public void render(Render render) {
-		/*
-		 * List<Player> players = level.getPlayers(this, 50); if (players.size()
-		 * > 0) { if (tick % 50 < 25) { render.render((int) x + 15, (int) y -
-		 * 20, Sprite.f_indicator, false, false); } else { render.render((int) x
-		 * + 15, (int) y - 22, Sprite.f_indicator, false, false); } }
-		 */
+		List<Player> players = level.getPlayers(this, 50);
+		if (players.size() > 0 && tutLength ==0) {
+			tutorial = true;
+			if (tick % 50 < 25) {
+				render.render((int) x + 16, (int) y , Sprite.f_indicator, false, false);
+			} else {
+				render.render((int) x + 16, (int) y - 2, Sprite.f_indicator, false, false);
+			}
+		} else {
+			tutorial = false;
+			tutLength = 100;
+		}
 
 		if (inAir) {
 			render.render((int) x, (int) y + 15, Sprite.command_centre_shadow, false, false);
+		} else {
+			render.render((int) x, (int) y + 11, Sprite.command_centre_shadow, false, false);
 		}
-		render.render((int) x, (int) y-16, sprite, false, false);
-		render.render((int) x, (int) y , Sprite.command_centre_legs, false, false);
+		render.render((int) x, (int) y, sprite, false, false);
+		render.render((int) x, (int) y+16, Sprite.command_centre_legs, false, false);
 
 	}
 }

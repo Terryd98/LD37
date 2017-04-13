@@ -18,23 +18,25 @@ public class Mob extends Entity {
 	public boolean walking = false;
 	public boolean running = false;
 	public boolean still = true;
+	public static boolean canMove = false;
 
 	public void move(double xa, double ya) {
-
 		if (xa < 0) dir = 0;
 		if (xa > 0) dir = 2;
 		if (ya < 0) dir = 1;
 		if (ya > 0) dir = 3;
-		
+		if(collision(xa, ya))canMove =false;
 		while (xa != 0) {
 			if (Math.abs(xa) > 1) {
 				if (!collision(abs(xa), ya)) {
 					this.x += abs(xa);
+					canMove = true;
 				}
 				xa -= abs(xa);
 			} else {
 				if (!collision(abs(xa), ya)) {
 					this.x += xa;
+					canMove = true;
 				}
 				xa = 0;
 			}
@@ -44,11 +46,13 @@ public class Mob extends Entity {
 			if (Math.abs(ya) > 1) {
 				if (!collision(xa, abs(ya))) {
 					this.y += abs(ya);
+					canMove = true;
 				}
 				ya -= abs(ya);
 			} else {
 				if (!collision(xa, abs(ya))) {
 					this.y += ya;
+					canMove = true;
 				}
 				ya = 0;
 			}

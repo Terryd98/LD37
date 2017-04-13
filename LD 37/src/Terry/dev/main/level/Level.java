@@ -245,6 +245,23 @@ public class Level {
 		}
 		return result;
 	}
+	
+	public List<Player> getPlayers(Entity e, int radius) {
+		List<Player> result = new ArrayList<Player>();
+		double ex = e.getX();
+		double ey = e.getY();
+		for (int i = 0; i < players.size(); i++) {
+			Player player = players.get(i);
+			double x = player.getX();
+			double y = player.getY();
+
+			double dx = Math.abs(x - ex);
+			double dy = Math.abs(y - ey);
+			double distance = Math.sqrt((dx * dx) + (dy * dy));
+			if (distance <= radius) result.add(player);
+		}
+		return result;
+	}
 
 	public List<ChasingZombie> getChaserZombies(double ex, double ey, int radius) {
 		List<ChasingZombie> result = new ArrayList<ChasingZombie>();
@@ -273,23 +290,6 @@ public class Level {
 			}
 		}
 		return solid;
-	}
-
-	public List<Player> getPlayers(Entity e, int radius) {
-		List<Player> result = new ArrayList<Player>();
-		double ex = e.getX();
-		double ey = e.getY();
-		for (int i = 0; i < players.size(); i++) {
-			Player player = players.get(i);
-			double x = player.getX();
-			double y = player.getY();
-
-			double dx = Math.abs(x - ex);
-			double dy = Math.abs(y - ey);
-			double distance = Math.sqrt((dx * dx) + (dy * dy));
-			if (distance <= radius) result.add(player);
-		}
-		return result;
 	}
 
 	public void add(Entity e) {

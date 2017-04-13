@@ -117,16 +117,16 @@ public class Render {
 			y0 -= yOffset;
 		}
 		for (int yt = y0; yt < y0 + ySize; yt++) {
-			int ya = yt+ y0;
+			int ya = yt + y0;
 			for (int xt = x0; xt < x0 + xSize; xt++) {
-				int xa =  xt + x0;
+				int xa = xt + x0;
 				if (xa < -16 || xa >= width || ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
 				pixels[xa + ya * width] = col;
 			}
 		}
 	}
-	
+
 	public void renderPlayer(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip) {
 		xp -= xOffset;
 		yp -= yOffset;
@@ -162,7 +162,12 @@ public class Render {
 				if (xa < 0) xa = 0;
 				int col = sprite.pixels[xs + ys * sprite.SIZE];
 				if (col == 0xff416144) col = cCol;
-				if (col != 0xffff00ff) pixels[xa + ya * width] = col;
+				if (col != 0xffff00ff) {
+					if (cCol == 0xffffffff) {
+						col = 0xffffffff;
+					}
+					pixels[xa + ya * width] = col;
+				}
 			}
 		}
 	}

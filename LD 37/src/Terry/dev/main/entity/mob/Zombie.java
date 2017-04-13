@@ -5,6 +5,7 @@ import java.util.List;
 import Terry.dev.main.Game;
 import Terry.dev.main.entity.AmmoEntity;
 import Terry.dev.main.entity.CashEntity;
+import Terry.dev.main.entity.Entity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -22,9 +23,11 @@ public class Zombie extends Mob {
 	private int cCol;
 	public static boolean moving = false;
 	private int col;
+	public final int T_COL;
 	private int counter = 0;
 	public int damage = 1;
 	public boolean debug = false;
+	boolean knockBack = false;
 
 	public Zombie(Level level) {
 		health = random.nextInt(40) + 20;
@@ -35,6 +38,7 @@ public class Zombie extends Mob {
 		if (cCol == 1) col = 0x94837C;
 		if (cCol == 2) col = 0x676975;
 		if (cCol == 3) col = 0x60534B;
+		T_COL = col;
 
 	}
 
@@ -49,12 +53,12 @@ public class Zombie extends Mob {
 		if (cCol == 1) col = 0x770039;
 		if (cCol == 2) col = 0x64A07B;
 		if (cCol == 3) col = 0xC2C2C2;
-
+		T_COL = col;
 	}
 
 	public static boolean playerInRange = false;
-	double playerX;
-	double playerY;
+	public double playerX;
+	public double playerY;
 
 	public void tick() {
 
@@ -69,10 +73,12 @@ public class Zombie extends Mob {
 			List<Player> players = level.getPlayers(this, 150);
 			if (players.size() <= 0) playerInRange = false;
 			if (players.size() > 0) {
+				Player player = players.get(0);
+
+				// if (player.getX() < x && )
 				counter++;
 				if (counter >= 70) {
 					playerInRange = true;
-					Player player = players.get(0);
 					xa = 0;
 					ya = 0;
 					if (anim % 30 == 0) {
@@ -113,8 +119,31 @@ public class Zombie extends Mob {
 		} else {
 			moving = false;
 			walking = false;
-
 		}
+		knockBack = false;
+	}
+
+	private void knockBack() {
+		if (playerX <= x) {
+				move(2,0);
+				System.out.println(xa + " | " + ya);
+			}
+			if (playerX >= x) {
+				move(-2,0);
+				System.out.println(xa + " | " + ya);
+
+			}
+			if (playerY <= y) {
+				move(0,2);
+				System.out.println(xa + " | " + ya);
+
+			}
+			if (playerY >= y) {
+				move(0, -2);
+				System.out.println(xa + " | " + ya);
+
+			}
+			knockBack = true;
 	}
 
 	private void attack() {
@@ -127,9 +156,43 @@ public class Zombie extends Mob {
 		}
 	}
 
+	public void hurt(int damage) {
+		health -= damage;
+		knockBack();
+		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
+		level.add(new ParticleEmitter((int) x, (int) y, 10, 10000, level, Sprite.bloodParticle));
+		if (health <= 0) {
+			if (random.nextInt(3) == 0) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenHead));
+			} else if (random.nextInt(3) == 2) {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenArm));
+			} else {
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
+				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
+			}
+			Player.score += 10;
+			if (random.nextInt(3) < 2) {
+				CashEntity cash = new CashEntity(x + random.nextInt(20), y + random.nextInt(20), level);
+				level.add(cash);
+			}
+
+			if (random.nextInt(3) < 1) {
+				AmmoEntity ammo = new AmmoEntity(x + random.nextInt(20), y + random.nextInt(20), level);
+				level.add(ammo);
+			}
+			Game.ZCount--;
+			level.remove(this);
+		}
+	}
+
 	public void render(Render render) {
 		int xx = (int) x;
 		int yy = (int) y;
+		if (knockBack) {
+			col = 0xffffffff;
+		} else {
+			col = T_COL;
+		}
 		render.render(xx - 8, yy + 5, Sprite.shadow, false, false);
 		if (dir == 1) {
 			if (walking && anim % 20 > 10) {
@@ -180,34 +243,4 @@ public class Zombie extends Mob {
 		Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28) + 3, 0x694A58, true);
 		Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28) + 2, 0x9E7286, true);
 	}
-
-	public void hurt(int damage) {
-		health -= damage;
-		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
-		level.add(new ParticleEmitter((int) x, (int) y, 10, 10000, level, Sprite.bloodParticle));
-		if (health <= 0) {
-			if (random.nextInt(3) == 0) {
-				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenHead));
-			} else if (random.nextInt(3) == 2) {
-				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.rottenArm));
-			} else {
-				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
-				level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.blood));
-			}
-			Player.score += 10;
-			if (random.nextInt(3) < 2) {
-				CashEntity cash = new CashEntity(x + random.nextInt(20), y + random.nextInt(20), level);
-				level.add(cash);
-			}
-
-			if (random.nextInt(3) < 1) {
-				AmmoEntity ammo = new AmmoEntity(x + random.nextInt(20), y + random.nextInt(20), level);
-				level.add(ammo);
-			}
-			Game.ZCount--;
-			level.remove(this);
-		}
-
-	}
-
 }
