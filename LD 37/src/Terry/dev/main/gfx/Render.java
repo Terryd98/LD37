@@ -21,8 +21,7 @@ public class Render {
 		}
 	}
 
-	
-	//TODO: ADD COLOR AND REMOVE OTHER METHOD
+	// TODO: ADD COLOR AND REMOVE OTHER METHOD
 	public void render(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip) {
 		xp -= xOffset;
 		yp -= yOffset;
@@ -41,7 +40,28 @@ public class Render {
 			}
 		}
 	}
-	
+
+	public void renderWH(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip, boolean fixed) {
+		if (!fixed) {
+			xp -= xOffset;
+			yp -= yOffset;
+		}
+		for (int y = 0; y < sprite.height; y++) {
+			int ya = y + yp;
+			int ys = y;
+			if (yFlip) ys = (sprite.height - 1) - y;
+			for (int x = 0; x < sprite.width; x++) {
+				int xa = x + xp;
+				int xs = x;
+				if (xFlip) xs = (sprite.width - 1) - x;
+				if (xa < -sprite.width || xa >= width || ya < 0 || ya >= height) break;
+				if (xa < 0) xa = 0;
+				int col = sprite.pixels[xs + ys * sprite.width];
+				if (col != 0xffff00ff) pixels[xa + ya * width] = col;
+			}
+		}
+	}
+
 	public void renderFlash(int xp, int yp, Sprite sprite, boolean xFlip, boolean yFlip, int cCol) {
 		xp -= xOffset;
 		yp -= yOffset;
@@ -61,7 +81,7 @@ public class Render {
 						col = 0xffffffff;
 					}
 					pixels[xa + ya * width] = col;
-				
+
 				}
 			}
 		}

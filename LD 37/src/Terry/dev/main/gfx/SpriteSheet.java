@@ -15,6 +15,7 @@ public class SpriteSheet {
 	public static SpriteSheet player_sheet = new SpriteSheet(320, "/sheets/player_sheets/player_spritesheet.png");
 	public static SpriteSheet zombie_sheet = new SpriteSheet(320, "/sheets/mob_sheets/zombie_spritesheet.png");
 	public static SpriteSheet rat_sheet = new SpriteSheet(320, "/sheets/mob_sheets/rat_spritesheet.png");
+	public static SpriteSheet ui_sheet = new SpriteSheet(1008, "/sheets/ui/title.png");
 
 	public SpriteSheet(int size, String path) {
 		this.path = path;

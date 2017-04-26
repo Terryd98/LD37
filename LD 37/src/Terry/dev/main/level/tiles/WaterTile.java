@@ -22,7 +22,7 @@ public class WaterTile extends Tile {
 		tickCount++;
 		if (tickCount >= 1000000) tickCount = 0;
 		if (time >= 1000000) time = 0;
-		if ((tickCount % 1200) == 80) time++;
+		if ((tickCount % 2200) == 80) time++;
 		if (time % 70 > 35) {
 			sprite = Sprite.water0;
 		} else if (time % 100 > 180)  {

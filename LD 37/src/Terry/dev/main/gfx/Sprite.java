@@ -3,11 +3,16 @@ package Terry.dev.main.gfx;
 public class Sprite {
 
 	public int x, y;
-	private int width, height;
+	public int width, height;
 	public SpriteSheet sheet;
 	public int[] pixels;
 	public final int SIZE;
 	public static final int TSIZE = 16;
+	
+	public static Sprite title = new Sprite(208, 72, 0, 0, SpriteSheet.ui_sheet);
+	public static Sprite title1 = new Sprite(208, 72, 0, 1, SpriteSheet.ui_sheet);
+	public static Sprite title2 = new Sprite(208, 72, 0, 2, SpriteSheet.ui_sheet);
+	public static Sprite title3 = new Sprite(208, 72, 0, 3, SpriteSheet.ui_sheet);
 
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);
@@ -48,6 +53,7 @@ public class Sprite {
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);
+	public static Sprite blood_drop = new Sprite(16, 13, 0, SpriteSheet.tiles_sheet);
 
 	public static Sprite shadow = new Sprite(16, 0, 2, SpriteSheet.tiles_sheet);
 	public static Sprite wall = new Sprite(16, 1, 0, SpriteSheet.tiles_sheet);
@@ -147,6 +153,17 @@ public class Sprite {
 		pixels = new int[SIZE * SIZE];
 		load();
 	}
+	
+	public Sprite(int width, int height, int x, int y, SpriteSheet sheet) {
+		this.sheet = sheet;
+		this.SIZE = -1;
+		this.x = x*width;
+		this.y = y*height;
+		this.width = width;
+		this.height = height;
+		pixels = new int[width * height];
+		loadWH();
+	}
 
 	public Sprite(int width, int height, int color) {
 		SIZE = -1;
@@ -188,6 +205,13 @@ public class Sprite {
 		for (int y = 0; y < SIZE; y++) {
 			for (int x = 0; x < SIZE; x++) {
 				pixels[x + y * SIZE] = sheet.pixels[(x + this.x) + (y + this.y) * sheet.SIZE];
+			}
+		}
+	}
+	private void loadWH() {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				pixels[x + y * width] = sheet.pixels[(x + this.x) + (y + this.y) * sheet.SIZE];
 			}
 		}
 	}
