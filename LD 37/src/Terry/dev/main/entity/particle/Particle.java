@@ -12,7 +12,7 @@ public class Particle extends Entity {
 	protected double xx, yy, zz;
 	private boolean xFlip, yFlip;
 	private int time = 0;
-
+	
 	public Particle(int x, int y, int lifeTime, Sprite sprite) {
 		this.sprite = sprite;
 		this.lifeTime = lifeTime + (random.nextInt(20) - 10);

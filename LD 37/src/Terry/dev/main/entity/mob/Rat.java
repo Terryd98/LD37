@@ -13,7 +13,7 @@ import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.level.Level;
 import Terry.dev.main.level.Tile;
 
-public class Zombie extends Mob {
+public class Rat extends Mob {
 
 	public double speed;
 	public final double START_SPEED;
@@ -29,7 +29,7 @@ public class Zombie extends Mob {
 	public boolean debug = false;
 	boolean knockBack = false;
 
-	public Zombie(Level level) {
+	public Rat(Level level) {
 		health = random.nextInt(40) + 20;
 		findZombieStartPos(level);
 		START_SPEED = Math.abs(random.nextDouble() + 0.1);
@@ -42,7 +42,7 @@ public class Zombie extends Mob {
 
 	}
 
-	public Zombie(int x, int y, Level level) {
+	public Rat(int x, int y, Level level) {
 		this.x = x;
 		this.y = y;
 		health = random.nextInt(100) + 50;
@@ -98,7 +98,7 @@ public class Zombie extends Mob {
 						Game.playSound("/sounds/zombie2.wav", -13.0f);
 					}
 				} 
-			}else if (time % (random.nextInt(60) + 30) == 0) {
+			} else if (time % (random.nextInt(60) + 30) == 0) {
 				counter = 0;
 				xa = random.nextInt((int) 2.5) - 0.5;
 				ya = random.nextInt((int) 2.5) - 0.5;
@@ -196,51 +196,51 @@ public class Zombie extends Mob {
 		render.render(xx - 8, yy + 5, Sprite.shadow, false, false);
 		if (dir == 1) {
 			if (walking && anim % 20 > 10) {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratUp1, false, false, col);
 			} else if (walking) {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratUp2, false, false, col);
 			} else {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUp, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratStillUp, false, false, col);
 			}
 		}
 
 		if (dir == 3) {
 			if (walking && anim % 20 > 10) {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratDown1, false, false, col);
 			} else if (walking) {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratDown2, false, false, col);
 			} else {
-				render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDown, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.ratStillDown, false, false, col);
 
 			}
 		}
 
 		if (dir == 2) {
 			if (walking && anim % 20 > 10) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratRight2, false, false, col);
 			} else if (walking && anim % 20 > 3) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratStillRight, false, false, col);
 			} else if (walking) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratRight1, false, false, col);
 			} else {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratStillRight, false, false, col);
 
 			}
 		}
 
 		if (dir == 0) {
 			if (walking && anim % 20 > 10) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratRight2, true, false, col);
 			} else if (walking && anim % 20 > 3) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratStillRight, true, false, col);
 			} else if (walking) {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratRight1, true, false, col);
 			} else {
-				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.ratStillRight, true, false, col);
 			}
 		}
 
-		Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28) + 3, 0x694A58, true);
-		Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28) + 2, 0x9E7286, true);
+		//Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28) + 3, 0x694A58, true);
+		//Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28) + 2, 0x9E7286, true);
 	}
 }

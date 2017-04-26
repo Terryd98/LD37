@@ -17,13 +17,14 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import javax.swing.JFrame;
 
-import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
+import Terry.dev.main.entity.mob.Rat;
 import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.SpriteSheet;
+import Terry.dev.main.gui.Menu;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
 import Terry.dev.main.level.OneLevel;
@@ -38,12 +39,13 @@ public class Game extends Canvas implements Runnable {
 	private Render render;
 	private Player player;
 	private Zombie zombie;
+	private Rat rat;
 	private ChasingZombie chasingZombie;
-	public static int shake = 0;
 	private int alpha = 0;
 	private int tickCount = 0;
 	public static boolean firstSpawn = true;
 	private Level level;
+	private Menu gui;
 	public static boolean finalLevel = false;
 	public static boolean infiniLevel = false;
 	private Input input;
@@ -71,12 +73,15 @@ public class Game extends Canvas implements Runnable {
 		addKeyListener(input);
 		level = new OneLevel("/levels/level1.png");
 		// Vector2i pp = new Vector2i(5 * 16, 5 * 16);
-		player = new Player(input, level);
+		player = new Player(2 * 16, 2, input, level);
+		rat = new Rat(5 * 16, 2, level);
+		level.add(rat);
 		for (int i = 0; i < 10; i++) {
 			zombie = new Zombie(level);
 			level.add(zombie);
 		}
 		level.add(player);
+		gui = new Menu(input);
 
 	}
 
@@ -128,7 +133,8 @@ public class Game extends Canvas implements Runnable {
 			delta += (now - lastTime) / ns;
 			lastTime = now;
 			while (delta >= 1) {
-				if (!paused) tick();
+				if (!paused)
+					tick();
 				updates++;
 				delta--;
 			}
@@ -187,8 +193,10 @@ public class Game extends Canvas implements Runnable {
 			System.out.println(volMod);
 			volMod--;
 		}
-		if (volMod >= 15) volMod = 15;
-		if (volMod <= -50) volMod = -50;
+		if (volMod >= 15)
+			volMod = 15;
+		if (volMod <= -50)
+			volMod = -50;
 		time++;
 		input.tick();
 		level.tick();
@@ -197,9 +205,12 @@ public class Game extends Canvas implements Runnable {
 		}
 
 		levelTick();
+		gui.tick();
 	}
 
 	private BufferedImage main;
+
+	public static int shake;
 
 	public void render() {
 		BufferStrategy bs = getBufferStrategy();
@@ -215,9 +226,10 @@ public class Game extends Canvas implements Runnable {
 		if (shake != 0) {
 			xScroll += random.nextInt(shake);
 			yScroll += random.nextInt(shake);
+
 		}
 		level.render((int) xScroll, (int) yScroll, render);
-
+		gui.render(render);
 		// if (xScroll < 0) xScroll = 0;
 		// if (yScroll < 0) yScroll = 0;
 		// if (xScroll >= level.width * 16 - render.width - 16) xScroll =
@@ -225,11 +237,12 @@ public class Game extends Canvas implements Runnable {
 		// if (yScroll >= level.height * 16 - render.height+ 30) yScroll =
 		// level.height * 16 - render.height+20;
 
+		if(!menu) {
 		if (player.dead) {
 			String deathMsg = "YOU ARE DEAD";
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4, HEIGHT / 2 - 8, 0x5E2727, false);
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4 - 1, HEIGHT / 2 - 8 - 1, 0xC23434, false);
-
+	
 			String Score = "Score:" + Integer.toString(Player.score);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 + 1 - 15, (HEIGHT / 2) + 4, 0x614B4B, false);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15, (HEIGHT / 2 - 1) + 4, 0xC99797, false);
@@ -241,29 +254,33 @@ public class Game extends Canvas implements Runnable {
 			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 1 + 55 - 15, (3), 0x363636, false);
 			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 55 - 15, (2), 0xEF358C, false);
 		}
+		}
 
 		Graphics g = bs.getDrawGraphics();
+		/*
 		if (menu) {
-
 			try {
 				main = ImageIO.read(BufferedImage.class.getResource("/sheets/Main.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		if (menu) {
-			String msg = "Can anyone hear me?  i need Help! im in the basement!";
-			String msg1 = "Kill all of these zombies to clear the path and please try rescue me!";
-			Font.draw(msg, render, render.width / 2, render.height / 2, 0xA16468, false);
-			g.drawImage(main, 0, 0, main.getWidth(), main.getHeight(), null);
-
-		}
+		 * if (menu) { String msg =
+		 * "Can anyone hear me?  i need Help! im in the basement!"; String msg1
+		 * =
+		 * "Kill all of these zombies to clear the path and please try rescue me!"
+		 * ; Font.draw(msg, render, render.width / 2, render.height / 2,
+		 * 0xA16468, false); g.drawImage(main, 0, 0, main.getWidth(),
+		 * main.getHeight(), null); }
+		 */
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		// BRIGHTNESS
 		if (dayNightCycle) {
-			if (alpha >= 100 * 2) alpha = 100 * 2;
+			if (alpha >= 100 * 2)
+				alpha = 100 * 2;
 			tickCount++;
-			if (tickCount % 1000 == 10) alpha++;
+			if (tickCount % 1000 == 10)
+				alpha++;
 			Color col = new Color(10, 10, 10, 0);
 			g.setColor(col);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -289,11 +306,12 @@ public class Game extends Canvas implements Runnable {
 				}
 				for (int i = 0; i < expo - (expo / 3); i++) {
 					if (ZCount < 40) {
-						//chasingZombie = new ChasingZombie(level);
-						//level.add(chasingZombie);
-						//zombie = new Zombie(level);
-						//level.add(zombie);
-						if (random.nextInt(10) == 2) Game.playSound("/sounds/zombie2.wav", -20.0f);
+						chasingZombie = new ChasingZombie(level);
+						level.add(chasingZombie);
+						zombie = new Zombie(level);
+						level.add(zombie);
+						if (random.nextInt(10) == 2)
+							Game.playSound("/sounds/zombie2.wav", -20.0f);
 						ZCount += 2;
 					}
 					// Game.playSound("/sounds/zombie2.wav", -20.0f);
@@ -301,7 +319,8 @@ public class Game extends Canvas implements Runnable {
 				}
 			}
 		}
-		if (expo > 5) expo = 0;
+		if (expo > 5)
+			expo = 0;
 		if (canChangeLevel) {
 
 			if (Player.score == 200 && lvl == 0) {

@@ -12,6 +12,7 @@ public class Sprite {
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);
 	public static Sprite particle = new Sprite(3, 2, 0x3B3B3B);
+	public static Sprite tntParticle = new Sprite(3, 2, 0xa41e22);
 	public static Sprite casingParticle = new Sprite(3, 1, 0xB59900);
 	public static Sprite bloodParticle = new Sprite(2, 2, 0x4E1616);
 
@@ -42,7 +43,8 @@ public class Sprite {
 
 	public static Sprite CashEntity = new Sprite(16, 5, 3, SpriteSheet.tiles_sheet);
 	public static Sprite AmmoEntity = new Sprite(16, 6, 3, SpriteSheet.tiles_sheet);
-	
+	public static Sprite GrenadeEntity = new Sprite(16, 7, 3, SpriteSheet.tiles_sheet);
+
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);
@@ -122,6 +124,19 @@ public class Sprite {
 	public static Sprite zombieRight1 = new Sprite(32, 2, 1, SpriteSheet.zombie_sheet);
 	public static Sprite zombieRight2 = new Sprite(32, 2, 2, SpriteSheet.zombie_sheet);
 
+	public static Sprite ratStillDown = new Sprite(32, 0, 0, SpriteSheet.rat_sheet);
+	public static Sprite ratDown1 = new Sprite(32, 0, 1, SpriteSheet.rat_sheet);
+	public static Sprite ratDown2 = new Sprite(32, 0, 2, SpriteSheet.rat_sheet);
+
+	public static Sprite ratStillUp = new Sprite(32, 1, 0, SpriteSheet.rat_sheet);
+	public static Sprite ratUp1 = new Sprite(32, 1, 1, SpriteSheet.rat_sheet);
+	public static Sprite ratUp2 = new Sprite(32, 1, 2, SpriteSheet.rat_sheet);
+
+	public static Sprite ratStillRight = new Sprite(32, 2, 0, SpriteSheet.rat_sheet);
+	public static Sprite ratRight1 = new Sprite(32, 2, 1, SpriteSheet.rat_sheet);
+	public static Sprite ratRight2 = new Sprite(32, 2, 2, SpriteSheet.rat_sheet);
+
+	
 	public Sprite(int size, int x, int y, SpriteSheet sheet) {
 		this.sheet = sheet;
 		this.SIZE = size;

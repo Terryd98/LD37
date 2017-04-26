@@ -16,7 +16,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 	public boolean up, down, left, right, reload, space, shift, upArrow, downArrow, leftArrow, rightArrow, volUp, volDown, trap, esc, use, one, two;
 
 	public void tick() {
-
 		trap = keys[KeyEvent.VK_E];
 		up = keys[KeyEvent.VK_W];
 		down = keys[KeyEvent.VK_S];

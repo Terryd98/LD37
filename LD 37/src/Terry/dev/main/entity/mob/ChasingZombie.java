@@ -137,46 +137,46 @@ public class ChasingZombie extends Mob {
 		render.render(xx - 8, yy + 5, Sprite.shadow, false, false);
 		if (dir == 1) {
 			if (walking && anim % 20 > 10) {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieUp1, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1, false, false, col);
 			} else if (walking) {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieUp2, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2, false, false, col);
 			} else {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieStillUp, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUp, false, false, col);
 			}
 		}
 		if (dir == 3) {
 			if (walking && anim % 20 > 10) {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieDown1, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1, false, false, col);
 			} else if (walking) {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieDown2, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2, false, false, col);
 			} else {
-				render.renderZombie(xx - 16, yy - 16, Sprite.zombieStillDown, false, false, col);
+				render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDown, false, false, col);
 
 			}
 		}
 
 		if (dir == 2) {
 			if (walking && anim % 20 > 10) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight2, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, false, false, col);
 			} else if (walking && anim % 20 > 3) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
 			} else if (walking) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight1, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, false, false, col);
 			} else {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
 
 			}
 		}
 
 		if (dir == 0) {
 			if (walking && anim % 20 > 10) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
 			} else if (walking && anim % 20 > 3) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
 			} else if (walking) {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
 			} else {
-				render.renderZombie((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+				render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
 			}
 		}
 
