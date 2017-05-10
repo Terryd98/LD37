@@ -23,6 +23,6 @@ public class BridgeWallTileTop extends Tile {
 		return true;
 	}
 	public boolean Entitysolid() {
-		return true;
+		return false;
 	}
 }

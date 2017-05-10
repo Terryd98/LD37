@@ -47,9 +47,9 @@ public class DrawerEntity extends Entity {
 
 	public void tick() {
 		tick++;
-		List<Player> players = level.getPlayers(this, 20);
+		List<Player> players = level.getPlayers(this, 15);
 		if (players.size() > 0) {
-			inRange = true;
+			inRange = true;      
 		} else {
 			looting = false;
 			inRange = false;
@@ -59,18 +59,20 @@ public class DrawerEntity extends Entity {
 	}
 
 	public void renderGui(Render render) {
-
 	}
 
 	public void render(Render render) {
 		render.render((int) x - 11, (int) y, sprite, false, false);
+		renderGui(render);
 		if (looting) {
-		if (tick % 55 < 50/2) {
-			Font.draw("Looting", render, (int) x + 10, (int) y, 0x191919, true);
-		} else {
-			Font.draw("Looting...", render, (int) x + 10, (int) y, 0x191919, true);
+			if (tick % 55 < 50 / 2) {
+				Font.draw("Looting", render, (int) x + 10, (int) y+1, 0x363636, true);
+				Font.draw("Looting", render, (int) x + 10, (int) y, 0xEFF589, true);
+			} else {
+				Font.draw("Looting..", render, (int) x + 10, (int) y+1, 0x363636, true);
+				Font.draw("Looting..", render, (int) x + 10, (int) y, 0xEFF589, true);
+			}
 		}
-		}
-		//render.renderRect((int)10, (int)0, 5, 10, 0xff00ff,true);
+
 	}
 }

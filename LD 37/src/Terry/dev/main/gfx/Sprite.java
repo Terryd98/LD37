@@ -9,10 +9,10 @@ public class Sprite {
 	public final int SIZE;
 	public static final int TSIZE = 16;
 	
-	public static Sprite title = new Sprite(208, 72, 0, 0, SpriteSheet.ui_sheet);
-	public static Sprite title1 = new Sprite(208, 72, 0, 1, SpriteSheet.ui_sheet);
-	public static Sprite title2 = new Sprite(208, 72, 0, 2, SpriteSheet.ui_sheet);
-	public static Sprite title3 = new Sprite(208, 72, 0, 3, SpriteSheet.ui_sheet);
+	public static Sprite title = new Sprite(224, 72, 0, 0, SpriteSheet.ui_sheet);
+	public static Sprite title1 = new Sprite(224, 72, 0, 1, SpriteSheet.ui_sheet);
+	public static Sprite title2 = new Sprite(224, 72, 0, 2, SpriteSheet.ui_sheet);
+	public static Sprite title3 = new Sprite(224, 72, 0, 3, SpriteSheet.ui_sheet);
 
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);

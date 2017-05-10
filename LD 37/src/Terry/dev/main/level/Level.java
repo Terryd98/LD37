@@ -23,6 +23,7 @@ public class Level {
 	public int levelChoice;
 	private int time = 0;
 	public boolean cleared = false;
+	public boolean levelSwitching = false;
 
 	public static List<Entity> entities = new ArrayList<Entity>();
 	public static List<Player> players = new ArrayList<Player>();
@@ -38,7 +39,6 @@ public class Level {
 
 			return 0;
 		}
-
 	};
 
 	private Comparator<Node> nodeSorter = new Comparator<Node>() {
@@ -48,7 +48,6 @@ public class Level {
 
 			return 0;
 		}
-
 	};
 
 	private Comparator<Zombie> zombieSorter = new Comparator<Zombie>() {
@@ -88,7 +87,13 @@ public class Level {
 		ttpLevel();
 	}
 
-	public void clearLevel() {
+	public void prepLevelSwitch() {
+		removeAll();
+		if (removeAll()) cleared = true;
+		
+	}
+
+	private boolean removeAll() {
 		for (int i = 0; i < entities.size(); i++) {
 			entities.remove(i);
 		}
@@ -98,18 +103,25 @@ public class Level {
 		for (int i = 0; i < players.size(); i++) {
 			players.remove(i);
 		}
+		for (int i = 0; i < chasingZombies.size(); i++) {
+			chasingZombies.remove(i);
+		}
 		for (int i = 0; i < zombies.size(); i++) {
 			zombies.remove(i);
 		}
 		for (int i = 0; i < particles.size(); i++) {
 			particles.remove(i);
 		}
+
 		Particle.lremove = true;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				tiles[x + y * width] = 0;
 			}
 		}
+
+		if (entities.size() == 0 && projectiles.size() == 0 && players.size() == 0 && chasingZombies.size() == 0 && zombies.size() == 0 && particles.size() == 0) return true;
+		return false;
 	}
 
 	public void loadLevel(String path) {
@@ -245,7 +257,7 @@ public class Level {
 		}
 		return result;
 	}
-	
+
 	public List<Player> getPlayers(Entity e, int radius) {
 		List<Player> result = new ArrayList<Player>();
 		double ex = e.getX();
@@ -379,7 +391,10 @@ public class Level {
 	// 808080 = walllFront
 	// 322015 = wood;
 	public Tile getTile(int x, int y) {
-		if (x < 0 || x >= width || y < 0 || y >= height) return Tile.water;
+		if (x < 0 || x >= width || y < 0 || y >= height) {
+			if (cleared) return Tile.voidTile;
+			return Tile.water;
+		}
 		if (tiles[x + y * width] == 0xff526B4A) tiles[x + y * width] = Tile.grass.id;
 		if (tiles[x + y * width] == 0xff638200) tiles[x + y * width] = Tile.grassCornerTL.id;
 		if (tiles[x + y * width] == 0xff4A6000) tiles[x + y * width] = Tile.grassCornerTR.id;

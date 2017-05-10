@@ -8,6 +8,7 @@ public class Menu {
 
 	public Input input;
 	protected Game game;
+	protected int selected = 0;
 
 	public Menu() {
 	}
@@ -18,6 +19,20 @@ public class Menu {
 	}
 
 	public void tick() {
+
+	}
+
+	public void selector() {
+		if (input.up.clicked) {
+			selected--;
+		}
+		if (input.down.clicked) {
+			selected++;
+		}
+
+		if (selected <= 0) {
+			selected = 0;
+		}
 	}
 
 	public void render(Render render) {

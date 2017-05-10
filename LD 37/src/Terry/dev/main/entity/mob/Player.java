@@ -23,8 +23,8 @@ public class Player extends Mob {
 	public double speed = WALKING_SPEED;
 	private static int energy = 100;
 	public static int cash = 0;
-	public static int addedCash = 3000;
-	public static int addedAmmo = 3000;
+	public static int addedCash = 0;
+	public static int addedAmmo = 0;
 
 	public int tickCount = 0;
 	private static boolean armed = true;
@@ -62,7 +62,7 @@ public class Player extends Mob {
 	public Player(Input input, Level level) {
 		this.input = input;
 		findStartPos(level);
-		cCentre = new CommandCentre((int) x + 8, (int) y, level, input);
+		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
 		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
 		level.add(drawer);
@@ -72,7 +72,7 @@ public class Player extends Mob {
 		this.input = input;
 		this.x = x;
 		this.y = y;
-		cCentre = new CommandCentre((int) x + 8, (int) y, level, input);
+		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
 		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
 		level.add(drawer);
@@ -83,16 +83,11 @@ public class Player extends Mob {
 		this.x = vector.x;
 		this.y = vector.y;
 		vector.x += 8;
-		cCentre = new CommandCentre(vector, level, input);
+		cCentre = new CommandCentre(vector, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		DrawerEntity drawer = new DrawerEntity(x - 2 * 16, y - 2 * 16, level, input);
 		level.add(drawer);
 	}
-
-	private int keyT = 20;
-	private boolean t = false;
-	private int placeTime = 30;
-	private int useCooldown = 20;
 
 	public void tick() {
 		if (addedCash > 0 || addedAmmo > 0) {
@@ -108,37 +103,27 @@ public class Player extends Mob {
 			if (ammoPickupTime > 0) ammoPickupTime--;
 
 			if (anim % 10 == 1) tickCount++;
-			if (DrawerEntity.inRange) {
-				if (input.space) {
-					DrawerEntity.looting = true;
-				} else {
-					DrawerEntity.looting = false;
-				}
-			}
 		}
-		if (input.up && input.down && input.shift) cash++;
+		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
+			DrawerEntity.looting = true;
+		}
+		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
+			cCentre.activated = true;
+		}
+		if (input.up.down && input.down.down && input.shift.down) cash++;
 
-		if (hasPistol && input.one && useCooldown == 0) {
+		if (hasPistol && input.one.clicked) {
 			assaultRifle = false;
 			shotgun = false;
 			pistol = true;
-			useCooldown = 20;
-		} else if (hasAssaultRifle && input.two && useCooldown == 0) {
+		} else if (hasAssaultRifle && input.two.clicked) {
 			assaultRifle = true;
 			shotgun = false;
 			pistol = false;
-			useCooldown = 20;
-		}
-		if (useCooldown >= 1) useCooldown--;
-		if (cCentre.inRange && input.use && !cCentre.activated && useCooldown == 0 && !trapToggled) {
-			cCentre.activated = true;
-			useCooldown = 20;
-		} else if (cCentre.inRange && input.use && cCentre.activated && useCooldown == 0 && !trapToggled) {
-			useCooldown = 20;
-			cCentre.activated = false;
+
 		}
 
-		if (!trapToggled && input.space && energy >= 2 && cCentre.pickupRange && !cCentre.activated) {
+		if (!trapToggled && input.space.down && energy >= 2 && cCentre.pickupRange && !cCentre.activated && !DrawerEntity.looting) {
 			carrying = true;
 			armed = false;
 			if (anim % 10 == 0) energy--;
@@ -155,32 +140,23 @@ public class Player extends Mob {
 			level.setTile((int) x / 16, (int) ((y + 16) / 16), Tile.grass);
 			Game.playSound("/sounds/flower.wav", -10.0f);
 		}
-		if (input.upArrow) placeDir = 1;
-		if (input.downArrow) placeDir = 3;
-		if (input.leftArrow) placeDir = 0;
-		if (input.rightArrow) placeDir = 2;
-		if (keyT >= 0) keyT--;
+		if (input.upArrow.clicked) placeDir = 1;
+		if (input.downArrow.clicked) placeDir = 3;
+		if (input.leftArrow.clicked) placeDir = 0;
+		if (input.rightArrow.clicked) placeDir = 2;
 		if (trapToggled || carrying || cCentre.activated) {
 			armed = false;
 		} else {
 			armed = true;
 		}
-		if (keyT <= 0 && input.trap && t == false && !cCentre.activated) {
+		if (input.trap.clicked && !cCentre.activated && !DrawerEntity.looting) {
 			trapToggled = true;
 
-			if (trapToggled) {
-				t = true;
-			}
-			keyT = 20;
-		} else if (keyT <= 0 && input.trap && t == true && !cCentre.activated) {
+		} else {
 			trapToggled = false;
-			keyT = 20;
-			t = false;
 		}
-		if (placeTime >= 0) placeTime--;
-		if (input.space && trapToggled && placeTime <= 0 && !carrying) {
+		if (input.space.clicked && trapToggled && !carrying) {
 			place();
-			placeTime = 30;
 		}
 
 		if (!walking && !running) {
@@ -198,7 +174,7 @@ public class Player extends Mob {
 			energy++;
 		}
 
-		if (input.shift && energy > 0) {
+		if (!carrying && input.shift.down && energy > 0) {
 			speed = RUNNING_SPEED;
 			if (running && anim % 5 == 0) energy--;
 		} else {
@@ -206,27 +182,31 @@ public class Player extends Mob {
 		}
 
 		double xa = 0, ya = 0;
-		if (!cCentre.activated) {
-			if (carrying) speed = 0.7;
-			if (input.up) {
+		if (!cCentre.activated && !DrawerEntity.looting) {
+			if (carrying) {
+				running = false;
+				walking = true;
+				speed = 0.7;
+			}
+			if (input.up.down) {
 				ya -= speed;
-			} else if (input.down) {
+			} else if (input.down.down) {
 				ya += speed;
 			}
-			// TODO: Temp
-			if (input.mouseB == 3 && pistol_fireRate == 0) {
-				grenade = new GrenadeEntity(x + 16, y, level);
-				level.add(grenade);
-				pistol_fireRate = PistolBullet.FIRERATE;
-
-			}
-			if (input.left) {
+			if (input.left.down) {
 				xa -= speed;
-			} else if (input.right) {
+			} else if (input.right.down) {
 				xa += speed;
 			}
 		}
 
+		// TODO: Temp
+		if (input.mouseB == 3 && pistol_fireRate == 0) {
+			grenade = new GrenadeEntity(x, y, level);
+			level.add(grenade);
+			pistol_fireRate = PistolBullet.FIRERATE;
+
+		}
 		if (xa != 0 || ya != 0) {
 			if (speed == WALKING_SPEED) {
 				walking = true;
@@ -236,13 +216,11 @@ public class Player extends Mob {
 				running = true;
 				walking = false;
 			}
-
 			move(xa, 0);
 			move(0, ya);
 		} else {
 			running = walking = false;
 		}
-
 		tickShots();
 		clear();
 		if (walking | running && anim % 15 == 0) {
@@ -251,16 +229,16 @@ public class Player extends Mob {
 
 		if (running || shooting || GrenadeEntity.exploding && shakeTime > 0) {
 			shakeTime--;
-			if (running) {
+			/*if (running) {
 				Game.shake = 2;
-			} else if (assaultRifle && shooting) {
+			} else */if (assaultRifle && shooting) {
 				Game.shake = 6;
 			} else if (pistol && shooting) {
 				Game.shake = 4;
 			} else if (GrenadeEntity.exploding) {
 				Game.shake = 10;
 			} else {
-				Game.shake = 4;
+				Game.shake = 0;
 			}
 		} else {
 			shakeTime = SHAKE_TIME;
@@ -281,7 +259,7 @@ public class Player extends Mob {
 				reload = false;
 				PISTOL_CLIP = 20;
 			}
-			if (input.reload && PISTOL_CLIP != PistolBullet.CLIP) {
+			if (input.reload.clicked && PISTOL_CLIP != PistolBullet.CLIP) {
 				reload = true;
 			}
 			if (PISTOL_AMMO <= 0) PISTOL_AMMO = 0;
@@ -295,40 +273,40 @@ public class Player extends Mob {
 			if (Input.getButton() == 1 && PISTOL_CLIP == 0) {
 				if (time % 5 == 0) Game.playSound("/sounds/outOfAmmo.wav", -10.0f);
 			}
-				if (Input.getButton() == 1 && pistol_fireRate == 0 && !trapToggled && armed) {
-					shooting = true;
-					reload = false;
-					if (PISTOL_CLIP <= 0) {
-						PISTOL_CLIP = 0;
-						shooting = false;
-					}
-					if (PISTOL_CLIP > 0) {
-						double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
-						double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
-						double direction = Math.atan2(dy, dx);
-						if (dir == 0) {
-							shoot(x - 7, y + 4, direction, 1);
-							PISTOL_CLIP--;
-						}
-						if (dir == 1) {
-							shoot(x - 7, y + 4, direction, 1);
-							PISTOL_CLIP--;
-
-						}
-						if (dir == 2) {
-							shoot(x - 6, y + 4, direction, 1);
-							PISTOL_CLIP--;
-
-						}
-						if (dir == 3) {
-							shoot(x - 7, y, direction, 1);
-							PISTOL_CLIP--;
-
-						}
-						level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.casingParticle));
-						pistol_fireRate = PistolBullet.FIRERATE;
-					}
+			if (Input.getButton() == 1 && pistol_fireRate == 0 && !trapToggled && armed) {
+				shooting = true;
+				reload = false;
+				if (PISTOL_CLIP <= 0) {
+					PISTOL_CLIP = 0;
+					shooting = false;
 				}
+				if (PISTOL_CLIP > 0) {
+					double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
+					double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
+					double direction = Math.atan2(dy, dx);
+					if (dir == 0) {
+						shoot(x - 7, y + 4, direction, 1);
+						PISTOL_CLIP--;
+					}
+					if (dir == 1) {
+						shoot(x - 7, y + 4, direction, 1);
+						PISTOL_CLIP--;
+
+					}
+					if (dir == 2) {
+						shoot(x - 6, y + 4, direction, 1);
+						PISTOL_CLIP--;
+
+					}
+					if (dir == 3) {
+						shoot(x - 7, y, direction, 1);
+						PISTOL_CLIP--;
+
+					}
+					level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.casingParticle));
+					pistol_fireRate = PistolBullet.FIRERATE;
+				}
+			}
 		}
 
 		if (Input.getButton() == -1) shooting = false;
@@ -339,7 +317,7 @@ public class Player extends Mob {
 				reload = false;
 				ASSAULT_RIFLE_CLIP = AssaultRifle.CLIP;
 			}
-			if (input.reload && ASSAULT_RIFLE_CLIP != AssaultRifle.CLIP) {
+			if (input.reload.clicked && ASSAULT_RIFLE_CLIP != AssaultRifle.CLIP) {
 				reload = true;
 			}
 			if (ASSAULT_RIFLE_AMMO <= 0) ASSAULT_RIFLE_AMMO = 0;
@@ -361,40 +339,40 @@ public class Player extends Mob {
 				if (time % 5 == 0) Game.playSound("/sounds/outOfAmmo.wav", -10.0f);
 			}
 
-				if (Input.getButton() == 1 && ASSAULT_RIFLE_fireRate == 0 && !trapToggled && armed) {
-					shooting = true;
-					reload = false;
-					if (ASSAULT_RIFLE_CLIP <= 0) {
-						ASSAULT_RIFLE_CLIP = 0;
-						shooting = false;
-					}
-					if (ASSAULT_RIFLE_CLIP > 0) {
-						double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
-						double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
-						double direction = Math.atan2(dy, dx);
-						if (dir == 0) {
-							shoot(x - 7, y + 4, direction, 3);
-							ASSAULT_RIFLE_CLIP--;
-						}
-						if (dir == 1) {
-							shoot(x - 7, y + 4, direction, 3);
-							ASSAULT_RIFLE_CLIP--;
-
-						}
-						if (dir == 2) {
-							shoot(x - 6, y + 4, direction, 3);
-							ASSAULT_RIFLE_CLIP--;
-
-						}
-						if (dir == 3) {
-							shoot(x - 7, y, direction, 3);
-							ASSAULT_RIFLE_CLIP--;
-
-						}
-						level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.casingParticle));
-						ASSAULT_RIFLE_fireRate = AssaultRifle.FIRERATE;
-					}
+			if (Input.getButton() == 1 && ASSAULT_RIFLE_fireRate == 0 && !trapToggled && armed) {
+				shooting = true;
+				reload = false;
+				if (ASSAULT_RIFLE_CLIP <= 0) {
+					ASSAULT_RIFLE_CLIP = 0;
+					shooting = false;
 				}
+				if (ASSAULT_RIFLE_CLIP > 0) {
+					double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
+					double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
+					double direction = Math.atan2(dy, dx);
+					if (dir == 0) {
+						shoot(x - 7, y + 4, direction, 3);
+						ASSAULT_RIFLE_CLIP--;
+					}
+					if (dir == 1) {
+						shoot(x - 7, y + 4, direction, 3);
+						ASSAULT_RIFLE_CLIP--;
+
+					}
+					if (dir == 2) {
+						shoot(x - 6, y + 4, direction, 3);
+						ASSAULT_RIFLE_CLIP--;
+
+					}
+					if (dir == 3) {
+						shoot(x - 7, y, direction, 3);
+						ASSAULT_RIFLE_CLIP--;
+
+					}
+					level.add(new ParticleEmitter((int) x, (int) y, 1, 1000, level, Sprite.casingParticle));
+					ASSAULT_RIFLE_fireRate = AssaultRifle.FIRERATE;
+				}
+			}
 		}
 	}
 
@@ -503,7 +481,19 @@ public class Player extends Mob {
 			}
 		}
 
-		render.render(xx - 8, yy + 5, Sprite.shadow, false, false);
+		if (dir == 1) {
+			render.render(xx - 8, yy + 6, Sprite.shadow, false, false);
+		}
+		if (dir == 3 ) {
+			render.render(xx - 8, yy + 6, Sprite.shadow, false, true);
+		}
+		if (dir == 0) {
+			render.render(xx - 11 , yy + 7, Sprite.shadow, false, false);
+		}
+		if (dir == 2 ) {
+			render.render(xx -5, yy + 7, Sprite.shadow, false, false);
+		}
+		
 		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
 		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
 
@@ -818,7 +808,7 @@ public class Player extends Mob {
 		}
 
 		///////////////////////////////////////////
-		if (cCentre.activated) cCentre.renderGui(render);
+		// if (cCentre.activated) cCentre.renderGui(render);
 	}
 
 }

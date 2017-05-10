@@ -4,7 +4,7 @@ public class Font {
 
 	private static String chars = "" + //
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ      " + //
-			"0123456789.,!?'\"-+=/\\%()<>:;$   " + //
+			"0123456789.,!?'\"-+=/\\%()<>:;$@  " + //
 			"";
 
 	public static void draw(String msg, Render render, int x, int y, int col, boolean following) {

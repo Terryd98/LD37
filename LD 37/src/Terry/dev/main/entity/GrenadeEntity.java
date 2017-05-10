@@ -30,6 +30,7 @@ public class GrenadeEntity extends Entity {
 	private boolean yFlip = random.nextBoolean();
 
 	public GrenadeEntity(double x, double y, Level level) {
+		Game.playSound("/sounds/reload.wav", -15.0f);
 		this.x = x;
 		this.y = y;
 		sprite = Sprite.GrenadeEntity;
@@ -39,6 +40,7 @@ public class GrenadeEntity extends Entity {
 	}
 
 	public GrenadeEntity(Vector2i vector, Level level, Input input) {
+		Game.playSound("/sounds/reload.wav", -15.0f);
 		this.x = vector.x;
 		this.y = vector.y;
 		sprite = Sprite.GrenadeEntity;
@@ -69,20 +71,20 @@ public class GrenadeEntity extends Entity {
 			removeTime--;
 			if (removeTime <= 0) {
 				level.remove(this);
-				Game.playSound("/sounds/grenade.wav", -15.0f);
+				Game.playSound("/sounds/grenade.wav", -20.0f);
 				exploding = false;
 
 			}
 		}
 		tick++;
 		List<Player> ps = level.getPlayers(this, 13);
-		if (ps.size() > 0) {
-			Game.playSound("/sounds/reload.wav", -15.0f);
-		}
+		//if (ps.size() > 0) {
+		//	Game.playSound("/sounds/reload.wav", -15.0f);
+		//}
 	}
 
 	public void render(Render render) {
-		if (!removed) {
+		if (fuseTime >0) {
 			render.renderFlash((int) x, (int) y, sprite, xFlip, yFlip, col);
 		}
 	}

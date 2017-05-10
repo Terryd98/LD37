@@ -62,6 +62,9 @@ public class Zombie extends Mob {
 
 	public void tick() {
 
+		if(level.levelSwitching) this.remove();
+		
+		
 		time++;
 		anim++;
 		if (!debug) {

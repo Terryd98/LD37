@@ -158,18 +158,18 @@ public class Render {
 		}
 	}
 
-	public void renderRect(int x0, int y0, int xSize, int ySize, int col, boolean following) {
+	public void renderRect(double x0, double y0, int xSize, int ySize, int col, boolean following) {
 		if (following) {
-			x0 -= xOffset;
-			y0 -= yOffset;
+			x0 -= xOffset/2;
+			y0 -= yOffset/2;
 		}
-		for (int yt = y0; yt < y0 + ySize; yt++) {
-			int ya = yt + y0;
-			for (int xt = x0; xt < x0 + xSize; xt++) {
-				int xa = xt + x0;
-				if (xa < -16 || xa >= width || ya < 0 || ya >= height) break;
+		for (double yt = y0; yt < y0 + ySize; yt++) {
+			double ya = yt + y0;
+			for (double xt = x0; xt < x0 + xSize; xt++) {
+				double xa = xt + x0;
+				if (xa < -xSize || xa >= width || ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
-				pixels[xa + ya * width] = col;
+				pixels[(int)xa + (int)ya * width] = col;
 			}
 		}
 	}

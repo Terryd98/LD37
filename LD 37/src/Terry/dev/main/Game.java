@@ -2,21 +2,26 @@ package Terry.dev.main;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import Terry.dev.main.entity.CommandCentre;
+import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.entity.mob.Rat;
@@ -24,7 +29,9 @@ import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.SpriteSheet;
+import Terry.dev.main.gui.LootingMenu;
 import Terry.dev.main.gui.Menu;
+import Terry.dev.main.gui.ShopMenu;
 import Terry.dev.main.gui.TitleMenu;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
@@ -52,42 +59,53 @@ public class Game extends Canvas implements Runnable {
 	public boolean paused = false;
 	private boolean running = false;
 	private boolean canChangeLevel = false;
-	private String title = "LD37 - Death Room";
+	private static String title = "LD37 - Death Room";
 	public static int ZCount = 0;
 	private boolean dayNightCycle = false;
+	private boolean levelSwitchExecuted = false;
 
 	BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	public int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 	private Menu menu;
 
+	public Game() {
+		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
+		render = new Render(WIDTH, HEIGHT, pixels, SpriteSheet.tiles_sheet);
+		input = new Input(this);
+		frame = new JFrame();
+		level = new OneLevel("/levels/level1.png");
+		setMenu(new TitleMenu());
+		player = new Player(input, level);
+		level.add(player);
+
+		// rat = new Rat(5 * 16, 2, level);
+		// level.add(rat);
+		for (int i = 0; i < 0; i++) {
+			zombie = new Zombie(level);
+			level.add(zombie);
+		}
+
+	}
+
 	public void getLevel(Level level) {
 		this.level = level;
+	}
+
+	public void switchLevel() {
+		if (!level.cleared) level.prepLevelSwitch();
+		level.prepLevelSwitch();
+		level = new OneLevel("/levels/level2.png");
+		level.cleared = false;
+		if (level.cleared) levelSwitchExecuted = true;
+		level.levelSwitching = true;
+		player = new Player(input, level);
+		level.add(player);
+		levelSwitchExecuted = true;
 	}
 
 	public void setMenu(Menu menu) {
 		this.menu = menu;
 		if (menu != null) menu.init(this, input);
-	}
-
-	public Game() {
-		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
-		render = new Render(WIDTH, HEIGHT, pixels, SpriteSheet.tiles_sheet);
-		input = new Input();
-		addMouseListener(input);
-		addMouseMotionListener(input);
-		addKeyListener(input);
-		level = new OneLevel("/levels/level1.png");
-		// Vector2i pp = new Vector2i(5 * 16, 5 * 16);
-		player = new Player(2 * 16, 2, input, level);
-		//rat = new Rat(5 * 16, 2, level);
-		//level.add(rat);
-		for (int i = 0; i < 10; i++) {
-			zombie = new Zombie(level);
-			level.add(zombie);
-		}
-		level.add(player);
-		setMenu(new TitleMenu());
-
 	}
 
 	public void setLevel(Level level) {
@@ -109,17 +127,6 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 
-	public void init() {
-		frame = new JFrame();
-		frame.setTitle(title);
-		frame.setResizable(false);
-		frame.add(this);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-	}
-
 	public void run() {
 		long lastTime = System.nanoTime();
 		long timer = System.currentTimeMillis();
@@ -127,13 +134,8 @@ public class Game extends Canvas implements Runnable {
 		double delta = 0;
 		int frames = 0;
 		int updates = 0;
-		init();
 		requestFocus();
 		while (running) {
-			// if (input.esc) {
-			// System.out.println("EXITING..... NO ERROR");
-			// System.exit(0);
-			// }
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
@@ -167,7 +169,7 @@ public class Game extends Canvas implements Runnable {
 		return HEIGHT * SCALE;
 	}
 
-	public static float volMod = 0;
+	public static float VOL_MOD = 0;
 
 	public static void playSound(final String url, Float vol) {
 		try {
@@ -175,7 +177,7 @@ public class Game extends Canvas implements Runnable {
 			AudioInputStream inputStream = AudioSystem.getAudioInputStream(Game.class.getResource(url));
 			clip.open(inputStream);
 			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-			gainControl.setValue(vol + volMod);
+			gainControl.setValue(vol + VOL_MOD);
 			clip.start();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -183,35 +185,60 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	private int expo = 0;
+	private boolean cursorSwitched = false;
 
 	public void tick() {
+
+		if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
+			setMenu(new LootingMenu());
+		} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
+			setMenu(new ShopMenu());
+		}
+
+		if (menu instanceof LootingMenu || menu instanceof ShopMenu) {
+			level.tick();
+			levelTick();
+
+		}
+
+		if (input.reload.clicked && !levelSwitchExecuted) switchLevel();
+
 		input.tick();
 		if (menu != null) {
 			menu.tick();
+			if (!cursorSwitched) {
+				BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+				Toolkit toolkit = Toolkit.getDefaultToolkit();
+				Point p = new Point((16 / 2) + 1, (16 / 2) + 1);
+				Cursor customCursor = toolkit.createCustomCursor(cursorImg, p, "Cursor");
+				setCursor(customCursor);
+				System.out.println("CURSOR GONE");
+				cursorSwitched = true;
+			}
 		} else {
-			if (input.esc) setMenu(new TitleMenu());
+
+			if (cursorSwitched) {
+				Toolkit toolkit = Toolkit.getDefaultToolkit();
+				Image cursor = toolkit.getImage("res/cursor.png");
+				Point p = new Point((16 / 2) + 1, (16 / 2) + 1);
+				Cursor customCursor = toolkit.createCustomCursor(cursor, p, "Cursor");
+				setCursor(customCursor);
+				System.out.println("CURSOR BACK ");
+				cursorSwitched = false;
+			}
+			if (input.esc.clicked) setMenu(new TitleMenu());
 			if (Input.getButton() == 2) {
-				zombie = new Zombie(input.mouseX, input.mouseY, level);
+				System.out.println(112);
+				zombie = new Zombie(Input.mouseX, Input.mouseY, level);
 				level.add(zombie);
 			}
-			if (input.volUp) {
-				System.out.println(volMod);
-				volMod++;
-			}
-			if (input.volDown) {
-				System.out.println(volMod);
-				volMod--;
-			}
-			if (volMod >= 15) volMod = 15;
-			if (volMod <= -50) volMod = -50;
 			time++;
 			level.tick();
-
 			levelTick();
 		}
 	}
 
-	private BufferedImage main;
+	// private BufferedImage main;
 
 	public static int shake;
 
@@ -248,11 +275,10 @@ public class Game extends Canvas implements Runnable {
 			String deathMsg = "YOU ARE DEAD";
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4, HEIGHT / 2 - 8, 0x5E2727, false);
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4 - 1, HEIGHT / 2 - 8 - 1, 0xC23434, false);
-
 			String Score = "Score:" + Integer.toString(Player.score);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 + 1 - 15, (HEIGHT / 2) + 4, 0x614B4B, false);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15, (HEIGHT / 2 - 1) + 4, 0xC99797, false);
-		} else if (menu == null) {
+		} else if (menu == null && !level.cleared) {
 			String Score = "Score:";
 			String ScoreNum = Integer.toString(Player.score);
 			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15 + 1, (3), 0x363636, false);
@@ -283,8 +309,16 @@ public class Game extends Canvas implements Runnable {
 			g.setColor(col);
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
+		if (time < getHeight() && level.levelSwitching) {
+			time++;
+			g.fillRect(0, time, getWidth(), getHeight());
+			level.levelSwitching = false;
+		} else {
+			time = 0;
+		}
 		g.dispose();
 		bs.show();
+
 	}
 
 	int lvl = 0;
@@ -320,7 +354,7 @@ public class Game extends Canvas implements Runnable {
 			if (Player.score == 200 && lvl == 0) {
 				lvl = 1;
 				expo = 0;
-				level.clearLevel();
+				// level.clearLevel();
 				System.out.println(0);
 				getLevel(new OneLevel("/levels/level2.png"));
 				player = new Player(input, level);
@@ -330,7 +364,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (Player.score == 400 && lvl == 1) {
 				lvl = 2;
-				level.clearLevel();
+				// level.clearLevel();
 				getLevel(new OneLevel("/levels/level3.png"));
 				player = new Player(input, level);
 				level.add(player);
@@ -338,7 +372,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (Player.score == 600 && lvl == 2) {
 				lvl = 3;
-				level.clearLevel();
+				// level.clearLevel();
 				getLevel(new OneLevel("/levels/level4.png"));
 				player = new Player(input, level);
 				level.add(player);
@@ -346,7 +380,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (Player.score == 800 && lvl == 3) {
 				lvl = 4;
-				level.clearLevel();
+				// level.clearLevel();
 				getLevel(new OneLevel("/levels/level5.png"));
 				player = new Player(input, level);
 				level.add(player);
@@ -354,7 +388,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (Player.score == 1000 && lvl == 4) {
 				lvl = 5;
-				level.clearLevel();
+				// level.clearLevel();
 				getLevel(new OneLevel("/levels/levelFinal.png"));
 				finalLevel = true;
 
@@ -364,7 +398,7 @@ public class Game extends Canvas implements Runnable {
 
 			if (Player.score == 1100 && lvl == 5) {
 				lvl = 6;
-				level.clearLevel();
+				// level.clearLevel();
 				getLevel(new OneLevel("/levels/level5.png"));
 				infiniLevel = true;
 				player = new Player(input, level);
@@ -375,8 +409,16 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		new Game().start();
+		Game game = new Game();
 
+		game.frame.setTitle(title);
+		game.frame.setResizable(false);
+		game.frame.add(game);
+		game.frame.pack();
+		game.frame.setLocationRelativeTo(null);
+		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		game.frame.setVisible(true);
+		game.start();
 	}
 
 }
