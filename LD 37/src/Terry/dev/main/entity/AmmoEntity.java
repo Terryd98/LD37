@@ -1,14 +1,8 @@
 package Terry.dev.main.entity;
 
 import java.util.List;
-
 import Terry.dev.main.Game;
-import Terry.dev.main.entity.gun.AssaultRifle;
-import Terry.dev.main.entity.gun.PistolBullet;
-import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
-import Terry.dev.main.entity.mob.Zombie;
-import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.input.Input;
@@ -46,13 +40,19 @@ public class AmmoEntity extends Entity {
 		yy = y;
 		tick++;
 		List<Player> ps = level.getPlayers(this, 13);
+
 		if (ps.size() > 0) {
-			if (Player.assaultRifle) Player.ASSAULT_RIFLE_AMMO += amount;
-			if (Player.pistol) Player.PISTOL_AMMO += amount;
-			Player.addedAmmo += amount;
-			Game.playSound("/sounds/reload.wav", -15.0f);
+			Player.addAmmo(amount);
 			removed = true;
 			level.remove(this);
+		}
+		if (level.getTile((int) x / 16, (int) y / 16) == Tile.voidTile || level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
+			x-=0.5;
+			if (tick % 10 == 0) {
+				y += 0.3;
+			} else if(tick %5 == 0){
+				y -= 0.3;
+			}
 		}
 	}
 

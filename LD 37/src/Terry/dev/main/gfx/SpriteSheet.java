@@ -12,10 +12,12 @@ public class SpriteSheet {
 	public int[] pixels;
 
 	public static SpriteSheet tiles_sheet = new SpriteSheet(256, "/sheets/tiles/spritesheet.png");
+	public static SpriteSheet basement_tiles_sheet = new SpriteSheet(256, "/sheets/tiles/basementTiles.png");
 	public static SpriteSheet player_sheet = new SpriteSheet(320, "/sheets/player_sheets/player_spritesheet.png");
 	public static SpriteSheet zombie_sheet = new SpriteSheet(320, "/sheets/mob_sheets/zombie_spritesheet.png");
 	public static SpriteSheet rat_sheet = new SpriteSheet(320, "/sheets/mob_sheets/rat_spritesheet.png");
 	public static SpriteSheet ui_sheet = new SpriteSheet(1008, "/sheets/ui/title.png");
+	public static SpriteSheet big_tiles = new SpriteSheet(192, "/sheets/tiles/bigTiles.png");
 
 	public SpriteSheet(int size, String path) {
 		this.path = path;

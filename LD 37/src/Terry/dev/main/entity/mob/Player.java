@@ -1,6 +1,9 @@
 package Terry.dev.main.entity.mob;
 
+import java.util.List;
+
 import Terry.dev.main.Game;
+import Terry.dev.main.SaveGame;
 import Terry.dev.main.entity.CommandCentre;
 import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.GrenadeEntity;
@@ -18,14 +21,15 @@ import Terry.dev.main.level.Tile;
 import Terry.dev.main.util.Vector2i;
 
 public class Player extends Mob {
+
 	public int health = 100;
-	public boolean dead = false;
+	public static int playerDir;
+	public static boolean dead = false;
 	public double speed = WALKING_SPEED;
-	private static int energy = 100;
+	public static int energy = 100;
 	public static int cash = 0;
 	public static int addedCash = 0;
 	public static int addedAmmo = 0;
-
 	public int tickCount = 0;
 	private static boolean armed = true;
 	private static final double WALKING_SPEED = 1;
@@ -34,48 +38,56 @@ public class Player extends Mob {
 	private boolean carrying = false;
 	private int time = 0;
 	private Trap trap;
-	private CommandCentre cCentre;
+	public CommandCentre cCentre;
 	private GrenadeEntity grenade;
-	private int placeDir = 0;
+	public int placeDir = 0;
 	public static int traps = 0;
 	private final int SHAKE_TIME = 10;
 	private int shakeTime = SHAKE_TIME;
 	Projectile p;
-	public int cashPickupTime = 10;
-	public int ammoPickupTime = 10;
+	public static int cashPickupTime = 50;
+	public static int ammoPickupTime = 50;
 	public static boolean pistol = true;
 	public static boolean shotgun = false;
 	public static boolean assaultRifle = false;
-
 	public static boolean hasPistol = true;
 	public static boolean hasShotgun = false;
 	public static boolean hasAssaultRifle = false;
-
-	private static int PISTOL_CLIP = PistolBullet.CLIP;
+	public static int PISTOL_CLIP = PistolBullet.CLIP;
 	public static int PISTOL_AMMO = PistolBullet.AMMO;
-	private int pistol_fireRate = PistolBullet.FIRERATE;
-
-	private static int ASSAULT_RIFLE_CLIP = AssaultRifle.CLIP;
+	public int pistol_fireRate = PistolBullet.FIRERATE;
+	public int ASSAULT_RIFLE_CLIP = AssaultRifle.CLIP;
 	public static int ASSAULT_RIFLE_AMMO = AssaultRifle.AMMO;
-	private int ASSAULT_RIFLE_fireRate = AssaultRifle.FIRERATE;
+	public static boolean hasKey = false;
+	public int ASSAULT_RIFLE_fireRate = AssaultRifle.FIRERATE;
+	public int finalMessageTime = 0;
+	public boolean trapToggled = false;
+	public boolean reload = false;
+	public boolean shooting = false;
+	public int reloadTime = 100;
+	public final int RELOAD_TIME = 100;
+	private boolean swimming = false;
 
 	public Player(Input input, Level level) {
 		this.input = input;
-		findStartPos(level);
+		// findStartPos(level);
+		x = SaveGame.read(0);
+		y = SaveGame.read(1);
 		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		DrawerEntity drawer = new DrawerEntity(x, y, level);
 		level.add(drawer);
 	}
 
 	public Player(int x, int y, Input input, Level level) {
-		this.input = input;
 		this.x = x;
 		this.y = y;
+		this.input = input;
 		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x, y, level, input);
+		DrawerEntity drawer = new DrawerEntity(x, y, level);
 		level.add(drawer);
+
 	}
 
 	public Player(Vector2i vector, Input input, Level level) {
@@ -85,26 +97,24 @@ public class Player extends Mob {
 		vector.x += 8;
 		cCentre = new CommandCentre(vector, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x - 2 * 16, y - 2 * 16, level, input);
+		DrawerEntity drawer = new DrawerEntity(x - 2 * 16, y - 2 * 16, level);
 		level.add(drawer);
+
 	}
 
-	public void tick() {
-		if (addedCash > 0 || addedAmmo > 0) {
-			if (cashPickupTime == 0) {
-				tickCount = 0;
-				cashPickupTime = 50;
-			}
-			if (cashPickupTime > 0) cashPickupTime--;
-			if (ammoPickupTime == 0) {
-				tickCount = 0;
-				ammoPickupTime = 50;
-			}
-			if (ammoPickupTime > 0) ammoPickupTime--;
+	double dVelocityX = 0.0;
+	double dVelocityY = 15.0;
+	double dFriction = 0.90; // simple friction coefficient, 1.0 means no
+								// friction
 
-			if (anim % 10 == 1) tickCount++;
-		}
+	int xStart = 10;
+	int yStart = 10;
+	double yVel = 0.2;
+	double xVel = 0.2;
+
+	public void tick() {
 		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
+			System.out.println(22);
 			DrawerEntity.looting = true;
 		}
 		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
@@ -128,7 +138,7 @@ public class Player extends Mob {
 			armed = false;
 			if (anim % 10 == 0) energy--;
 			cCentre.x = x - 8;
-			cCentre.y = y - 20;
+			cCentre.y = y - 15;
 			cCentre.inAir = true;
 		} else {
 			armed = true;
@@ -144,15 +154,14 @@ public class Player extends Mob {
 		if (input.downArrow.clicked) placeDir = 3;
 		if (input.leftArrow.clicked) placeDir = 0;
 		if (input.rightArrow.clicked) placeDir = 2;
-		if (trapToggled || carrying || cCentre.activated) {
+		if (trapToggled || carrying || cCentre.activated || swimming) {
 			armed = false;
 		} else {
 			armed = true;
 		}
-		if (input.trap.clicked && !cCentre.activated && !DrawerEntity.looting) {
+		if (input.trap.clicked && !cCentre.activated && !DrawerEntity.looting && !trapToggled) {
 			trapToggled = true;
-
-		} else {
+		} else if (trapToggled && input.trap.clicked) {
 			trapToggled = false;
 		}
 		if (input.space.clicked && trapToggled && !carrying) {
@@ -161,9 +170,11 @@ public class Player extends Mob {
 
 		if (!walking && !running) {
 			still = true;
-		} else still = false;
-		anim++;
+		} else {
+			still = false;
+		}
 
+		anim++;
 		time++;
 		if (energy <= 0) energy = 0;
 		if (energy >= 100) energy = 100;
@@ -174,7 +185,7 @@ public class Player extends Mob {
 			energy++;
 		}
 
-		if (!carrying && input.shift.down && energy > 0) {
+		if (!carrying && !swimming && input.shift.down && energy > 0) {
 			speed = RUNNING_SPEED;
 			if (running && anim % 5 == 0) energy--;
 		} else {
@@ -182,24 +193,54 @@ public class Player extends Mob {
 		}
 
 		double xa = 0, ya = 0;
+		if (input.control.down) speed /= 2;
+
+		if (level.getTile((int) x / 16, (int) (y / 16) + 1) == Tile.water) {
+			swimming = true;
+			speed /= 2;
+		} else {
+			swimming = false;
+		}
+
 		if (!cCentre.activated && !DrawerEntity.looting) {
 			if (carrying) {
 				running = false;
 				walking = true;
 				speed = 0.7;
 			}
+
+			if (!input.up.down && !input.down.down) {
+				yVel = 0;
+			}
+			if (!input.left.down && !input.right.down) {
+				xVel = 0;
+			}
+
+			// System.out.println("yVel = " + yVel + " xVel = " + xVel);
 			if (input.up.down) {
-				ya -= speed;
+				yVel += 0.2;
+				ya -= speed * yVel;
+				if (yVel >= 1.2) yVel = 1.2;
 			} else if (input.down.down) {
-				ya += speed;
+				yVel += -0.2;
+				ya += speed * -yVel;
+				if (yVel <= -1.2) yVel = -1.2;
 			}
 			if (input.left.down) {
-				xa -= speed;
+				xVel += 0.2;
+				xa -= speed * xVel;
+				if (xVel >= 1.2) xVel = 1.2;
 			} else if (input.right.down) {
-				xa += speed;
+				xVel += -0.2;
+				xa += speed * -xVel;
+				if (xVel <= -1.2) xVel = -1.2;
 			}
 		}
 
+		if (xa < 0) playerDir = 0;
+		if (xa > 0) playerDir = 2;
+		if (ya < 0) playerDir = 1;
+		if (ya > 0) playerDir = 3;
 		// TODO: Temp
 		if (input.mouseB == 3 && pistol_fireRate == 0) {
 			grenade = new GrenadeEntity(x, y, level);
@@ -208,7 +249,7 @@ public class Player extends Mob {
 
 		}
 		if (xa != 0 || ya != 0) {
-			if (speed == WALKING_SPEED) {
+			if (speed == WALKING_SPEED || speed == WALKING_SPEED / 2) {
 				walking = true;
 				running = false;
 			}
@@ -229,9 +270,9 @@ public class Player extends Mob {
 
 		if (running || shooting || GrenadeEntity.exploding && shakeTime > 0) {
 			shakeTime--;
-			/*if (running) {
-				Game.shake = 2;
-			} else */if (assaultRifle && shooting) {
+			/*
+			 * if (running) { Game.shake = 2; } else
+			 */if (assaultRifle && shooting) {
 				Game.shake = 6;
 			} else if (pistol && shooting) {
 				Game.shake = 4;
@@ -246,11 +287,6 @@ public class Player extends Mob {
 			shooting = false;
 		}
 	}
-
-	public boolean reload = false;
-	public boolean shooting = false;
-	public int reloadTime = 100;
-	public final int RELOAD_TIME = 100;
 
 	private void tickShots() {
 		if (pistol) {
@@ -284,21 +320,21 @@ public class Player extends Mob {
 					double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
 					double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
 					double direction = Math.atan2(dy, dx);
-					if (dir == 0) {
+					if (playerDir == 0) {
 						shoot(x - 7, y + 4, direction, 1);
 						PISTOL_CLIP--;
 					}
-					if (dir == 1) {
+					if (playerDir == 1) {
 						shoot(x - 7, y + 4, direction, 1);
 						PISTOL_CLIP--;
 
 					}
-					if (dir == 2) {
+					if (playerDir == 2) {
 						shoot(x - 6, y + 4, direction, 1);
 						PISTOL_CLIP--;
 
 					}
-					if (dir == 3) {
+					if (playerDir == 3) {
 						shoot(x - 7, y, direction, 1);
 						PISTOL_CLIP--;
 
@@ -350,21 +386,21 @@ public class Player extends Mob {
 					double dx = (Input.getX() - (Game.getWWidth() / 2)) - 0;
 					double dy = (Input.getY() - (Game.getWHeight() / 2)) - 0;
 					double direction = Math.atan2(dy, dx);
-					if (dir == 0) {
+					if (playerDir == 0) {
 						shoot(x - 7, y + 4, direction, 3);
 						ASSAULT_RIFLE_CLIP--;
 					}
-					if (dir == 1) {
+					if (playerDir == 1) {
 						shoot(x - 7, y + 4, direction, 3);
 						ASSAULT_RIFLE_CLIP--;
 
 					}
-					if (dir == 2) {
+					if (playerDir == 2) {
 						shoot(x - 6, y + 4, direction, 3);
 						ASSAULT_RIFLE_CLIP--;
 
 					}
-					if (dir == 3) {
+					if (playerDir == 3) {
 						shoot(x - 7, y, direction, 3);
 						ASSAULT_RIFLE_CLIP--;
 
@@ -431,8 +467,22 @@ public class Player extends Mob {
 		}
 	}
 
-	private int finalMessageTime = 0;
-	boolean trapToggled = false;
+	public static void addCash(int amount) {
+		Game.playSound("/sounds/Cash.wav", -15.0f);
+		addedCash += amount;
+		cash += amount;
+		cashPickupTime = 40;
+		Game.cashY = 0;
+	}
+
+	public static void addAmmo(int amount) {
+		Game.playSound("/sounds/reload.wav", -15.0f);
+		if (assaultRifle) Player.ASSAULT_RIFLE_AMMO += amount;
+		if (pistol) Player.PISTOL_AMMO += amount;
+		Player.addedAmmo += amount;
+		ammoPickupTime = 40;
+		Game.ammoY = 0;
+	}
 
 	public void render(Render render) {
 		int xx = (int) Math.abs(x);
@@ -448,146 +498,6 @@ public class Player extends Mob {
 				Game.firstSpawn = false;
 			}
 		}
-
-		Font.draw("Energy:", render, (render.width - 82), render.height - 10, 0x363636, false);
-		Font.draw("Energy:", render, (render.width - 82), render.height - 11, 0xEFF589, false);
-
-		Font.draw(Integer.toString(energy), render, (render.width - 26), render.height - 10, 0x7E305C, false);
-		Font.draw(Integer.toString(energy), render, (render.width - 26), render.height - 11, 0xEF358C, false);
-
-		Font.draw("Cash:", render, (render.width - 82), render.height - 20, 0x363636, false);
-		Font.draw("Cash:", render, (render.width - 82), render.height - 21, 0xEFF589, false);
-
-		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 20, 0x7E305C, false);
-		Font.draw(Integer.toString(cash), render, (render.width - 42), render.height - 21, 0xEF358C, false);
-
-		if (addedCash > 0) {
-			if (cashPickupTime > 0) {
-				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 20, 0x7E305C, false);
-				Font.draw("+" + Integer.toString(addedCash), render, (render.width - 115), render.height - (tickCount) - 21, 0xEF358C, false);
-			} else {
-				cashPickupTime = 0;
-				addedCash = 0;
-			}
-		}
-
-		if (addedAmmo > 0) {
-			if (ammoPickupTime > 0) {
-				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 240, 0x7E305C, false);
-				Font.draw("+" + Integer.toString(addedAmmo), render, (render.width - 50), render.height - (tickCount) - 241, 0xEF358C, false);
-			} else {
-				ammoPickupTime = 0;
-				addedAmmo = 0;
-			}
-		}
-
-		if (dir == 1) {
-			render.render(xx - 8, yy + 6, Sprite.shadow, false, false);
-		}
-		if (dir == 3 ) {
-			render.render(xx - 8, yy + 6, Sprite.shadow, false, true);
-		}
-		if (dir == 0) {
-			render.render(xx - 11 , yy + 7, Sprite.shadow, false, false);
-		}
-		if (dir == 2 ) {
-			render.render(xx -5, yy + 7, Sprite.shadow, false, false);
-		}
-		
-		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
-		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
-
-		if (pistol) {/////////////////////////////////////////
-			if (PISTOL_CLIP > 0) {
-
-				Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-				Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-			}
-
-			if (PISTOL_CLIP <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-					Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(PISTOL_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
-				}
-			}
-
-			if (PISTOL_AMMO <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-					Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
-				}
-			}
-			if (PISTOL_AMMO > 0) {
-				Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-				Font.draw(Integer.toString(PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-			}
-		}
-		if (assaultRifle) {//////////////////////////////////////////////
-			if (ASSAULT_RIFLE_CLIP > 0) {
-
-				Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-				Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-			}
-
-			if (ASSAULT_RIFLE_CLIP <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-					Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
-				}
-			}
-
-			if (ASSAULT_RIFLE_AMMO <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-					Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
-				}
-			}
-			if (ASSAULT_RIFLE_AMMO > 0) {
-				Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-				Font.draw(Integer.toString(ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-			}
-		}
-
-		if (!dead && Game.finalLevel) {
-			finalMessageTime++;
-			if (finalMessageTime < 10000) {
-
-				String msg = "She is dead! aaaand so am i!";
-				Font.draw(msg, render, xx - msg.length() * 4, yy - 30, 0x7E305C, true);
-			}
-		}
-
-		if (!dead && Game.infiniLevel) {
-			finalMessageTime++;
-			if (finalMessageTime < 10000) {
-				String msg = "you survived! thats surp..ehhmazing!";
-				String msg2 = "see how high you can get your score!";
-				Font.draw(msg, render, xx - msg.length() * 4, yy - 40, 0x7E305C, true);
-				Font.draw(msg2, render, xx - msg.length() * 4 + 2, yy - 30, 0x7E305C, true);
-			}
-		}
-
-		Font.draw("Ammo:", render, (render.width - 20) - 65, 3, 0x363636, false);
-		Font.draw("Ammo:", render, (render.width - 20) - 65, 2, 0xEFF589, false);
-
-		Font.draw("Health:", render, 3, 3, 0x363636, false);
-		Font.draw("Health:", render, 2, 2, 0xEFF589, false);
-
-		Font.draw(Integer.toString(health), render, 3 + 57, 3, 0x363636, false);
-		Font.draw(Integer.toString(health), render, 2 + 57, 2, 0xEF358C, false);
-
 		if (trapToggled || cCentre.activated) {
 
 			render.renderIcon(5, render.height - 20, Sprite.spikeIcon, false, false, false);
@@ -627,47 +537,62 @@ public class Player extends Mob {
 				render.render(xs * 16, ys * 16, Sprite.selector, false, false);
 			}
 		}
+
 		/////////////////////////////////////////////////////////// PLAYER ANIM
+		if (!swimming) {
+			if (playerDir == 1) {
+				render.render(xx - 8, yy + 6, Sprite.shadow, false, false);
+			}
+			if (playerDir == 3) {
+				render.render(xx - 8, yy + 6, Sprite.shadow, false, true);
+			}
+			if (playerDir == 0) {
+				render.render(xx - 11, yy + 7, Sprite.shadow, false, false);
+			}
+			if (playerDir == 2) {
+				render.render(xx - 5, yy + 7, Sprite.shadow, false, false);
+			}
+		}
 		{
 			{
-				if (pistol) {
-					if (dir == 1 && armed) {
+				if (pistol && !swimming) {
+					if (playerDir == 1 && armed) {
 						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.playerUp1, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp1, false, false);
 						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.playerUp2, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp2, false, false);
 						} else {
-							render.render(xx - 16, yy - 16, Sprite.playerStillUp, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillUp, false, false);
 						}
-					} else if (dir == 1 && !armed) {
+					} else if (playerDir == 1 && !armed) {
 						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
 						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerUp2, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp2, false, false);
 						} else {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
-						}
-					}
-					if (dir == 3 && armed) {
-
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.playerDown1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.playerDown2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.playerStillDown, false, false);
-
-						}
-					} else if (dir == 3 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
 						}
 					}
-					if (dir == 2 && armed) {
+					if (playerDir == 3 && armed) {
+
+						if (walking | running && anim % 20 > 10) {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown1, false, false);
+						} else if (walking | running) {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown2, false, false);
+						} else {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillDown, false, false);
+
+						}
+					} else if (playerDir == 3 && !armed) {
+						if (walking | running && anim % 20 > 10) {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
+						} else if (walking | running) {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerDown2, false, false);
+						} else {
+							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
+						}
+					}
+					if (playerDir == 2 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, false, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -677,7 +602,7 @@ public class Player extends Mob {
 						} else {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, false, false);
 						}
-					} else if (dir == 2 && !armed) {
+					} else if (playerDir == 2 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, false, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -688,7 +613,7 @@ public class Player extends Mob {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
 						}
 					}
-					if (dir == 0 && armed) {
+					if (playerDir == 0 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, true, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -698,7 +623,7 @@ public class Player extends Mob {
 						} else {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, true, false);
 						}
-					} else if (dir == 0 && !armed) {
+					} else if (playerDir == 0 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, true, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -711,8 +636,8 @@ public class Player extends Mob {
 					}
 				}
 
-				if (assaultRifle) {
-					if (dir == 1 && armed) {
+				if (assaultRifle && !swimming) {
+					if (playerDir == 1 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.render(xx - 16, yy - 16, Sprite.AR_playerUp1, false, false);
 						} else if (walking | running) {
@@ -720,7 +645,7 @@ public class Player extends Mob {
 						} else {
 							render.render(xx - 16, yy - 16, Sprite.AR_playerStillUp, false, false);
 						}
-					} else if (dir == 1 && !armed) {
+					} else if (playerDir == 1 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.render(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
 						} else if (walking | running) {
@@ -729,8 +654,7 @@ public class Player extends Mob {
 							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
 						}
 					}
-					if (dir == 3 && armed) {
-
+					if (playerDir == 3 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.render(xx - 16, yy - 16, Sprite.AR_playerDown1, false, false);
 						} else if (walking | running) {
@@ -739,7 +663,7 @@ public class Player extends Mob {
 							render.render(xx - 16, yy - 16, Sprite.AR_playerStillDown, false, false);
 
 						}
-					} else if (dir == 3 && !armed) {
+					} else if (playerDir == 3 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
 						} else if (walking | running) {
@@ -748,7 +672,7 @@ public class Player extends Mob {
 							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
 						}
 					}
-					if (dir == 2 && armed) {
+					if (playerDir == 2 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, false, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -758,7 +682,7 @@ public class Player extends Mob {
 						} else {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, false, false);
 						}
-					} else if (dir == 2 && !armed) {
+					} else if (playerDir == 2 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, false, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -769,7 +693,7 @@ public class Player extends Mob {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
 						}
 					}
-					if (dir == 0 && armed) {
+					if (playerDir == 0 && armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, true, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -779,7 +703,7 @@ public class Player extends Mob {
 						} else {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, true, false);
 						}
-					} else if (dir == 0 && !armed) {
+					} else if (playerDir == 0 && !armed) {
 						if (walking | running && anim % 20 > 10) {
 							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, true, false);
 						} else if (walking | running && anim % 20 > 3) {
@@ -793,20 +717,64 @@ public class Player extends Mob {
 				}
 			}
 		}
-		if (hasPistol) {
-			render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOff, false, false, false);
-			if (pistol) {
-				render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOn, false, false, false);
+
+		if (swimming) {
+			int yz = 0;
+			if (time % 60 > 30) {
+				yz = -2;
+			} else if (time % 30 > 0) {
+				yz = 0;
 			}
 
-		}
-		if (hasAssaultRifle) {
-			render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOff, false, false, false);
-			if (assaultRifle) {
-				render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOn, false, false, false);
+			if (time % 40 > 26) {
+				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashA, false, false, true);
+			} else if (time % 40 > 13) {
+				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashB, false, false, true);
+			} else if (time % 40 > 0) {
+				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashC, false, false, true);
+			}
+
+			if (playerDir == 1 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerUp1_Swimming, false, false);
+				} else if (walking | running) {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerUp2_Swimming, false, false);
+				} else {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerStillUp_Swimming, false, false);
+				}
+			}
+			if (playerDir == 3 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerDown1_Swimming, false, false);
+				} else if (walking | running) {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerDown2_Swimming, false, false);
+				} else {
+					render.renderPlayer(xx - 16, yy + yz, Sprite.playerStillDown_Swimming, false, false);
+				}
+			}
+			if (playerDir == 2 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerRight2_Swimming, false, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerStillRight_Swimming, false, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerRight1_Swimming, false, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerStillRight_Swimming, false, false);
+				}
+			}
+			if (playerDir == 0 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerRight2_Swimming, true, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerStillRight_Swimming, true, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerRight1_Swimming, true, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y + yz, Sprite.playerStillRight_Swimming, true, false);
+				}
 			}
 		}
-
 		///////////////////////////////////////////
 		// if (cCentre.activated) cCentre.renderGui(render);
 	}

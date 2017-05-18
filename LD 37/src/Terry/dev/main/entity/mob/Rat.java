@@ -1,13 +1,10 @@
 package Terry.dev.main.entity.mob;
 
 import java.util.List;
-
 import Terry.dev.main.Game;
 import Terry.dev.main.entity.AmmoEntity;
 import Terry.dev.main.entity.CashEntity;
-import Terry.dev.main.entity.Entity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
-import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.level.Level;

@@ -4,8 +4,6 @@ import java.util.Random;
 
 import Terry.dev.main.Game;
 import Terry.dev.main.entity.DrawerEntity;
-import Terry.dev.main.entity.gun.AssaultRifle;
-import Terry.dev.main.entity.gun.PistolBullet;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -13,19 +11,23 @@ import Terry.dev.main.gfx.Sprite;
 
 public class LootingMenu extends Menu {
 
-	private String returnB = "Return", volume = "Volume";
 	private String[] selections = { "return", "Volume" };
-	private int bgCol = 0;
-
-	private Sprite sprite;
+///////////////////sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss// MOVE TO CUPBAORD 
+	public Sprite sprite;
 	private int time = 0;
 	private int anim = 0;
 	private int drop = 140;
 	private Random random = new Random();
 
+	private int cashLoot = random.nextInt(10);
+	private int ammoLoot = random.nextInt(5);
+
+	public int cashLooted = 0;
+	public int ammoLooted = 0;
+	public boolean empty = false;
+
 	public LootingMenu() {
 		selected = 0;
-		bgCol = 0x1b1b1b;
 		sprite = Sprite.title;
 
 	}
@@ -40,6 +42,30 @@ public class LootingMenu extends Menu {
 
 	public void tick() {
 		time++;
+		int r1 = random.nextInt(1000);
+		int r2 = random.nextInt(1500);
+		if (r1 != 0 && time % r1 == 0 && cashLoot > 0) {
+			int cash = random.nextInt(20);
+			if (cash != 0 ) {
+				Player.addCash(cash);
+				cashLoot--;
+				cashLooted++;
+
+			}
+		}
+		if (cashLoot <= 0 && ammoLoot <= 0) empty = true;
+		
+		
+			
+			if (r2 != 0 && time % r2 == 0 && ammoLoot > 0) {
+			int ammo = random.nextInt(5);
+			if (ammo != 0) {
+				Player.addAmmo(ammo);
+				ammoLooted++;
+				ammoLoot--;
+			}
+		}
+
 		if (!DrawerEntity.inRange || input.use.clicked) {
 			DrawerEntity.looting = false;
 			game.setMenu(null);
@@ -115,7 +141,8 @@ public class LootingMenu extends Menu {
 		{
 			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x6B6B6B, false);
 			for (int i = 0; i < 6; i++) {
-			//	render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false, false, false);
+				// render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false,
+				// false, false);
 			}
 
 			render.renderIcon(-6, 6, Sprite.guiCorner, false, false, false);
@@ -140,7 +167,45 @@ public class LootingMenu extends Menu {
 			}
 		}
 		Font.draw("LOOTING", render, (16 * 2), 25, 0x5E3F4E, false);
-		Font.draw("LOOTING", render, 16 * 2 , 25 - 1, 0xDB76A5, false);
+		Font.draw("LOOTING", render, 16 * 2, 25 - 1, 0xDB76A5, false);
+
+		if (cashLooted > 0) {
+			for (int i = 0; i < cashLooted; i++) {
+				if (i < 25) {
+					render.renderIcon(10, 140 - (i * 5), Sprite.CashEntity, false, false, false);
+				}
+			}
+		}
+		
+
+		if (ammoLooted > 0) {
+			for (int i = 0; i < ammoLooted; i++) {
+				if (i < 25) {
+					render.renderIcon(30, 140 - (i * 5), Sprite.AmmoEntity, false, false, false);
+				}
+			}
+		}
+		int yE = 157;
+		if(empty && time % 55 < 50 / 2) {
+			Font.draw("Empty!", render, 37, yE + 1, 0x7E305C, false);
+			Font.draw("Empty!", render, 37, yE, 0xEF358C, false);
+		}else if(empty){
+			Font.draw("Empty!", render, 37, yE + 3, 0x7E305C, false);
+			Font.draw("Empty!", render, 37, yE+2, 0xEF358C, false);
+		}
+		
+
+		if (!empty) {
+			int x = 13;
+			int y = 160;
+			if (time % 55 < 50 / 2) {
+				Font.draw("searching", render, x, y + 1, 0x363636, false);
+				Font.draw("searching", render, x, y, 0xEFF589, false);
+			} else {
+				Font.draw("searching...", render, x, y + 1, 0x363636, false);
+				Font.draw("searching...", render, x, y, 0xEFF589, false);
+			}
+		}
 
 		if (selected == 0) {
 		}

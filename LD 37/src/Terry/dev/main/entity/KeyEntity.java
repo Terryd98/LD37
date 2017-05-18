@@ -10,49 +10,42 @@ import Terry.dev.main.level.Level;
 import Terry.dev.main.level.Tile;
 import Terry.dev.main.util.Vector2i;
 
-public class CashEntity extends Entity {
+public class KeyEntity extends Entity {
 
-	public static int amount = 0;
 	public static boolean removed = false;
 	public static double xx, yy;
 	private int time = 0;
-	private boolean above = true;
 
-	public CashEntity(double x, double y, Level level) {
+	public KeyEntity(double x, double y, Level level) {
 		this.x = x;
 		this.y = y;
-		amount = random.nextInt(40) + 3;
-		removed = false;
 	}
 
-	public CashEntity(Vector2i vector, Level level, Input input) {
+	public KeyEntity(Vector2i vector, Level level, Input input) {
 		this.x = vector.x;
 		this.y = vector.y;
-		amount = random.nextInt(40) + 3;
-		removed = false;
 	}
 
 	public void tick() {
 		time++;
 		List<Player> ps = level.getPlayers(this, 13);
 		if (ps.size() > 0) {
-			Player.addCash(amount);
+			Player.hasKey = true;
 			removed = true;
 			level.remove(this);
 		}
+
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.voidTile || level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
-			x-=0.5;
+			x -= 0.5;
 			if (time % 10 == 0) {
 				y += 0.3;
-				above = true;
-			} else if(time %5 == 0){
+			} else if (time % 5 == 0) {
 				y -= 0.3;
-				above = false;
 			}
 		}
 	}
 
 	public void render(Render render) {
-		render.render((int) x - 5, (int) y, Sprite.CashEntity, false, false);
+		render.render((int) x, (int) y, Sprite.KeyEntity, false, false);
 	}
 }

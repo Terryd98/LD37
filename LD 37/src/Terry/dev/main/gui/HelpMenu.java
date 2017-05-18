@@ -1,8 +1,6 @@
 package Terry.dev.main.gui;
 
 import java.util.Random;
-
-import Terry.dev.main.Game;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;

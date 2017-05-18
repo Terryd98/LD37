@@ -64,8 +64,8 @@ public class Particle extends Entity {
 	public boolean Collision(double x, double y) {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
-			double xt = ((x - c % 2 * Sprite.TSIZE + 1.5) / Sprite.TSIZE);
-			double yt = ((y - c / 2 * Sprite.TSIZE) / Sprite.TSIZE);
+			double xt = ((x - c % 2 * Sprite.T_SIZE + 1.5) / Sprite.T_SIZE);
+			double yt = ((y - c / 2 * Sprite.T_SIZE) / Sprite.T_SIZE);
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
 			int ix = (int) Math.ceil(xt);

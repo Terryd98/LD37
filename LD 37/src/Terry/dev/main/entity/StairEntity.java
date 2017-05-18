@@ -6,43 +6,38 @@ import Terry.dev.main.Game;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.gui.LootingMenu;
-import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
 import Terry.dev.main.util.Vector2i;
 
-public class DrawerEntity extends Entity {
+public class StairEntity extends Entity {
 
 	private Sprite sprite;
 	public static boolean solid = false;
 	private int tick = 0;
 	public static boolean inRange = false;
-	public static boolean looting = false;
-	public boolean inAir = false;
+	public boolean up;
 
-	public DrawerEntity(double x, double y, Level level) {
+	// add fuel
+	public StairEntity(double x, double y, Level level, boolean up) {
 		this.x = x;
 		this.y = y;
-		sprite = Sprite.drawer;
-	//	level.setTile((int)x, (int)y, Tile.water);
+		sprite = Sprite.stairs;
+		this.up = up;
 	}
 
-	public DrawerEntity(Vector2i vector, Level level) {
+	public StairEntity(Vector2i vector, Level level) {
 		this.x = vector.x;
 		this.y = vector.y;
-		sprite = Sprite.drawer;
-
+		sprite = Sprite.stairs;
 	}
 
 	public void tick() {
-		List<Player> players = level.getPlayers(this, 25);
+		tick++;
+		List<Player> players = level.getPlayers(this, 16);
 		if (players.size() > 0) {
-			inRange = true;      	
-		} else {
-			looting = false;
-			inRange = false;
-
+			inRange = true;
 		}
+
 	}
 
 	public void render(Render render) {

@@ -6,7 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import Terry.dev.main.SaveGame;
 import Terry.dev.main.entity.Entity;
+import Terry.dev.main.entity.KeyEntity;
+import Terry.dev.main.entity.TreeEntity;
 import Terry.dev.main.entity.gun.Projectile;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
@@ -31,6 +34,7 @@ public class Level {
 	public static List<ChasingZombie> chasingZombies = new ArrayList<ChasingZombie>();
 	public static List<Projectile> projectiles = new ArrayList<Projectile>();
 	public static List<Particle> particles = new ArrayList<Particle>();
+	public static List<TreeEntity> treeEntity = new ArrayList<TreeEntity>();
 
 	private Comparator<Entity> entitySorter = new Comparator<Entity>() {
 		public int compare(Entity e0, Entity e1) {
@@ -79,18 +83,32 @@ public class Level {
 				tiles[x + y * width] = Tile.grass.id;
 			}
 		}
-
 	}
 
 	public Level(String path) {
 		loadLevel(path);
 		ttpLevel();
+		spawnTrees(100000);
+		add(new KeyEntity(1700, 750, this));
+		// add(new StairEntity(0, 0, this, false));
+	}
+
+	private void spawnTrees(int amount) {
+
+		for (int i = 0; i < amount; i++) {
+			int xx = random.nextInt(width * 16);
+			int yy = random.nextInt(height * 16);
+			if (getTile(xx, yy) == Tile.grass) {
+				add(new TreeEntity(xx, yy, this));
+				// System.out.println("TREE");
+			}
+		}
 	}
 
 	public void prepLevelSwitch() {
 		removeAll();
 		if (removeAll()) cleared = true;
-		
+
 	}
 
 	private boolean removeAll() {
@@ -112,6 +130,9 @@ public class Level {
 		for (int i = 0; i < particles.size(); i++) {
 			particles.remove(i);
 		}
+		for (int i = 0; i < treeEntity.size(); i++) {
+			treeEntity.remove(i);
+		}
 
 		Particle.lremove = true;
 		for (int y = 0; y < height; y++) {
@@ -120,7 +141,7 @@ public class Level {
 			}
 		}
 
-		if (entities.size() == 0 && projectiles.size() == 0 && players.size() == 0 && chasingZombies.size() == 0 && zombies.size() == 0 && particles.size() == 0) return true;
+		if (entities.size() == 0 && projectiles.size() == 0 && players.size() == 0 && chasingZombies.size() == 0 && zombies.size() == 0 && particles.size() == 0 && treeEntity.size() == 0) return true;
 		return false;
 	}
 
@@ -135,7 +156,6 @@ public class Level {
 
 	public void tick() {
 		time++;
-
 		int xft = random.nextInt((width) * 16);
 		int yft = random.nextInt((height) * 16);
 		// if (time % 60 == 0) System.out.println(random.nextInt((width *
@@ -143,6 +163,11 @@ public class Level {
 		if (getTile(xft, yft) == Tile.grass) {
 			setTile(xft, yft, Tile.flower);
 		}
+
+		/*
+		 * if (getTile(xft, yft) == Tile.grass) { add(new TreeEntity(xft, yft,
+		 * this)); }
+		 */
 
 		for (int i = 0; i < entities.size(); i++) {
 			entities.get(i).tick();
@@ -166,6 +191,9 @@ public class Level {
 
 		for (int i = 0; i < particles.size(); i++) {
 			particles.get(i).tick();
+		}
+		for (int i = 0; i < treeEntity.size(); i++) {
+			treeEntity.get(i).tick();
 		}
 
 	}
@@ -258,10 +286,40 @@ public class Level {
 		return result;
 	}
 
+	public List<TreeEntity> getTrees(double ex, double ey, int radius) {
+		List<TreeEntity> result = new ArrayList<TreeEntity>();
+		for (int i = 0; i < treeEntity.size(); i++) {
+			TreeEntity tree = treeEntity.get(i);
+			double x = tree.getX();
+			double y = tree.getY();
+
+			double dx = Math.abs(x - ex);
+			double dy = Math.abs(y - ey);
+			double distance = Math.sqrt((dx * dx) + (dy * dy));
+			if (distance <= radius) result.add(tree);
+		}
+		return result;
+	}
+
 	public List<Player> getPlayers(Entity e, int radius) {
 		List<Player> result = new ArrayList<Player>();
 		double ex = e.getX();
 		double ey = e.getY();
+		for (int i = 0; i < players.size(); i++) {
+			Player player = players.get(i);
+			double x = player.getX();
+			double y = player.getY();
+
+			double dx = Math.abs(x - ex);
+			double dy = Math.abs(y - ey);
+			double distance = Math.sqrt((dx * dx) + (dy * dy));
+			if (distance <= radius) result.add(player);
+		}
+		return result;
+	}
+
+	public List<Player> getPlayersOffseted(double ex, double ey, int radius) {
+		List<Player> result = new ArrayList<Player>();
 		for (int i = 0; i < players.size(); i++) {
 			Player player = players.get(i);
 			double x = player.getX();
@@ -293,8 +351,8 @@ public class Level {
 	public boolean tileCollision(int x, int y, int size, int xOffset, int yOffset) {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
-			int xt = ((x - c % 2 * size + xOffset) / Sprite.TSIZE);
-			int yt = ((y - c / 2 * size + yOffset) / Sprite.TSIZE);
+			int xt = ((x - c % 2 * size + xOffset) / Sprite.T_SIZE);
+			int yt = ((y - c / 2 * size + yOffset) / Sprite.T_SIZE);
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
 			if (getTile(xt, yt).Entitysolid()) {
@@ -310,12 +368,15 @@ public class Level {
 			players.add((Player) e);
 		} else if (e instanceof Zombie) {
 			zombies.add((Zombie) e);
+			System.out.println("ZOMBIE ADDED");
 		} else if (e instanceof ChasingZombie) {
 			chasingZombies.add((ChasingZombie) e);
 		} else if (e instanceof Projectile) {
 			projectiles.add((Projectile) e);
 		} else if (e instanceof Particle) {
 			particles.add((Particle) e);
+		} else if (e instanceof TreeEntity) {
+			treeEntity.add((TreeEntity) e);
 		} else {
 			entities.add(e);
 		}
@@ -332,9 +393,16 @@ public class Level {
 			projectiles.remove((Projectile) e);
 		} else if (e instanceof Particle) {
 			particles.remove((Particle) e);
+		} else if (e instanceof TreeEntity) {
+			treeEntity.remove((TreeEntity) e);
 		} else {
 			entities.remove(e);
 		}
+	}
+
+	public void save() {
+		SaveGame.save(players.get(0).x, players.get(0).y);
+		SaveGame.save(zombies);
 	}
 
 	public List<Projectile> getProjectiles() {
@@ -344,9 +412,9 @@ public class Level {
 	public void render(int xScroll, int yScroll, Render render) {
 		render.setOffsets(xScroll, yScroll);
 		int x0 = xScroll >> 4;
-		int x1 = (xScroll + render.width + Sprite.TSIZE) >> 4;
+		int x1 = (xScroll + render.width + Sprite.T_SIZE) >> 4;
 		int y0 = yScroll >> 4;
-		int y1 = (yScroll + render.height + Sprite.TSIZE) >> 4;
+		int y1 = (yScroll + render.height + Sprite.T_SIZE) >> 4;
 
 		for (int y = y0; y < y1; y++) {
 			for (int x = x0; x < x1; x++) {
@@ -357,25 +425,33 @@ public class Level {
 		for (int i = 0; i < particles.size(); i++) {
 			particles.get(i).render(render);
 		}
-
-		for (int i = 0; i < projectiles.size(); i++) {
-			projectiles.get(i).render(render);
-		}
 		for (int i = 0; i < entities.size(); i++) {
 			Collections.sort(entities, entitySorter);
 			entities.get(i).render(render);
 		}
-		for (int i = 0; i < zombies.size(); i++) {
-			Collections.sort(zombies, zombieSorter);
-			zombies.get(i).render(render);
+		for (int i = 0; i < projectiles.size(); i++) {
+			projectiles.get(i).render(render);
 		}
 
 		for (int i = 0; i < chasingZombies.size(); i++) {
 			Collections.sort(chasingZombies, chaserSorter);
 			chasingZombies.get(i).render(render);
 		}
+
 		for (int i = 0; i < players.size(); i++) {
 			players.get(i).render(render);
+		}
+		for (int i = 0; i < zombies.size(); i++) {
+			Collections.sort(zombies, zombieSorter);
+			zombies.get(i).render(render);
+		}
+		for (int y = y0; y < y1; y++) {
+			for (int x = x0; x < x1; x++) {
+				getTile(x, y).render1(x, y, render);
+			}
+		}
+		for (int i = 0; i < treeEntity.size(); i++) {
+			treeEntity.get(i).render(render);
 		}
 
 	}
@@ -393,8 +469,9 @@ public class Level {
 	public Tile getTile(int x, int y) {
 		if (x < 0 || x >= width || y < 0 || y >= height) {
 			if (cleared) return Tile.voidTile;
-			return Tile.water;
+			return Tile.voidTile;
 		}
+
 		if (tiles[x + y * width] == 0xff526B4A) tiles[x + y * width] = Tile.grass.id;
 		if (tiles[x + y * width] == 0xff638200) tiles[x + y * width] = Tile.grassCornerTL.id;
 		if (tiles[x + y * width] == 0xff4A6000) tiles[x + y * width] = Tile.grassCornerTR.id;
@@ -405,7 +482,6 @@ public class Level {
 		if (tiles[x + y * width] == 0xffC3FF00) tiles[x + y * width] = Tile.grassRight.id;
 		if (tiles[x + y * width] == 0xff009637) tiles[x + y * width] = Tile.grassDown.id;
 		if (tiles[x + y * width] == 0xff87845E) tiles[x + y * width] = Tile.rottenHead.id;
-		if (tiles[x + y * width] == 0xffD8D8D8) tiles[x + y * width] = Tile.basementFloor.id;
 		if (tiles[x + y * width] == 0xffFAFA37) tiles[x + y * width] = Tile.flower.id;
 		if (tiles[x + y * width] == 0xff3A607D) tiles[x + y * width] = Tile.water.id;
 		if (tiles[x + y * width] == 0xffA0A4A3) tiles[x + y * width] = Tile.wall.id;
@@ -415,6 +491,10 @@ public class Level {
 		if (tiles[x + y * width] == 0xff404040) tiles[x + y * width] = Tile.wallIso.id;
 		if (tiles[x + y * width] == 0xff808080) tiles[x + y * width] = Tile.wallFront.id;
 		if (tiles[x + y * width] == 0xff322015) tiles[x + y * width] = Tile.wood.id;
+		if (tiles[x + y * width] == 0xffB6FF00) tiles[x + y * width] = Tile.bin.id;
+		if (tiles[x + y * width] == 0xff7A8C4C) tiles[x + y * width] = Tile.bush.id;
+		if (tiles[x + y * width] == 0xffAAAAAA) tiles[x + y * width] = Tile.base_floor.id;
+
 		return Tile.tiles[tiles[x + y * width]];
 	}
 

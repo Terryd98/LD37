@@ -2,7 +2,10 @@ package Terry.dev.main.level;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
+
+import Terry.dev.main.input.Input;
 
 public class OneLevel extends Level {
 

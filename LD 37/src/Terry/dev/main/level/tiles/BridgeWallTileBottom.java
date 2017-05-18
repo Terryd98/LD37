@@ -11,11 +11,9 @@ public class BridgeWallTileBottom extends Tile {
 	}
 
 	protected void tick() {
-
-
 	}
-
-	public void render(int x, int y, Render render) {
+	
+	public void render1(int x, int y, Render render) {
 		render.render(x << 4, y << 4, Sprite.bridgeWallBottom , false, false);
 	}
 

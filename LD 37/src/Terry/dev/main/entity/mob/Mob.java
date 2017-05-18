@@ -92,7 +92,7 @@ public class Mob extends Entity {
 	protected boolean collision(double xa, double ya) {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
-			double xt = ((x + xa) - c % 2 * 3 / 6 - 8) / 16;
+			double xt = ((x + xa) - c % 2 / 1 - 8) / 16;
 			double yt = ((y + ya) - c / 2 * 15 / 6 + 1) / 16;
 			int ix = (int) Math.ceil(xt);
 			int iy = (int) Math.ceil(yt);

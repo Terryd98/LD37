@@ -17,7 +17,7 @@ public class WallFrontTile extends Tile {
 	public void render(int x, int y, Render render) {
 		render.render(x << 4, y << 4, Sprite.wallFront , false, false);
 	}
-
+	
 	public boolean solid() {
 		return true;
 	}

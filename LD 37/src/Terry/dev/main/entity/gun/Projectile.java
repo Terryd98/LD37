@@ -1,14 +1,8 @@
 package Terry.dev.main.entity.gun;
 
-import java.util.List;
 import java.util.Random;
-
-import Terry.dev.main.Game;
 import Terry.dev.main.entity.Entity;
-import Terry.dev.main.entity.Emitter.ParticleEmitter;
-import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.gfx.Render;
-import Terry.dev.main.gfx.Sprite;
 
 public class Projectile extends Entity {
 

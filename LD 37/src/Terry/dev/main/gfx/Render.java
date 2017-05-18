@@ -145,7 +145,7 @@ public class Render {
 			if (yFlip) ys = 7 - y;
 			for (int x = 0; x < 8; x++) {
 				int xa = x + xp;
-				if (xa < 0 || xa >= width || ya < 0 || ya >= height) break;
+				if (xa <= -8 || xa >= width || ya <= 0 || ya >= height) break;
 				int xs = x;
 				if (xFlip) xs = 7 - x;
 				int col = ((sheet.pixels[xs + ys * sheet.SIZE + tileOffs]));

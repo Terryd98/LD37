@@ -3,25 +3,17 @@ package Terry.dev.main.entity;
 import java.util.List;
 
 import Terry.dev.main.Game;
-import Terry.dev.main.entity.gun.AssaultRifle;
-import Terry.dev.main.entity.gun.PistolBullet;
-import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
-import Terry.dev.main.entity.mob.Zombie;
-import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.level.Level;
-import Terry.dev.main.level.Tile;
 import Terry.dev.main.util.Vector2i;
 
 public class CommandCentre extends Entity {
 
 	private Sprite sprite;
 	public static boolean solid = false;
-	private int tickCount = 0;
 	public static boolean activated = false;
-	private int time = 15;
 	private boolean powered = false;
 	private int tick = 0;
 	public static boolean inRange = false;

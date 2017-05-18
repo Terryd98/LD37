@@ -18,7 +18,7 @@ public class BridgeWallTileTop extends Tile {
 	public void render(int x, int y, Render render) {
 		render.render(x << 4, y << 4, Sprite.bridgeWallTop , false, false);
 	}
-
+	
 	public boolean solid() {
 		return true;
 	}

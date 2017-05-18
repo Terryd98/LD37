@@ -7,16 +7,31 @@ public class Sprite {
 	public SpriteSheet sheet;
 	public int[] pixels;
 	public final int SIZE;
-	public static final int TSIZE = 16;
-	
+	public static int T_SIZE = 16;
+
 	public static Sprite title = new Sprite(224, 72, 0, 0, SpriteSheet.ui_sheet);
 	public static Sprite title1 = new Sprite(224, 72, 0, 1, SpriteSheet.ui_sheet);
 	public static Sprite title2 = new Sprite(224, 72, 0, 2, SpriteSheet.ui_sheet);
 	public static Sprite title3 = new Sprite(224, 72, 0, 3, SpriteSheet.ui_sheet);
 
+	public static Sprite tallTreeA = new Sprite(32, 64, 0, 0, SpriteSheet.big_tiles);
+	public static Sprite tallTreeB = new Sprite(32, 64, 0, 1, SpriteSheet.big_tiles);
+	public static Sprite tallTreeC = new Sprite(32, 64, 0, 2, SpriteSheet.big_tiles);
+
+	public static Sprite tallTree1A = new Sprite(32, 64, 1, 0, SpriteSheet.big_tiles);
+	public static Sprite tallTree1B = new Sprite(32, 64, 1, 1, SpriteSheet.big_tiles);
+	public static Sprite tallTree1C = new Sprite(32, 64, 1, 2, SpriteSheet.big_tiles);
+
+	public static Sprite treeTrunk = new Sprite(16, 9, 2, SpriteSheet.tiles_sheet);
+	public static Sprite treeTrunk1 = new Sprite(16, 10, 2, SpriteSheet.tiles_sheet);
+	public static Sprite logParticle1 = new Sprite(16, 11, 2, SpriteSheet.tiles_sheet);
+	public static Sprite logParticle = new Sprite(16, 12, 2, SpriteSheet.tiles_sheet);
+
+	public static Sprite stairs = new Sprite(16, 13, 2, SpriteSheet.tiles_sheet);
+
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);
-	public static Sprite particle = new Sprite(3, 2, 0x3B3B3B);
+	public static Sprite particle = new Sprite(3, 2, 0x4B2929);
 	public static Sprite tntParticle = new Sprite(3, 2, 0xa41e22);
 	public static Sprite casingParticle = new Sprite(3, 1, 0xB59900);
 	public static Sprite bloodParticle = new Sprite(2, 2, 0x4E1616);
@@ -34,7 +49,7 @@ public class Sprite {
 	public static Sprite f_indicator = new Sprite(16, 9, 0, SpriteSheet.tiles_sheet);
 
 	public static Sprite drawer = new Sprite(16, 10, 0, SpriteSheet.tiles_sheet);
-	
+
 	public static Sprite selector = new Sprite(16, 0, 3, SpriteSheet.tiles_sheet);
 	public static Sprite spikes = new Sprite(16, 1, 3, SpriteSheet.tiles_sheet);
 	public static Sprite spikesBlood = new Sprite(16, 1, 4, SpriteSheet.tiles_sheet);
@@ -42,14 +57,15 @@ public class Sprite {
 	public static Sprite spikeIcon = new Sprite(16, 2, 3, SpriteSheet.tiles_sheet);
 	public static Sprite pistolIconOff = new Sprite(16, 3, 3, SpriteSheet.tiles_sheet);
 	public static Sprite assaultRifleIconOff = new Sprite(16, 4, 3, SpriteSheet.tiles_sheet);
-	
+
 	public static Sprite pistolIconOn = new Sprite(16, 3, 4, SpriteSheet.tiles_sheet);
 	public static Sprite assaultRifleIconOn = new Sprite(16, 4, 4, SpriteSheet.tiles_sheet);
 
 	public static Sprite CashEntity = new Sprite(16, 5, 3, SpriteSheet.tiles_sheet);
 	public static Sprite AmmoEntity = new Sprite(16, 6, 3, SpriteSheet.tiles_sheet);
 	public static Sprite GrenadeEntity = new Sprite(16, 7, 3, SpriteSheet.tiles_sheet);
-
+	public static Sprite KeyEntity = new Sprite(16, 5, 4, SpriteSheet.tiles_sheet);
+	
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);
@@ -62,12 +78,18 @@ public class Sprite {
 	public static Sprite wood = new Sprite(16, 1, 1, SpriteSheet.tiles_sheet);
 
 	public static Sprite stone = new Sprite(16, 5, 1, SpriteSheet.tiles_sheet);
-	
+
 	public static Sprite bridgeWallTop = new Sprite(16, 5, 2, SpriteSheet.tiles_sheet);
 	public static Sprite bridgeWallBottom = new Sprite(16, 6, 2, SpriteSheet.tiles_sheet);
 
-	public static Sprite flowers = new Sprite(16, 3, 1, SpriteSheet.tiles_sheet);
-	public static Sprite grass_Snow = new Sprite(16, 2, 1, SpriteSheet.tiles_sheet);
+	public static Sprite bin = new Sprite(16, 7, 2, SpriteSheet.tiles_sheet);
+
+	public static Sprite bushA = new Sprite(16, 8, 2, SpriteSheet.tiles_sheet);
+	public static Sprite bushB = new Sprite(16, 8, 3, SpriteSheet.tiles_sheet);
+
+	public static Sprite flowerA = new Sprite(16, 3, 1, SpriteSheet.tiles_sheet);
+	public static Sprite flowerB = new Sprite(16, 2, 1, SpriteSheet.tiles_sheet);
+
 	public static Sprite grass = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite grassCorner = new Sprite(16, 4, 0, SpriteSheet.tiles_sheet);
 	public static Sprite grassLR = new Sprite(16, 4, 1, SpriteSheet.tiles_sheet);
@@ -91,6 +113,23 @@ public class Sprite {
 	public static Sprite playerStillRight = new Sprite(32, 2, 0, SpriteSheet.player_sheet);
 	public static Sprite playerRight1 = new Sprite(32, 2, 1, SpriteSheet.player_sheet);
 	public static Sprite playerRight2 = new Sprite(32, 2, 2, SpriteSheet.player_sheet);
+	
+	//SWIMMING
+	public static Sprite playerStillDown_Swimming = new Sprite(32, 4, 3, SpriteSheet.player_sheet);
+	public static Sprite playerDown1_Swimming = new Sprite(32, 4, 4, SpriteSheet.player_sheet);
+	public static Sprite playerDown2_Swimming = new Sprite(32, 4, 5, SpriteSheet.player_sheet);
+
+	public static Sprite playerStillUp_Swimming = new Sprite(32, 5, 3, SpriteSheet.player_sheet);
+	public static Sprite playerUp1_Swimming = new Sprite(32, 5, 4, SpriteSheet.player_sheet);
+	public static Sprite playerUp2_Swimming = new Sprite(32, 5, 5, SpriteSheet.player_sheet);
+
+	public static Sprite playerStillRight_Swimming = new Sprite(32, 6, 3, SpriteSheet.player_sheet);
+	public static Sprite playerRight1_Swimming = new Sprite(32, 6, 4, SpriteSheet.player_sheet);
+	public static Sprite playerRight2_Swimming = new Sprite(32, 6, 5, SpriteSheet.player_sheet);
+	
+	public static Sprite splashA = new Sprite(32, 3, 3, SpriteSheet.player_sheet);
+	public static Sprite splashB = new Sprite(32, 3, 4, SpriteSheet.player_sheet);
+	public static Sprite splashC = new Sprite(32, 3, 5, SpriteSheet.player_sheet);
 
 	// PLAYER WITH AR
 	public static Sprite AR_playerStillDown = new Sprite(32, 0, 3, SpriteSheet.player_sheet);
@@ -130,6 +169,19 @@ public class Sprite {
 	public static Sprite zombieRight1 = new Sprite(32, 2, 1, SpriteSheet.zombie_sheet);
 	public static Sprite zombieRight2 = new Sprite(32, 2, 2, SpriteSheet.zombie_sheet);
 
+	public static Sprite zombieStillDownA = new Sprite(32, 3, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown1A = new Sprite(32, 3, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown2A = new Sprite(32, 3, 2, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillUpA = new Sprite(32, 4, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp1A = new Sprite(32, 4, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp2A = new Sprite(32, 4, 2, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillRightA = new Sprite(32, 5, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight1A = new Sprite(32, 5, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight2A = new Sprite(32, 5, 2, SpriteSheet.zombie_sheet);
+
+	
 	public static Sprite ratStillDown = new Sprite(32, 0, 0, SpriteSheet.rat_sheet);
 	public static Sprite ratDown1 = new Sprite(32, 0, 1, SpriteSheet.rat_sheet);
 	public static Sprite ratDown2 = new Sprite(32, 0, 2, SpriteSheet.rat_sheet);
@@ -142,7 +194,9 @@ public class Sprite {
 	public static Sprite ratRight1 = new Sprite(32, 2, 1, SpriteSheet.rat_sheet);
 	public static Sprite ratRight2 = new Sprite(32, 2, 2, SpriteSheet.rat_sheet);
 
-	
+	// BASEMENT TILES
+	public static Sprite floor = new Sprite(16, 0, 0, SpriteSheet.basement_tiles_sheet);
+
 	public Sprite(int size, int x, int y, SpriteSheet sheet) {
 		this.sheet = sheet;
 		this.SIZE = size;
@@ -153,12 +207,12 @@ public class Sprite {
 		pixels = new int[SIZE * SIZE];
 		load();
 	}
-	
+
 	public Sprite(int width, int height, int x, int y, SpriteSheet sheet) {
 		this.sheet = sheet;
 		this.SIZE = -1;
-		this.x = x*width;
-		this.y = y*height;
+		this.x = x * width;
+		this.y = y * height;
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
@@ -208,6 +262,7 @@ public class Sprite {
 			}
 		}
 	}
+
 	private void loadWH() {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {

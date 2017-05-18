@@ -41,6 +41,7 @@ public class ChasingZombie extends Mob {
 	}
 
 	private boolean playerInRange = false;
+	private boolean isInSight= false;
 
 	public ChasingZombie(int x, int y, Level level) {
 		this.x = x;
@@ -56,6 +57,28 @@ public class ChasingZombie extends Mob {
 	}
 
 	public void tick() {
+
+		List<Player> inSightLeft = level.getPlayersOffseted((int) x + 90, (int) y, 100);
+		List<Player> inSightRight = level.getPlayersOffseted((int) x - 90, (int) y, 100);
+		List<Player> inSightUp = level.getPlayersOffseted((int) x, (int) y + 90, 100);
+		List<Player> inSightDown = level.getPlayersOffseted((int) x, (int) y - 90, 100);
+		isInSight = false;
+		if (inSightLeft.size() > 0 && Player.playerDir == 0) {
+			isInSight = true;
+		}
+
+		if (inSightUp.size() > 0 && Player.playerDir == 1) {
+			isInSight = true;
+		}
+
+		if (inSightRight.size() > 0 && Player.playerDir == 2) {
+			isInSight = true;
+		}
+
+		if (inSightDown.size() > 0 && Player.playerDir == 3) {
+			isInSight = true;
+		}
+		
 		if (level.getTile((int) (x) / 16, (int) (y + 16) / 16) == Tile.flower) {
 			level.setTile((int) x / 16, (int) ((y + 16) / 16), Tile.grass);
 			if (playerInRange) Game.playSound("/sounds/flower.wav", -10.0f);

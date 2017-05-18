@@ -2,13 +2,14 @@ package Terry.dev.main.gui;
 
 import java.util.Random;
 
+import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 
 public class TitleMenu extends Menu {
 
-	private String play = "Play", options = "Options", help = "Help", exit = "Exit to Desktop";
+	private String play = "Play", newGame = "NEW GAME", options = "Options", help = "Help", exit = "Exit to Desktop";
 	private String[] selections = { "play", "options", "help", "exit" };
 	private int bgCol = 0;
 	private Sprite sprite;
@@ -24,7 +25,12 @@ public class TitleMenu extends Menu {
 	}
 
 	public void play() {
-		game.setMenu(null);
+		if(Player.dead) {
+			game.restartGame();
+		} else {
+			game.setMenu(null);
+		}
+		
 	}
 
 	public void options() {
@@ -90,12 +96,20 @@ public class TitleMenu extends Menu {
 		} else {
 			render.renderIcon(220+8, 140, Sprite.blood_drop, false, false, false);
 		}
-		if (selected == 0) {
+		if (selected == 0 && !Player.dead) {
 			Font.draw(play, render, render.width / 2 - play.length() * 4, yy, 0xCD545E, false);
 			Font.draw(">", render, render.width / 2 - play.length() * 4 - 10, yy, 0xFFFFFF, false);
 			Font.draw("<", render, render.width / 2 - play.length() * 4 + play.length() * 8, yy, 0xFFFFFF, false);
-		} else {
+		} else if(!Player.dead){
 			Font.draw(play, render, render.width / 2 - play.length() * 4, yy, 0xEFEFEF, false);
+		}
+		
+		if (selected == 0 && Player.dead) {
+			Font.draw(newGame, render, render.width / 2 - newGame.length() * 4, yy, 0xCD545E, false);
+			Font.draw(">", render, render.width / 2 - newGame.length() * 4 - 10, yy, 0xFFFFFF, false);
+			Font.draw("<", render, render.width / 2 - newGame.length() * 4 + newGame.length() * 8, yy, 0xFFFFFF, false);
+		} else if(Player.dead){
+			Font.draw(newGame, render, render.width / 2 - newGame.length() * 4, yy, 0xEFEFEF, false);
 		}
 
 		if (selected == 1) {

@@ -8,6 +8,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -17,17 +19,18 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import Terry.dev.main.entity.CommandCentre;
 import Terry.dev.main.entity.DrawerEntity;
+import Terry.dev.main.entity.StairEntity;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.entity.mob.Rat;
 import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
+import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.gfx.SpriteSheet;
 import Terry.dev.main.gui.LootingMenu;
 import Terry.dev.main.gui.Menu;
@@ -36,11 +39,12 @@ import Terry.dev.main.gui.TitleMenu;
 import Terry.dev.main.input.Input;
 import Terry.dev.main.level.Level;
 import Terry.dev.main.level.OneLevel;
+import Terry.dev.main.level.Tile;
 
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 300, HEIGHT = 267;
+	public static final int WIDTH = 400, HEIGHT = WIDTH / 16 * 11;
 	public static int SCALE = 3;
 	private JFrame frame;
 	private Thread thread;
@@ -48,9 +52,11 @@ public class Game extends Canvas implements Runnable {
 	private Player player;
 	private Zombie zombie;
 	private Rat rat;
+	private int tick;
 	private ChasingZombie chasingZombie;
 	private int alpha = 0;
-	private int tickCount = 0;
+	public static int cashY = 0;
+	public static int ammoY = 0;
 	public static boolean firstSpawn = true;
 	private Level level;
 	public static boolean finalLevel = false;
@@ -59,7 +65,7 @@ public class Game extends Canvas implements Runnable {
 	public boolean paused = false;
 	private boolean running = false;
 	private boolean canChangeLevel = false;
-	private static String title = "LD37 - Death Room";
+	private static String title = "Post LD37 - PROJECT Z";
 	public static int ZCount = 0;
 	private boolean dayNightCycle = false;
 	private boolean levelSwitchExecuted = false;
@@ -77,14 +83,11 @@ public class Game extends Canvas implements Runnable {
 		setMenu(new TitleMenu());
 		player = new Player(input, level);
 		level.add(player);
-
 		// rat = new Rat(5 * 16, 2, level);
 		// level.add(rat);
 		for (int i = 0; i < 0; i++) {
-			zombie = new Zombie(level);
-			level.add(zombie);
+			level.add(new Zombie(level));
 		}
-
 	}
 
 	public void getLevel(Level level) {
@@ -103,6 +106,10 @@ public class Game extends Canvas implements Runnable {
 		levelSwitchExecuted = true;
 	}
 
+	public void restartGame() {
+		System.out.println("RESTART GAME");
+	}
+
 	public void setMenu(Menu menu) {
 		this.menu = menu;
 		if (menu != null) menu.init(this, input);
@@ -119,8 +126,11 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public void stop() {
+		level.save();
 		running = false;
 		try {
+			System.exit(0);
+			frame.dispose();
 			thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -188,7 +198,6 @@ public class Game extends Canvas implements Runnable {
 	private boolean cursorSwitched = false;
 
 	public void tick() {
-
 		if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
 			setMenu(new LootingMenu());
 		} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
@@ -201,18 +210,19 @@ public class Game extends Canvas implements Runnable {
 
 		}
 
-		if (input.reload.clicked && !levelSwitchExecuted) switchLevel();
+		// if (input.one.clicked && !levelSwitchExecuted) switchLevel();
+		if (StairEntity.inRange && !levelSwitchExecuted) switchLevel();
 
 		input.tick();
 		if (menu != null) {
 			menu.tick();
 			if (!cursorSwitched) {
-				BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 				Toolkit toolkit = Toolkit.getDefaultToolkit();
+				Image cursor = toolkit.getImage("res/cursor1.png");
 				Point p = new Point((16 / 2) + 1, (16 / 2) + 1);
-				Cursor customCursor = toolkit.createCustomCursor(cursorImg, p, "Cursor");
+				Cursor customCursor = toolkit.createCustomCursor(cursor, p, "Cursor");
 				setCursor(customCursor);
-				System.out.println("CURSOR GONE");
+
 				cursorSwitched = true;
 			}
 		} else {
@@ -223,18 +233,35 @@ public class Game extends Canvas implements Runnable {
 				Point p = new Point((16 / 2) + 1, (16 / 2) + 1);
 				Cursor customCursor = toolkit.createCustomCursor(cursor, p, "Cursor");
 				setCursor(customCursor);
-				System.out.println("CURSOR BACK ");
 				cursorSwitched = false;
 			}
 			if (input.esc.clicked) setMenu(new TitleMenu());
 			if (Input.getButton() == 2) {
-				System.out.println(112);
 				zombie = new Zombie(Input.mouseX, Input.mouseY, level);
 				level.add(zombie);
 			}
 			time++;
 			level.tick();
 			levelTick();
+			Tile.tickCount++;
+		}
+		tick++;
+		if (player.addedCash > 0) {
+
+			if (player.cashPickupTime > 0) player.cashPickupTime--;
+			if (player.cashPickupTime == 0) {
+				cashY = 0;
+			}
+			if (tick % 2 == 1) cashY++;
+
+		}
+		if (player.addedAmmo > 0) {
+			if (player.ammoPickupTime > 0) player.ammoPickupTime--;
+			if (player.ammoPickupTime == 0) {
+				ammoY = 0;
+			}
+			if (tick % 2 == 1) ammoY++;
+
 		}
 	}
 
@@ -254,11 +281,13 @@ public class Game extends Canvas implements Runnable {
 		double xScroll = (player.getX() - render.width / 2);
 		double yScroll = (player.getY() - render.height / 2);
 		if (shake != 0) {
-			xScroll += random.nextInt(shake);
+			xScroll -= random.nextInt(shake);
 			yScroll += random.nextInt(shake);
 
 		}
+
 		level.render((int) xScroll, (int) yScroll, render);
+		renderGui();
 
 		if (menu != null) {
 			menu.render(render);
@@ -275,16 +304,22 @@ public class Game extends Canvas implements Runnable {
 			String deathMsg = "YOU ARE DEAD";
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4, HEIGHT / 2 - 8, 0x5E2727, false);
 			Font.draw(deathMsg, render, WIDTH / 2 - deathMsg.length() * 4 - 1, HEIGHT / 2 - 8 - 1, 0xC23434, false);
-			String Score = "Score:" + Integer.toString(Player.score);
-			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 + 1 - 15, (HEIGHT / 2) + 4, 0x614B4B, false);
-			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15, (HEIGHT / 2 - 1) + 4, 0xC99797, false);
+			// String Score = "Score:" + Integer.toString(Player.score);
+			// Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 + 1 - 15,
+			// (HEIGHT / 2) + 4, 0x614B4B, false);
+			// Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15,
+			// (HEIGHT / 2 - 1) + 4, 0xC99797, false);
 		} else if (menu == null && !level.cleared) {
-			String Score = "Score:";
-			String ScoreNum = Integer.toString(Player.score);
-			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15 + 1, (3), 0x363636, false);
-			Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15, (2), 0xEFF589, false);
-			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 1 + 55 - 15, (3), 0x363636, false);
-			Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 55 - 15, (2), 0xEF358C, false);
+			// String Score = "Score:";
+			// String ScoreNum = Integer.toString(Player.score);
+			// Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15 + 1,
+			// (3), 0x363636, false);
+			// Font.draw(Score, render, WIDTH / 2 - Score.length() * 4 - 15,
+			// (2), 0xEFF589, false);
+			// Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 1 +
+			// 55 - 15, (3), 0x363636, false);
+			// Font.draw(ScoreNum, render, WIDTH / 2 - Score.length() * 4 + 55 -
+			// 15, (2), 0xEF358C, false);
 		}
 
 		Graphics g = bs.getDrawGraphics();
@@ -303,8 +338,8 @@ public class Game extends Canvas implements Runnable {
 		// BRIGHTNESS
 		if (dayNightCycle) {
 			if (alpha >= 100 * 2) alpha = 100 * 2;
-			tickCount++;
-			if (tickCount % 1000 == 10) alpha++;
+			cashY++;
+			if (cashY % 1000 == 10) alpha++;
 			Color col = new Color(10, 10, 10, 0);
 			g.setColor(col);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -321,31 +356,175 @@ public class Game extends Canvas implements Runnable {
 
 	}
 
+	public void renderGui() {
+		if (player.hasPistol) {
+			render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOff, false, false, false);
+			if (player.pistol) {
+				render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOn, false, false, false);
+			}
+
+		}
+		if (player.hasAssaultRifle) {
+			render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOff, false, false, false);
+			if (player.assaultRifle) {
+				render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOn, false, false, false);
+			}
+		}
+		int xx = (int) Math.abs(player.x);
+		int yy = (int) Math.abs(player.y);
+		Font.draw("Energy:", render, (render.width - 82), render.height - 10, 0x363636, false);
+		Font.draw("Energy:", render, (render.width - 82), render.height - 11, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 10, 0x7E305C, false);
+		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 11, 0xEF358C, false);
+
+		Font.draw("Cash:", render, (render.width - 82), render.height - 20, 0x363636, false);
+		Font.draw("Cash:", render, (render.width - 82), render.height - 21, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.cash), render, (render.width - 42), render.height - 20, 0x7E305C, false);
+		Font.draw(Integer.toString(player.cash), render, (render.width - 42), render.height - 21, 0xEF358C, false);
+
+		if (player.addedCash > 0) {
+			if (player.cashPickupTime > 0) {
+				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 20, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 21, 0xEF358C, false);
+			} else {
+				player.cashPickupTime = 0;
+				player.addedCash = 0;
+			}
+		}
+
+		if (player.addedAmmo > 0) {
+			if (player.ammoPickupTime > 0) {
+				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 240, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 241, 0xEF358C, false);
+			} else {
+				player.ammoPickupTime = 0;
+				player.addedAmmo = 0;
+			}
+		}
+
+		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
+		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
+		
+		if (player.hasKey) render.renderIcon(WIDTH/2, -3, Sprite.KeyEntity, false, false, false);
+
+		if (player.pistol) {/////////////////////////////////////////
+			if (player.PISTOL_CLIP > 0) {
+
+				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
+				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
+			}
+
+			if (player.PISTOL_CLIP <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
+				}
+			}
+
+			if (player.PISTOL_AMMO <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
+				}
+			}
+			if (player.PISTOL_AMMO > 0) {
+				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
+				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
+			}
+		}
+		if (player.assaultRifle) {//////////////////////////////////////////////
+			if (player.ASSAULT_RIFLE_CLIP > 0) {
+
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
+			}
+
+			if (player.ASSAULT_RIFLE_CLIP <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
+				}
+			}
+
+			if (player.ASSAULT_RIFLE_AMMO <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
+				}
+			}
+			if (player.ASSAULT_RIFLE_AMMO > 0) {
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
+			}
+		}
+
+		if (!player.dead && Game.finalLevel) {
+			player.finalMessageTime++;
+			if (player.finalMessageTime < 10000) {
+
+				String msg = "She is dead! aaaand so am i!";
+				Font.draw(msg, render, xx - msg.length() * 4, yy - 30, 0x7E305C, true);
+			}
+		}
+
+		if (!player.dead && Game.infiniLevel) {
+			player.finalMessageTime++;
+			if (player.finalMessageTime < 10000) {
+				String msg = "you survived! thats surp..ehhmazing!";
+				String msg2 = "see how high you can get your score!";
+				Font.draw(msg, render, xx - msg.length() * 4, yy - 40, 0x7E305C, true);
+				Font.draw(msg2, render, xx - msg.length() * 4 + 2, yy - 30, 0x7E305C, true);
+			}
+		}
+
+		Font.draw("Ammo:", render, (render.width - 20) - 65, 3, 0x363636, false);
+		Font.draw("Ammo:", render, (render.width - 20) - 65, 2, 0xEFF589, false);
+
+		Font.draw("Health:", render, 3, 3, 0x363636, false);
+		Font.draw("Health:", render, 2, 2, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.health), render, 3 + 57, 3, 0x363636, false);
+		Font.draw(Integer.toString(player.health), render, 2 + 57, 2, 0xEF358C, false);
+
+	}
+
 	int lvl = 0;
 
 	private void levelTick() {
 		if (time % (60 * (random.nextInt(20) + 2)) == 0) {
 			expo++;
-			if (finalLevel) {
-				expo += 2;
-				for (int i = 0; i < expo - (expo / 3); i++) {
+			expo += 2;
+			for (int i = 0; i < expo - (expo / 3); i++) {
+				zombie = new Zombie(level);
+				level.add(zombie);
+				Game.playSound("/sounds/zombie2.wav", -20.0f);
+
+			}
+			for (int i = 0; i < expo - (expo / 3); i++) {
+				if (ZCount < 40) {
+					chasingZombie = new ChasingZombie(level);
+					level.add(chasingZombie);
 					zombie = new Zombie(level);
 					level.add(zombie);
-					Game.playSound("/sounds/zombie2.wav", -20.0f);
-
+					if (random.nextInt(10) == 2) Game.playSound("/sounds/zombie2.wav", -20.0f);
+					ZCount += 2;
 				}
-				for (int i = 0; i < expo - (expo / 3); i++) {
-					if (ZCount < 40) {
-						chasingZombie = new ChasingZombie(level);
-						level.add(chasingZombie);
-						zombie = new Zombie(level);
-						level.add(zombie);
-						if (random.nextInt(10) == 2) Game.playSound("/sounds/zombie2.wav", -20.0f);
-						ZCount += 2;
-					}
-					// Game.playSound("/sounds/zombie2.wav", -20.0f);
+				// Game.playSound("/sounds/zombie2.wav", -20.0f);
 
-				}
 			}
 		}
 		if (expo > 5) expo = 0;
@@ -416,8 +595,8 @@ public class Game extends Canvas implements Runnable {
 		game.frame.add(game);
 		game.frame.pack();
 		game.frame.setLocationRelativeTo(null);
-		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.frame.setVisible(true);
+		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.start();
 	}
 

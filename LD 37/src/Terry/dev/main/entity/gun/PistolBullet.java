@@ -1,15 +1,14 @@
 package Terry.dev.main.entity.gun;
 
 import java.util.List;
-
 import Terry.dev.main.Game;
+import Terry.dev.main.entity.TreeEntity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.entity.mob.ChasingZombie;
-import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
-import Terry.dev.main.level.Tile;
+import Terry.dev.main.level.tiles.TreeTrunk;
 
 public class PistolBullet extends Projectile {
 
@@ -21,7 +20,7 @@ public class PistolBullet extends Projectile {
 		super(x, y, dir);
 		range = random.nextInt(300) + 50;
 		speed = 8;
-		damage = 15;
+		damage = 17;
 
 		nx = speed * Math.cos(angle);
 		ny = speed * Math.sin(angle);
@@ -30,12 +29,17 @@ public class PistolBullet extends Projectile {
 	public void tick() {
 		List<Zombie> zombies = level.getZombies((int) x + (int) nx + 10, (int) y + (int) ny + 10, 20);
 		List<ChasingZombie> chasers = level.getChaserZombies((int) x + (int) nx + 10, (int) y + (int) ny + 10, 20);
+		List<TreeEntity> trees = level.getTrees((int) x + (int) nx + 5, (int) y + (int) ny, 30);
 
+		if(trees.size() > 0) {
+			TreeEntity tree = trees.get(0);
+			tree.chop();
+		}
+		
 		if (zombies.size() > 0) {
 			remove();
 			Zombie zombie = zombies.get(0);
 			zombie.hurt(damage);
-			Game.playSound("/sounds/hit.wav", -15.0f);
 		}
 
 		if (chasers.size() > 0) {

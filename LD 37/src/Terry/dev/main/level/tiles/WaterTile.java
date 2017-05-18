@@ -6,8 +6,6 @@ import Terry.dev.main.level.Tile;
 
 public class WaterTile extends Tile {
 
-	public int time = 0;
-	public int tickCount = 0;
 	private Sprite sprite = Sprite.water0;
 
 	public WaterTile(int id) {
@@ -19,22 +17,19 @@ public class WaterTile extends Tile {
 	}
 //TODO: FIX FIX FIX FIX problem with coords rounding and block placing with collision
 	public void render(int x, int y, Render render) {
-		tickCount++;
 		if (tickCount >= 1000000) tickCount = 0;
-		if (time >= 1000000) time = 0;
-		if ((tickCount % 2200) == 80) time++;
-		if (time % 70 > 35) {
+		if (tickCount % 80 == 0 ) {
 			sprite = Sprite.water0;
-		} else if (time % 100 > 180)  {
+		} else if (tickCount % 50 == 0)  {
 			sprite = Sprite.water1;
-		} else {
+		} else if (tickCount % 20 == 0)  {
 			sprite = Sprite.water2;
 		}
 		render.render(x << 4, y << 4, sprite , false, false);
 	}
 
 	public boolean solid() {
-		return true;
+		return false;
 	}
 	
 	public boolean Entitysolid() {
