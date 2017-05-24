@@ -85,7 +85,7 @@ public class Game extends Canvas implements Runnable {
 		level.add(player);
 		// rat = new Rat(5 * 16, 2, level);
 		// level.add(rat);
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 30; i++) {
 			level.add(new Zombie(level));
 		}
 	}
@@ -206,7 +206,6 @@ public class Game extends Canvas implements Runnable {
 
 		if (menu instanceof LootingMenu || menu instanceof ShopMenu) {
 			level.tick();
-			levelTick();
 
 		}
 
@@ -242,7 +241,7 @@ public class Game extends Canvas implements Runnable {
 			}
 			time++;
 			level.tick();
-			levelTick();
+			// levelTick();
 			Tile.tickCount++;
 		}
 		tick++;
@@ -285,8 +284,9 @@ public class Game extends Canvas implements Runnable {
 			yScroll += random.nextInt(shake);
 
 		}
+		Graphics g = bs.getDrawGraphics();
 
-		level.render((int) xScroll, (int) yScroll, render);
+		level.render((int) xScroll, (int) yScroll, render, g);
 		renderGui();
 
 		if (menu != null) {
@@ -322,7 +322,6 @@ public class Game extends Canvas implements Runnable {
 			// 15, (2), 0xEF358C, false);
 		}
 
-		Graphics g = bs.getDrawGraphics();
 		/*
 		 * if (menu) { try { main =
 		 * ImageIO.read(BufferedImage.class.getResource("/sheets/Main.png")); }
@@ -334,7 +333,40 @@ public class Game extends Canvas implements Runnable {
 		 * 0xA16468, false); g.drawImage(main, 0, 0, main.getWidth(),
 		 * main.getHeight(), null); }
 		 */
+
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+
+		g.setColor(new Color(255, 255, 255, 5));
+if(player.flashLight){
+		if (player.dir == 1) {
+			int xPoints[] = { 0, getWidth(), getWidth() / 2 };
+			int yPoints[] = { 0, 0, getHeight() / 2, 0 };
+			int nPoints = 3;
+			g.fillPolygon(xPoints, yPoints, nPoints);
+		}
+
+		if (player.dir == 3) {
+			int xPoints[] = { 0, getWidth(), getWidth() / 2 };
+			int yPoints[] = { getHeight(), getHeight(), getHeight() / 2, getHeight() };
+			int nPoints = 3;
+			g.fillPolygon(xPoints, yPoints, nPoints);
+		}
+		
+		if (player.dir == 0) {
+			int xPoints[] = { 0, getWidth()/2, 0 };
+			int yPoints[] = { 0, getHeight()/2, getHeight(), 0 };
+			int nPoints = 3;
+			g.fillPolygon(xPoints, yPoints, nPoints);
+		}
+
+		if (player.dir == 2) {
+			int xPoints[] = { getWidth(), getWidth()/2, getWidth() };
+			int yPoints[] = { 0, getHeight()/2, getHeight(), 0 };
+			int nPoints = 3;
+			g.fillPolygon(xPoints, yPoints, nPoints);
+		}
+}
+
 		// BRIGHTNESS
 		if (dayNightCycle) {
 			if (alpha >= 100 * 2) alpha = 100 * 2;
@@ -351,6 +383,7 @@ public class Game extends Canvas implements Runnable {
 		} else {
 			time = 0;
 		}
+
 		g.dispose();
 		bs.show();
 
@@ -406,8 +439,8 @@ public class Game extends Canvas implements Runnable {
 
 		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
 		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
-		
-		if (player.hasKey) render.renderIcon(WIDTH/2, -3, Sprite.KeyEntity, false, false, false);
+
+		if (player.hasKey) render.renderIcon(WIDTH / 2, -3, Sprite.KeyEntity, false, false, false);
 
 		if (player.pistol) {/////////////////////////////////////////
 			if (player.PISTOL_CLIP > 0) {
@@ -505,6 +538,7 @@ public class Game extends Canvas implements Runnable {
 	int lvl = 0;
 
 	private void levelTick() {
+		System.out.println("PROBLEM");
 		if (time % (60 * (random.nextInt(20) + 2)) == 0) {
 			expo++;
 			expo += 2;

@@ -24,5 +24,7 @@ public class GrassRightTile extends Tile {
 	}
 	public boolean Entitysolid() {
 		return false;
+	}public boolean solidToPlayer() {
+		return false;
 	}
 }

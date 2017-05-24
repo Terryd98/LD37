@@ -28,6 +28,8 @@ public class Sprite {
 	public static Sprite logParticle = new Sprite(16, 12, 2, SpriteSheet.tiles_sheet);
 
 	public static Sprite stairs = new Sprite(16, 13, 2, SpriteSheet.tiles_sheet);
+	public static Sprite Vault_Unconnected = new Sprite(16, 14, 2, SpriteSheet.tiles_sheet);
+	public static Sprite VaultDoor = new Sprite(16 * 5, 0, 0, SpriteSheet.basement_tiles_sheet);
 
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);
@@ -65,7 +67,7 @@ public class Sprite {
 	public static Sprite AmmoEntity = new Sprite(16, 6, 3, SpriteSheet.tiles_sheet);
 	public static Sprite GrenadeEntity = new Sprite(16, 7, 3, SpriteSheet.tiles_sheet);
 	public static Sprite KeyEntity = new Sprite(16, 5, 4, SpriteSheet.tiles_sheet);
-	
+
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);
@@ -113,8 +115,8 @@ public class Sprite {
 	public static Sprite playerStillRight = new Sprite(32, 2, 0, SpriteSheet.player_sheet);
 	public static Sprite playerRight1 = new Sprite(32, 2, 1, SpriteSheet.player_sheet);
 	public static Sprite playerRight2 = new Sprite(32, 2, 2, SpriteSheet.player_sheet);
-	
-	//SWIMMING
+
+	// SWIMMING
 	public static Sprite playerStillDown_Swimming = new Sprite(32, 4, 3, SpriteSheet.player_sheet);
 	public static Sprite playerDown1_Swimming = new Sprite(32, 4, 4, SpriteSheet.player_sheet);
 	public static Sprite playerDown2_Swimming = new Sprite(32, 4, 5, SpriteSheet.player_sheet);
@@ -126,7 +128,7 @@ public class Sprite {
 	public static Sprite playerStillRight_Swimming = new Sprite(32, 6, 3, SpriteSheet.player_sheet);
 	public static Sprite playerRight1_Swimming = new Sprite(32, 6, 4, SpriteSheet.player_sheet);
 	public static Sprite playerRight2_Swimming = new Sprite(32, 6, 5, SpriteSheet.player_sheet);
-	
+
 	public static Sprite splashA = new Sprite(32, 3, 3, SpriteSheet.player_sheet);
 	public static Sprite splashB = new Sprite(32, 3, 4, SpriteSheet.player_sheet);
 	public static Sprite splashC = new Sprite(32, 3, 5, SpriteSheet.player_sheet);
@@ -181,7 +183,6 @@ public class Sprite {
 	public static Sprite zombieRight1A = new Sprite(32, 5, 1, SpriteSheet.zombie_sheet);
 	public static Sprite zombieRight2A = new Sprite(32, 5, 2, SpriteSheet.zombie_sheet);
 
-	
 	public static Sprite ratStillDown = new Sprite(32, 0, 0, SpriteSheet.rat_sheet);
 	public static Sprite ratDown1 = new Sprite(32, 0, 1, SpriteSheet.rat_sheet);
 	public static Sprite ratDown2 = new Sprite(32, 0, 2, SpriteSheet.rat_sheet);
@@ -196,6 +197,16 @@ public class Sprite {
 
 	// BASEMENT TILES
 	public static Sprite floor = new Sprite(16, 0, 0, SpriteSheet.basement_tiles_sheet);
+
+	// BOAT
+	public static Sprite boat = new Sprite(5 * 32, 2 * 32, 0, 0, SpriteSheet.boat_sheet);
+	
+	public static Sprite boatN = new Sprite(2 * 32, 5 * 32, 3, 0, SpriteSheet.boat_sheet);
+	public static Sprite boatS = new Sprite(2 * 32, 5 * 32, 4, 0, SpriteSheet.boat_sheet);
+	public static Sprite boatNW = new Sprite(5 * 32, 2 * 32, 0, 0, SpriteSheet.boat_sheet);
+
+	public static Sprite boat1 = new Sprite(5 * 32, 2 * 32, 0, 1, SpriteSheet.boat_sheet);
+	public static Sprite boat2 = new Sprite(5 * 32, 2 * 32, 0, 2, SpriteSheet.boat_sheet);
 
 	public Sprite(int size, int x, int y, SpriteSheet sheet) {
 		this.sheet = sheet;

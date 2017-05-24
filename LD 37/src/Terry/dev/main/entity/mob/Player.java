@@ -1,7 +1,5 @@
 package Terry.dev.main.entity.mob;
 
-import java.util.List;
-
 import Terry.dev.main.Game;
 import Terry.dev.main.SaveGame;
 import Terry.dev.main.entity.CommandCentre;
@@ -35,7 +33,7 @@ public class Player extends Mob {
 	private static final double WALKING_SPEED = 1;
 	private static final double RUNNING_SPEED = 1.5;
 	public static int score = 0;
-	private boolean carrying = false;
+	public boolean carrying = false;
 	private int time = 0;
 	private Trap trap;
 	public CommandCentre cCentre;
@@ -67,6 +65,7 @@ public class Player extends Mob {
 	public int reloadTime = 100;
 	public final int RELOAD_TIME = 100;
 	private boolean swimming = false;
+	public boolean flashLight = false;
 
 	public Player(Input input, Level level) {
 		this.input = input;
@@ -77,6 +76,7 @@ public class Player extends Mob {
 		level.add(cCentre);
 		DrawerEntity drawer = new DrawerEntity(x, y, level);
 		level.add(drawer);
+		level.add(new Boat((int) x, (int) y - 100, level));
 	}
 
 	public Player(int x, int y, Input input, Level level) {
@@ -113,6 +113,14 @@ public class Player extends Mob {
 	double xVel = 0.2;
 
 	public void tick() {
+		if (input.t.clicked && !flashLight) {
+			flashLight = true;
+		} else if (input.t.clicked && flashLight) {
+			flashLight = false;
+		}
+		
+		
+
 		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
 			System.out.println(22);
 			DrawerEntity.looting = true;
@@ -137,8 +145,7 @@ public class Player extends Mob {
 			carrying = true;
 			armed = false;
 			if (anim % 10 == 0) energy--;
-			cCentre.x = x - 8;
-			cCentre.y = y - 15;
+
 			cCentre.inAir = true;
 		} else {
 			armed = true;
@@ -154,7 +161,7 @@ public class Player extends Mob {
 		if (input.downArrow.clicked) placeDir = 3;
 		if (input.leftArrow.clicked) placeDir = 0;
 		if (input.rightArrow.clicked) placeDir = 2;
-		if (trapToggled || carrying || cCentre.activated || swimming) {
+		if (trapToggled || carrying || cCentre.activated || swimming || hasKey) {
 			armed = false;
 		} else {
 			armed = true;
@@ -194,6 +201,12 @@ public class Player extends Mob {
 
 		double xa = 0, ya = 0;
 		if (input.control.down) speed /= 2;
+
+		if (Boat.onBoat) {
+			swimming = false;
+			carrying = false;
+			armed = false;
+		}
 
 		if (level.getTile((int) x / 16, (int) (y / 16) + 1) == Tile.water) {
 			swimming = true;
@@ -237,6 +250,10 @@ public class Player extends Mob {
 			}
 		}
 
+		if (level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
+			carrying = false;
+		}
+
 		if (xa < 0) playerDir = 0;
 		if (xa > 0) playerDir = 2;
 		if (ya < 0) playerDir = 1;
@@ -257,8 +274,8 @@ public class Player extends Mob {
 				running = true;
 				walking = false;
 			}
-			move(xa, 0);
-			move(0, ya);
+			move2(xa, 0);
+			move2(0, ya);
 		} else {
 			running = walking = false;
 		}
@@ -521,7 +538,6 @@ public class Player extends Mob {
 				render.render(xs * 16, ys * 16, Sprite.selector, false, false);
 			}
 		}
-
 		if (placeDir == 2) {
 			if (trapToggled) {
 				int xs = (int) (x / 16) + 2;
@@ -553,187 +569,152 @@ public class Player extends Mob {
 				render.render(xx - 5, yy + 7, Sprite.shadow, false, false);
 			}
 		}
-		{
-			{
-				if (pistol && !swimming) {
-					if (playerDir == 1 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp1, false, false);
-						} else if (walking | running) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp2, false, false);
-						} else {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillUp, false, false);
-						}
-					} else if (playerDir == 1 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
-						} else if (walking | running) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp2, false, false);
-						} else {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
-						}
-					}
-					if (playerDir == 3 && armed) {
+		///////////////////////////////////////
+		if (pistol && !swimming && !Boat.onBoat) {
+			if (playerDir == 1 && armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp1, false, false);
+				} else if (walking | running) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerUp2, false, false);
+				} else {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillUp, false, false);
+				}
+			} else if (playerDir == 3 && armed) {
 
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown1, false, false);
-						} else if (walking | running) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown2, false, false);
-						} else {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillDown, false, false);
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown1, false, false);
+				} else if (walking | running) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerDown2, false, false);
+				} else {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.playerStillDown, false, false);
 
-						}
-					} else if (playerDir == 3 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
-						} else if (walking | running) {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerDown2, false, false);
-						} else {
-							render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
-						}
-					}
-					if (playerDir == 2 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, false, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, false, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight1, false, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, false, false);
-						}
-					} else if (playerDir == 2 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, false, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, false, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
-						}
-					}
-					if (playerDir == 0 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, true, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, true, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight1, true, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, true, false);
-						}
-					} else if (playerDir == 0 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, true, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, true, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
-						}
+				}
+			} else if (playerDir == 0 && armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, true, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, true, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight1, true, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, true, false);
+				}
+			} else if (playerDir == 2 && armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight2, false, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, false, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerRight1, false, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.playerStillRight, false, false);
+				}
+			}
+			///////////////////////////////////////
+			if (assaultRifle && !swimming && !Boat.onBoat) {
+				if (playerDir == 1 && armed) {
+					if (walking | running && anim % 20 > 10) {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerUp1, false, false);
+					} else if (walking | running) {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerUp2, false, false);
+					} else {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerStillUp, false, false);
 					}
 				}
+				if (playerDir == 3 && armed) {
+					if (walking | running && anim % 20 > 10) {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerDown1, false, false);
+					} else if (walking | running) {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerDown2, false, false);
+					} else {
+						render.render(xx - 16, yy - 16, Sprite.AR_playerStillDown, false, false);
 
-				if (assaultRifle && !swimming) {
-					if (playerDir == 1 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerUp1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerUp2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerStillUp, false, false);
-						}
-					} else if (playerDir == 1 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerUp2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
-						}
 					}
-					if (playerDir == 3 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerDown1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerDown2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.AR_playerStillDown, false, false);
-
-						}
-					} else if (playerDir == 3 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
-						} else if (walking | running) {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown2, false, false);
-						} else {
-							render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
-						}
+				}
+				if (playerDir == 2 && armed) {
+					if (walking | running && anim % 20 > 10) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, false, false);
+					} else if (walking | running && anim % 20 > 3) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, false, false);
+					} else if (walking | running) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight1, false, false);
+					} else {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, false, false);
 					}
-					if (playerDir == 2 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, false, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, false, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight1, false, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, false, false);
-						}
-					} else if (playerDir == 2 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, false, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, false, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
-						}
-					}
-					if (playerDir == 0 && armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, true, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, true, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight1, true, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, true, false);
-						}
-					} else if (playerDir == 0 && !armed) {
-						if (walking | running && anim % 20 > 10) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, true, false);
-						} else if (walking | running && anim % 20 > 3) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
-						} else if (walking | running) {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, true, false);
-						} else {
-							render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
-						}
+				}
+				if (playerDir == 0 && armed) {
+					if (walking | running && anim % 20 > 10) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight2, true, false);
+					} else if (walking | running && anim % 20 > 3) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, true, false);
+					} else if (walking | running) {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerRight1, true, false);
+					} else {
+						render.renderPlayer((int) x - 16, (int) y - 16, Sprite.AR_playerStillRight, true, false);
 					}
 				}
 			}
 		}
+		//////////////////////////////////////////////////
+		if (!armed && !swimming && !Boat.onBoat) {
+			if (playerDir == 1 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp1, false, false);
+				} else if (walking | running) {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerUp2, false, false);
+				} else {
+					render.renderPlayer(xx - 16, yy - 16, Sprite.disarmed_playerStillUp, false, false);
+				}
+			}
+			if (playerDir == 0 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, true, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, true, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, true, false);
+				}
+			}
+			if (playerDir == 2 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight2, false, false);
+				} else if (walking | running && anim % 20 > 3) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
+				} else if (walking | running) {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerRight1, false, false);
+				} else {
+					render.renderPlayer((int) x - 16, (int) y - 16, Sprite.disarmed_playerStillRight, false, false);
+				}
+			}
+			if (playerDir == 3 && !armed) {
+				if (walking | running && anim % 20 > 10) {
+					render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown1, false, false);
+				} else if (walking | running) {
+					render.render(xx - 16, yy - 16, Sprite.disarmed_playerDown2, false, false);
+				} else {
+					render.render(xx - 16, yy - 16, Sprite.disarmed_playerStillDown, false, false);
+				}
+			}
+		}
 
-		if (swimming) {
+		if (swimming && !Boat.onBoat) {
 			int yz = 0;
-			if (time % 60 > 30) {
-				yz = -2;
-			} else if (time % 30 > 0) {
-				yz = 0;
+			if (!Boat.onBoat) {
+				if (time % 45 > 23) {
+					yz = -1;
+				} else if (time % 23 > 0) {
+					yz = 0;
+				}
+				if (time % 40 > 26) {
+					render.renderIcon((int) x - 16, (int) y + 8 + yz, Sprite.splashA, false, false, true);
+				} else if (time % 40 > 13) {
+					render.renderIcon((int) x - 16, (int) y + 8 + yz, Sprite.splashB, false, false, true);
+				} else if (time % 40 > 0) {
+					render.renderIcon((int) x - 16, (int) y + 8 + yz, Sprite.splashC, false, false, true);
+				}
 			}
-
-			if (time % 40 > 26) {
-				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashA, false, false, true);
-			} else if (time % 40 > 13) {
-				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashB, false, false, true);
-			} else if (time % 40 > 0) {
-				render.renderIcon((int) x - 16, (int) y + 8+ yz, Sprite.splashC, false, false, true);
-			}
-
 			if (playerDir == 1 && !armed) {
 				if (walking | running && anim % 20 > 10) {
 					render.renderPlayer(xx - 16, yy + yz, Sprite.playerUp1_Swimming, false, false);
@@ -775,6 +756,7 @@ public class Player extends Mob {
 				}
 			}
 		}
+
 		///////////////////////////////////////////
 		// if (cCentre.activated) cCentre.renderGui(render);
 	}

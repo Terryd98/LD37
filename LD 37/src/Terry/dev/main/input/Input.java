@@ -64,6 +64,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 	public Key one = new Key();
 	public Key two = new Key();
 	public Key control = new Key();
+	public Key t = new Key();
 
 	public void releaseAll() {
 		for (int i = 0; i < keys.size(); i++) {
@@ -111,6 +112,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 		if (ke.getKeyCode() == KeyEvent.VK_1) one.toggle(pressed);
 		if (ke.getKeyCode() == KeyEvent.VK_2) two.toggle(pressed);
 		if (ke.getKeyCode() == KeyEvent.VK_CONTROL) control.toggle(pressed);
+		if (ke.getKeyCode() == KeyEvent.VK_T) t.toggle(pressed);
 	}
 
 	public void keyTyped(KeyEvent ke) {

@@ -25,5 +25,8 @@ public class GrassCornerBLTile extends Tile {
 	public boolean Entitysolid() {
 		return false;
 	}
-
+	public boolean solidToPlayer() {
+		return false;
+	}
+	
 }

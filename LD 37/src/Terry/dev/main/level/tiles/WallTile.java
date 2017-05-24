@@ -24,4 +24,7 @@ public class WallTile extends Tile {
 	public boolean Entitysolid() {
 		return true;
 	}
+	public boolean solidToPlayer() {
+		return true;
+	}
 }

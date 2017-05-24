@@ -24,5 +24,7 @@ public class TreeTrunk1 extends Tile {
 	}
 	public boolean Entitysolid() {
 		return true;
+	}public boolean solidToPlayer() {
+		return true;
 	}
 }

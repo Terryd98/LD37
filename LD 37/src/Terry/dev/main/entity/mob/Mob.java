@@ -26,6 +26,8 @@ public class Mob extends Entity {
 		if (ya < 0) dir = 1;
 		if (ya > 0) dir = 3;
 		if(collision(xa, ya))canMove =false;
+		
+		
 		while (xa != 0) {
 			if (Math.abs(xa) > 1) {
 				if (!collision(abs(xa), ya)) {
@@ -57,6 +59,81 @@ public class Mob extends Entity {
 				ya = 0;
 			}
 		}
+		
+		while (xa != 0) {
+			if (Math.abs(xa) > 1) {
+				if (!collision(abs(xa), ya)) {
+					this.x += abs(xa);
+					canMove = true;
+				}
+				xa -= abs(xa);
+			} else {
+				if (!collision(abs(xa), ya)) {
+					this.x += xa;
+					canMove = true;
+				}
+				xa = 0;
+			}
+		}
+
+	}
+	
+	public void move2(double xa, double ya) {
+		if (xa < 0) dir = 0;
+		if (xa > 0) dir = 2;
+		if (ya < 0) dir = 1;
+		if (ya > 0) dir = 3;
+		if(playerCollision(xa, ya))canMove =false;
+		
+		
+		while (xa != 0) {
+			if (Math.abs(xa) > 1) {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += abs(xa);
+					canMove = true;
+				}
+				xa -= abs(xa);
+			} else {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += xa;
+					canMove = true;
+				}
+				xa = 0;
+			}
+		}
+
+		while (ya != 0) {
+			if (Math.abs(ya) > 1) {
+				if (!playerCollision(xa, abs(ya))) {
+					this.y += abs(ya);
+					canMove = true;
+				}
+				ya -= abs(ya);
+			} else {
+				if (!playerCollision(xa, abs(ya))) {
+					this.y += ya;
+					canMove = true;
+				}
+				ya = 0;
+			}
+		}
+		
+		while (xa != 0) {
+			if (Math.abs(xa) > 1) {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += abs(xa);
+					canMove = true;
+				}
+				xa -= abs(xa);
+			} else {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += xa;
+					canMove = true;
+				}
+				xa = 0;
+			}
+		}
+
 	}
 
 	protected int abs(double value) {
@@ -99,6 +176,21 @@ public class Mob extends Entity {
 			if (c % 2 == 0) ix = (int) Math.floor(xt);
 			if (c / 2 == 0) iy = (int) Math.floor(yt);
 			if (level.getTile(ix, iy).solid()) solid = true;
+		}
+		return solid;
+	}
+	
+
+	protected boolean playerCollision(double xa, double ya) {
+		boolean solid = false;
+		for (int c = 0; c < 4; c++) {
+			double xt = ((x + xa) - c % 2 / 1 - 8) / 16;
+			double yt = ((y + ya) - c / 2 * 15 / 6 + 1) / 16;
+			int ix = (int) Math.ceil(xt);
+			int iy = (int) Math.ceil(yt);
+			if (c % 2 == 0) ix = (int) Math.floor(xt);
+			if (c / 2 == 0) iy = (int) Math.floor(yt);
+			if (level.getTile(ix, iy).solidToPlayer()) solid = true;
 		}
 		return solid;
 	}

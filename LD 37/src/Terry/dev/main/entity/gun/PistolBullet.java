@@ -29,7 +29,7 @@ public class PistolBullet extends Projectile {
 	public void tick() {
 		List<Zombie> zombies = level.getZombies((int) x + (int) nx + 10, (int) y + (int) ny + 10, 20);
 		List<ChasingZombie> chasers = level.getChaserZombies((int) x + (int) nx + 10, (int) y + (int) ny + 10, 20);
-		List<TreeEntity> trees = level.getTrees((int) x + (int) nx + 5, (int) y + (int) ny, 30);
+		List<TreeEntity> trees = level.getTrees(((int) x + (int) nx) -2, ((int) y + (int) ny)-5, 24);
 
 		if(trees.size() > 0) {
 			TreeEntity tree = trees.get(0);

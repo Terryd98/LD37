@@ -29,11 +29,13 @@ public class WaterTile extends Tile {
 	}
 
 	public boolean solid() {
-		return false;
+		return true;
 	}
 	
 	public boolean Entitysolid() {
 		return false;
 	}
-
+	public boolean solidToPlayer() {
+		return false;
+	}
 }

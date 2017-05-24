@@ -1,5 +1,7 @@
 package Terry.dev.main.level;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +19,7 @@ import Terry.dev.main.entity.mob.Zombie;
 import Terry.dev.main.entity.particle.Particle;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
+import Terry.dev.main.level.tiles.VaultTile;
 import Terry.dev.main.util.Vector2i;
 
 public class Level {
@@ -155,6 +158,17 @@ public class Level {
 	private Random random = new Random();
 
 	public void tick() {
+		//System.out.println("Connected: " + VaultTile.connected + "  |  Start: " +  VaultTile.start);
+		
+		if (!VaultTile.connected && VaultTile.start && !VaultTile.stop) {
+			System.out.println("MAKING CONNECTION");
+			if (getTile(VaultTile.x + 1, VaultTile.y) == Tile.Vault_Unconnected) VaultTile.connected = true;
+			else if (getTile(VaultTile.x, VaultTile.y + 1) == Tile.Vault_Unconnected) VaultTile.connected = true;
+			else if (getTile(VaultTile.x - 1, VaultTile.y) == Tile.Vault_Unconnected) VaultTile.connected = true;
+			else if (getTile(VaultTile.x, VaultTile.y - 1) == Tile.Vault_Unconnected) VaultTile.connected = true;
+			VaultTile.stop = true;
+		}
+
 		time++;
 		int xft = random.nextInt((width) * 16);
 		int yft = random.nextInt((height) * 16);
@@ -409,7 +423,7 @@ public class Level {
 		return projectiles;
 	}
 
-	public void render(int xScroll, int yScroll, Render render) {
+	public void render(int xScroll, int yScroll, Render render, Graphics g) {
 		render.setOffsets(xScroll, yScroll);
 		int x0 = xScroll >> 4;
 		int x1 = (xScroll + render.width + Sprite.T_SIZE) >> 4;
@@ -421,7 +435,6 @@ public class Level {
 				getTile(x, y).render(x, y, render);
 			}
 		}
-
 		for (int i = 0; i < particles.size(); i++) {
 			particles.get(i).render(render);
 		}
@@ -453,7 +466,6 @@ public class Level {
 		for (int i = 0; i < treeEntity.size(); i++) {
 			treeEntity.get(i).render(render);
 		}
-
 	}
 
 	public Player getPlayerAt(int index) {
@@ -494,6 +506,7 @@ public class Level {
 		if (tiles[x + y * width] == 0xffB6FF00) tiles[x + y * width] = Tile.bin.id;
 		if (tiles[x + y * width] == 0xff7A8C4C) tiles[x + y * width] = Tile.bush.id;
 		if (tiles[x + y * width] == 0xffAAAAAA) tiles[x + y * width] = Tile.base_floor.id;
+		if (tiles[x + y * width] == 0xff000000) tiles[x + y * width] = Tile.Vault_Unconnected.id;
 
 		return Tile.tiles[tiles[x + y * width]];
 	}
