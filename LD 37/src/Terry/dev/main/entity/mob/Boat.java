@@ -59,34 +59,30 @@ public class Boat extends Mob {
 		List<Player> players = level.getPlayersOffseted(x + 50, y - 20, 60);
 		int yz = 2;
 
-		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water&& canEnter) {
+		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water && canEnter) {
 			Player player = players.get(0);
 			this.input = player.input;
 			inputInitiated = true;
 			if (input.up.down) {
 				ya -= speed;
-				yz = 5;
-				dir = 1;
 				player.y = y;
 			} else if (input.down.down) {
 				ya += speed;
-				dir = 3;
 				player.y = y;
 				yz = 2;
 			}
 			if (input.left.down) {
 				xa -= speed;
-				dir = 0;
 				player.x = x;
 				yz = 5;
-
 			} else if (input.right.down) {
 				xa += speed;
-				dir = 2;
 				player.x = x;
 				yz = 2;
 			}
 			onBoat = true;
+
+			System.out.println(dir + " : BOAT");
 
 			// ya += 0.1;
 			// if ((int) x < (int) playerX) xa += speed * 1.2;
@@ -96,21 +92,20 @@ public class Boat extends Mob {
 
 			speed = START_SPEED;
 			if (input.use.clicked && onBoat && inputInitiated) {
-				System.out.println(onBoat );
+				System.out.println(onBoat);
 				onBoat = false;
 				canEnter = false;
-			} 
-		} else if(players.size()< 1){
+			}
+		} else if (players.size() < 1) {
 			canEnter = true;
 			onBoat = false;
 		}
-		
 
 		if (xa != 0 || ya != 0) {
 			walking = true;
 			if (!debug) {
-				move2(xa, 0);
-				move2(0, ya);
+				moveBoat(xa, 0);
+				moveBoat(0, ya);
 			}
 		} else {
 			moving = false;

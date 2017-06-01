@@ -113,13 +113,12 @@ public class Player extends Mob {
 	double xVel = 0.2;
 
 	public void tick() {
+
 		if (input.t.clicked && !flashLight) {
 			flashLight = true;
 		} else if (input.t.clicked && flashLight) {
 			flashLight = false;
 		}
-		
-		
 
 		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
 			System.out.println(22);
@@ -166,6 +165,7 @@ public class Player extends Mob {
 		} else {
 			armed = true;
 		}
+
 		if (input.trap.clicked && !cCentre.activated && !DrawerEntity.looting && !trapToggled) {
 			trapToggled = true;
 		} else if (trapToggled && input.trap.clicked) {
@@ -180,7 +180,6 @@ public class Player extends Mob {
 		} else {
 			still = false;
 		}
-
 		anim++;
 		time++;
 		if (energy <= 0) energy = 0;
@@ -249,12 +248,11 @@ public class Player extends Mob {
 				if (xVel <= -1.2) xVel = -1.2;
 			}
 		}
-
+		
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
 			carrying = false;
 		}
-
-		if (xa < 0) playerDir = 0;
+ 		if (xa < 0) playerDir = 0;
 		if (xa > 0) playerDir = 2;
 		if (ya < 0) playerDir = 1;
 		if (ya > 0) playerDir = 3;

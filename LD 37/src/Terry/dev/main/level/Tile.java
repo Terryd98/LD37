@@ -37,6 +37,7 @@ public class Tile {
 	public boolean solid = false;
 	public Random random = new Random();
 	public static int tickCount = 0;
+	public static boolean VaultSpawned = false;
 
 	public static Tile voidTile = new VoidTile(0);
 	public static Tile grass = new GrassTile(1);

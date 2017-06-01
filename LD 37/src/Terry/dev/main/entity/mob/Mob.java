@@ -25,9 +25,8 @@ public class Mob extends Entity {
 		if (xa > 0) dir = 2;
 		if (ya < 0) dir = 1;
 		if (ya > 0) dir = 3;
-		if(collision(xa, ya))canMove =false;
-		
-		
+		if (collision(xa, ya)) canMove = false;
+
 		while (xa != 0) {
 			if (Math.abs(xa) > 1) {
 				if (!collision(abs(xa), ya)) {
@@ -59,7 +58,7 @@ public class Mob extends Entity {
 				ya = 0;
 			}
 		}
-		
+
 		while (xa != 0) {
 			if (Math.abs(xa) > 1) {
 				if (!collision(abs(xa), ya)) {
@@ -77,15 +76,14 @@ public class Mob extends Entity {
 		}
 
 	}
-	
+
 	public void move2(double xa, double ya) {
 		if (xa < 0) dir = 0;
 		if (xa > 0) dir = 2;
 		if (ya < 0) dir = 1;
 		if (ya > 0) dir = 3;
-		if(playerCollision(xa, ya))canMove =false;
-		
-		
+		if (playerCollision(xa, ya)) canMove = false;
+
 		while (xa != 0) {
 			if (Math.abs(xa) > 1) {
 				if (!playerCollision(abs(xa), ya)) {
@@ -117,8 +115,52 @@ public class Mob extends Entity {
 				ya = 0;
 			}
 		}
-		
+
 		while (xa != 0) {
+			if (Math.abs(xa) > 1) {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += abs(xa);
+					canMove = true;
+				}
+				xa -= abs(xa);
+			} else {
+				if (!playerCollision(abs(xa), ya)) {
+					this.x += xa;
+					canMove = true;
+				}
+				xa = 0;
+			}
+		}
+
+	}
+
+	public void moveBoat(double xa, double ya) {
+		if (xa < 0 && ya < 0) dir = 5;
+		if (xa > 0 && ya > 0) dir = 6;
+		if (xa > 0 && ya < 0) dir = 7;
+		if (xa < 0 && ya > 0) dir = 8;
+
+		if (xa < 0 && ya == 0) dir = 0;
+		if (xa == 0 && ya < 0) dir = 1;
+		if (xa > 0 && ya == 0) dir = 2;
+		if (xa == 0 && ya > 0) dir = 3;
+
+		if (playerCollision(xa, ya)) canMove = false;
+
+		while (ya != 0 || xa != 0) {
+			if (Math.abs(ya) > 1) {
+				if (!playerCollision(xa, abs(ya))) {
+					this.y += abs(ya);
+					canMove = true;
+				}
+				ya -= abs(ya);
+			} else {
+				if (!playerCollision(xa, abs(ya))) {
+					this.y += ya;
+					canMove = true;
+				}
+				ya = 0;
+			}
 			if (Math.abs(xa) > 1) {
 				if (!playerCollision(abs(xa), ya)) {
 					this.x += abs(xa);
@@ -179,7 +221,6 @@ public class Mob extends Entity {
 		}
 		return solid;
 	}
-	
 
 	protected boolean playerCollision(double xa, double ya) {
 		boolean solid = false;

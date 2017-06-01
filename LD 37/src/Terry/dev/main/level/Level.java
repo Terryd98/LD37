@@ -1,6 +1,5 @@
 package Terry.dev.main.level;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +11,7 @@ import Terry.dev.main.SaveGame;
 import Terry.dev.main.entity.Entity;
 import Terry.dev.main.entity.KeyEntity;
 import Terry.dev.main.entity.TreeEntity;
+import Terry.dev.main.entity.VaultEntity;
 import Terry.dev.main.entity.gun.Projectile;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
@@ -94,6 +94,7 @@ public class Level {
 		spawnTrees(100000);
 		add(new KeyEntity(1700, 750, this));
 		// add(new StairEntity(0, 0, this, false));
+		if (Tile.VaultSpawned) add(new VaultEntity(this));
 	}
 
 	private void spawnTrees(int amount) {
@@ -158,8 +159,9 @@ public class Level {
 	private Random random = new Random();
 
 	public void tick() {
-		//System.out.println("Connected: " + VaultTile.connected + "  |  Start: " +  VaultTile.start);
-		
+		// System.out.println("Connected: " + VaultTile.connected + " | Start: "
+		// + VaultTile.start);
+
 		if (!VaultTile.connected && VaultTile.start && !VaultTile.stop) {
 			System.out.println("MAKING CONNECTION");
 			if (getTile(VaultTile.x + 1, VaultTile.y) == Tile.Vault_Unconnected) VaultTile.connected = true;

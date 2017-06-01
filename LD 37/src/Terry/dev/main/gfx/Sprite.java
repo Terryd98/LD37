@@ -30,6 +30,8 @@ public class Sprite {
 	public static Sprite stairs = new Sprite(16, 13, 2, SpriteSheet.tiles_sheet);
 	public static Sprite Vault_Unconnected = new Sprite(16, 14, 2, SpriteSheet.tiles_sheet);
 	public static Sprite VaultDoor = new Sprite(16 * 5, 0, 0, SpriteSheet.basement_tiles_sheet);
+	public static Sprite VaultDoor_opening = new Sprite(16 * 5, 0, 1, SpriteSheet.basement_tiles_sheet);
+	public static Sprite VaultDoor_open = new Sprite(16 * 5, 0, 2, SpriteSheet.basement_tiles_sheet);
 
 	public static Sprite test = new Sprite(16, 2, 0, SpriteSheet.tiles_sheet);
 	public static Sprite voidSprite = new Sprite(16, 0x2b2b2b);
