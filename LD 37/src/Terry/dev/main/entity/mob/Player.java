@@ -229,30 +229,32 @@ public class Player extends Mob {
 			}
 
 			// System.out.println("yVel = " + yVel + " xVel = " + xVel);
-			if (input.up.down) {
-				yVel += 0.2;
-				ya -= speed * yVel;
-				if (yVel >= 1.2) yVel = 1.2;
-			} else if (input.down.down) {
-				yVel += -0.2;
-				ya += speed * -yVel;
-				if (yVel <= -1.2) yVel = -1.2;
-			}
-			if (input.left.down) {
-				xVel += 0.2;
-				xa -= speed * xVel;
-				if (xVel >= 1.2) xVel = 1.2;
-			} else if (input.right.down) {
-				xVel += -0.2;
-				xa += speed * -xVel;
-				if (xVel <= -1.2) xVel = -1.2;
+			if (!Boat.onBoat) {
+				if (input.up.down) {
+					yVel += 0.2;
+					ya -= speed * yVel;
+					if (yVel >= 1.2) yVel = 1.2;
+				} else if (input.down.down) {
+					yVel += -0.2;
+					ya += speed * -yVel;
+					if (yVel <= -1.2) yVel = -1.2;
+				}
+				if (input.left.down) {
+					xVel += 0.2;
+					xa -= speed * xVel;
+					if (xVel >= 1.2) xVel = 1.2;
+				} else if (input.right.down) {
+					xVel += -0.2;
+					xa += speed * -xVel;
+					if (xVel <= -1.2) xVel = -1.2;
+				}
 			}
 		}
-		
+
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
 			carrying = false;
 		}
- 		if (xa < 0) playerDir = 0;
+		if (xa < 0) playerDir = 0;
 		if (xa > 0) playerDir = 2;
 		if (ya < 0) playerDir = 1;
 		if (ya > 0) playerDir = 3;

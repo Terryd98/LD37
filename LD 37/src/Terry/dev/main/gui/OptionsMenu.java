@@ -36,8 +36,12 @@ public class OptionsMenu extends Menu {
 
 	public void tick() {
 		time++;
-		if (selected >= selections.length - 1) selected = selections.length - 1;
-
+		if (selected >= selections.length - 1) {
+			cursorCanMoveDown = false;
+		}
+		else{
+			cursorCanMoveDown = true;
+		}
 		selector();
 		if (input.space.clicked) select(selected);
 

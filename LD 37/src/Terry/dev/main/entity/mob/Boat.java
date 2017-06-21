@@ -52,7 +52,7 @@ public class Boat extends Mob {
 	public void tick() {
 		xa = 0;
 		ya = 0;
-		speed = 2;
+		speed = 1;
 		if (level.levelSwitching) this.remove();
 		time++;
 		anim++;
@@ -61,28 +61,24 @@ public class Boat extends Mob {
 
 		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water && canEnter) {
 			Player player = players.get(0);
+			player.x = x;
+			player.y = y;
 			this.input = player.input;
 			inputInitiated = true;
 			if (input.up.down) {
 				ya -= speed;
-				player.y = y;
 			} else if (input.down.down) {
 				ya += speed;
-				player.y = y;
 				yz = 2;
 			}
 			if (input.left.down) {
 				xa -= speed;
-				player.x = x;
 				yz = 5;
 			} else if (input.right.down) {
 				xa += speed;
-				player.x = x;
 				yz = 2;
 			}
 			onBoat = true;
-
-			System.out.println(dir + " : BOAT");
 
 			// ya += 0.1;
 			// if ((int) x < (int) playerX) xa += speed * 1.2;
@@ -92,7 +88,6 @@ public class Boat extends Mob {
 
 			speed = START_SPEED;
 			if (input.use.clicked && onBoat && inputInitiated) {
-				System.out.println(onBoat);
 				onBoat = false;
 				canEnter = false;
 			}
@@ -102,14 +97,13 @@ public class Boat extends Mob {
 		}
 
 		if (xa != 0 || ya != 0) {
-			walking = true;
+			moving = true;
 			if (!debug) {
 				moveBoat(xa, 0);
 				moveBoat(0, ya);
 			}
 		} else {
 			moving = false;
-			walking = false;
 		}
 	}
 
@@ -152,69 +146,121 @@ public class Boat extends Mob {
 	}
 
 	public void render(Render render) {
-		int xx = (int) x - sprite.width / 2;
+		int xx = (int) x - sprite.boat.width / 5;
 		int yy = (int) y - (sprite.height / 5);
 
-		if (dir == 0) { // left
-			render.renderWH((int) x - Sprite.boat.width / 2, (int) y - (Sprite.boat.height / 5), Sprite.boat, false, false, false);
-			if (onBoat) render.renderPlayer(xx + (Sprite.boatN.width / 2) + 30, yy + 10, Sprite.playerStillRight_Swimming, true, false);
-		} else if (dir == 1) { // up
-			render.renderWH((int) x - Sprite.boatN.width / 2, (int) y - Sprite.boatN.height / 3, Sprite.boatN, false, false, false);
-			if (onBoat) render.renderPlayer((int) x - Sprite.boatN.width / 2 + 15, yy + (Sprite.boatN.height / 4) - 24, Sprite.playerStillUp_Swimming, false, false);
-		} else if (dir == 2) { // right
-			render.renderWH((int) x - Sprite.boat.width / 2, (int) y - (Sprite.boat.height / 5), Sprite.boat, true, false, false);
-			if (onBoat) render.renderPlayer(xx + 62, yy + 10, Sprite.playerDown1_Swimming, false, false);
-		} else if (dir == 3) { // down
-			render.renderWH((int) x - Sprite.boatN.width / 2, (int) y - Sprite.boatN.height / 3, Sprite.boatS, false, false, false);
-			if (onBoat) render.renderPlayer((int) x - Sprite.boatN.width / 2 + 15, yy + (Sprite.boatS.height / 4) - 30, Sprite.playerStillDown_Swimming, false, false);
+		render.renderWH(xx, yy, Sprite.boat, false, false, false);
+		if (onBoat) {
+			
+			//paddle anim
+			if (dir == 1 && moving) {
+				if (anim % 60 >= 40) {
+					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, true, false);
+
+				} else if (anim % 60 >= 20) {
+					render.renderWH((int) x + 30, yy - 5, Sprite.paddleUD_0, false, false, false);
+
+				} else if (anim % 60 >= 0) {
+					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
+				}
+			} else if (dir == 1) {
+				render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
+			}
+			
+			
+			////////////////////////////////// PLAYER ANIMATION ON BOAT
+			if (dir == 0 && moving) {
+				if (anim % 60 > 40) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight1, true, false);
+				} else if (anim % 60 > 20) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+				} else {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+				}
+			} else if (dir == 0) {
+				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+			}
+			if (dir == 1 && moving) {
+				if (anim % 60 > 40) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+				} else if (anim % 60 > 20) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp1, false, false);
+				} else {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+
+				}
+			} else if (dir == 1) {
+				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+			}
+
+			if (dir == 2 && moving) {
+				if (anim % 60 > 40) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight1, false, false);
+				} else if (anim % 60 > 20) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+				} else {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+				}
+			} else if (dir == 2) {
+				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+			}
+			if (dir == 3 && moving) {
+				if (anim % 60 > 40) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+				} else if (anim % 60 > 20) {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown1, false, false);
+				} else {
+					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+
+				}
+			} else if (dir == 3) {
+				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+			}
+
+			////////////////////////////////////////////////////////// PADDLE
+			////////////////////////////////////////////////////////// ANIMATION
+			if (dir == 0 && moving) {
+				if (anim % 60 >= 40) {
+					render.renderWH((int) x + 15, yy, Sprite.paddleLR_0, false, false, false);
+
+				} else if (anim % 60 >= 20) {
+					render.renderWH((int) x + 15, yy + 5, Sprite.paddleLR_1, false, false, false);
+
+				} else if (anim % 60 >= 0) {
+					render.renderWH((int) x + 15, yy, Sprite.paddleLR_0, true, false, false);
+				}
+			} else if (dir == 0) {
+				render.renderWH((int) x + 15, yy, Sprite.paddleLR_0, true, false, false);
+			}
+
+			if (dir == 2 && moving) {
+				if (anim % 60 >= 40) {
+					render.renderWH((int) x + 21, yy, Sprite.paddleLR_0, true, false, false);
+
+				} else if (anim % 60 >= 20) {
+					render.renderWH((int) x + 21, yy + 5, Sprite.paddleLR_1, false, false, false);
+
+				} else if (anim % 60 >= 0) {
+					render.renderWH((int) x + 21, yy, Sprite.paddleLR_0, false, false, false);
+				}
+			} else if (dir == 2) {
+				render.renderWH((int) x + 21, yy, Sprite.paddleLR_0, true, false, false);
+			}
+			//paddle anim
+			if (dir == 3 && moving) {
+				if (anim % 60 >= 40) {
+					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
+
+				} else if (anim % 60 >= 20) {
+					render.renderWH((int) x + 30, yy - 5, Sprite.paddleUD_0, false, false, false);
+
+				} else if (anim % 60 >= 0) {
+					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, true, false);
+				}
+			} else if (dir == 3) {
+				render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
+			}
+			
 		}
-		// if (time % 60 > 40) {
-		// render.renderWH((int) x, (int) y, Sprite.boat, false, false, false);
-		// } else if (time % 60 > 20) {
-		// render.renderWH((int) x, (int) y, Sprite.boat1, false, false, false);
-		// } else {
-		// render.renderWH((int) x, (int) y, Sprite.boat2, false, false, false);
-		// }
-
-		/*
-		 * if (dir == 1) { if (walking && anim % 20 > 10) { render.renderMob(xx
-		 * - 16, yy - 16, Sprite.zombieUp1, false, false, col); } else if
-		 * (walking) { render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2,
-		 * false, false, col); } else { render.renderMob(xx - 16, yy - 16,
-		 * Sprite.zombieStillUp, false, false, col); } }
-		 * 
-		 * if (dir == 3) { if (walking && anim % 20 > 10) { render.renderMob(xx
-		 * - 16, yy - 16, Sprite.zombieDown1, false, false, col); } else if
-		 * (walking) { render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2,
-		 * false, false, col); } else { render.renderMob(xx - 16, yy - 16,
-		 * Sprite.zombieStillDown, false, false, col);
-		 * 
-		 * } }
-		 * 
-		 * if (dir == 2) { if (walking && anim % 20 > 10) {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2,
-		 * false, false, col); } else if (walking && anim % 20 > 3) {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight,
-		 * false, false, col); } else if (walking) { render.renderMob((int) x -
-		 * 16, (int) y - 16, Sprite.zombieRight1, false, false, col); } else {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight,
-		 * false, false, col);
-		 * 
-		 * } }
-		 * 
-		 * if (dir == 0) { if (walking && anim % 20 > 10) {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2,
-		 * true, false, col); } else if (walking && anim % 20 > 3) {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight,
-		 * true, false, col); } else if (walking) { render.renderMob((int) x -
-		 * 16, (int) y - 16, Sprite.zombieRight1, true, false, col); } else {
-		 * render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight,
-		 * true, false, col); } }
-		 */
-
-		// Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28)
-		// + 3, 0x694A58, true);
-		// Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28)
-		// + 2, 0x9E7286, true);
 	}
 }

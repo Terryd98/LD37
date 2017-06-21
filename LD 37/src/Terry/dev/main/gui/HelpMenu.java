@@ -35,8 +35,12 @@ public class HelpMenu extends Menu {
 	public void tick() {
 		System.out.println(selected);
 		time++;
-		if (selected >= selections.length - 1) selected = selections.length - 1;
-
+		if (selected >= selections.length - 1) {
+			cursorCanMoveDown = false;
+		}
+		else{
+			cursorCanMoveDown = true;
+		}
 		selector();
 		if (input.space.clicked) select(selected);
 

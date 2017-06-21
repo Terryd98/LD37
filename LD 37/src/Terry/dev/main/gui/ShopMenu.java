@@ -36,8 +36,12 @@ public class ShopMenu extends Menu {
 			game.setMenu(null);
 			CommandCentre.activated = false;
 		}
-		if (selected >= selections.length - 1) selected = selections.length - 1;
-
+		if (selected >= selections.length - 1) {
+			cursorCanMoveDown = false;
+		}
+		else{
+			cursorCanMoveDown = true;
+		}
 		selector();
 		if (input.space.clicked) select(selected);
 

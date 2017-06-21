@@ -160,30 +160,57 @@ public class Sprite {
 	public static Sprite disarmed_playerStillRight = new Sprite(32, 6, 0, SpriteSheet.player_sheet);
 	public static Sprite disarmed_playerRight1 = new Sprite(32, 6, 1, SpriteSheet.player_sheet);
 	public static Sprite disarmed_playerRight2 = new Sprite(32, 6, 2, SpriteSheet.player_sheet);
+	/////////////////////////////
+	public static Sprite zombieStillDown_bloody = new Sprite(32, 0, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown1_bloody = new Sprite(32, 0, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown2_bloody = new Sprite(32, 0, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillDown = new Sprite(32, 0, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieDown1 = new Sprite(32, 0, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieDown2 = new Sprite(32, 0, 2, SpriteSheet.zombie_sheet);
+	public static Sprite zombieStillUp_bloody = new Sprite(32, 1, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp1_bloody = new Sprite(32, 1, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp2_bloody = new Sprite(32, 1, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillUp = new Sprite(32, 1, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieUp1 = new Sprite(32, 1, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieUp2 = new Sprite(32, 1, 2, SpriteSheet.zombie_sheet);
+	public static Sprite zombieStillRight_bloody = new Sprite(32, 2, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight1_bloody = new Sprite(32, 2, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight2_bloody = new Sprite(32, 2, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillRight = new Sprite(32, 2, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieRight1 = new Sprite(32, 2, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieRight2 = new Sprite(32, 2, 2, SpriteSheet.zombie_sheet);
+	public static Sprite zombieStillDownA_bloody = new Sprite(32, 3, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown1A_bloody = new Sprite(32, 3, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown2A_bloody = new Sprite(32, 3, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillDownA = new Sprite(32, 3, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieDown1A = new Sprite(32, 3, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieDown2A = new Sprite(32, 3, 2, SpriteSheet.zombie_sheet);
+	public static Sprite zombieStillUpA_bloody = new Sprite(32, 4, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp1A_bloody = new Sprite(32, 4, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp2A_bloody = new Sprite(32, 4, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillUpA = new Sprite(32, 4, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieUp1A = new Sprite(32, 4, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieUp2A = new Sprite(32, 4, 2, SpriteSheet.zombie_sheet);
+	public static Sprite zombieStillRightA_bloody = new Sprite(32, 5, 0, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight1A_bloody = new Sprite(32, 5, 1, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight2A_bloody = new Sprite(32, 5, 2, SpriteSheet.zombie_sheet);
 
-	public static Sprite zombieStillRightA = new Sprite(32, 5, 0, SpriteSheet.zombie_sheet);
-	public static Sprite zombieRight1A = new Sprite(32, 5, 1, SpriteSheet.zombie_sheet);
-	public static Sprite zombieRight2A = new Sprite(32, 5, 2, SpriteSheet.zombie_sheet);
+	////////////////////////////////////
+
+	public static Sprite zombieStillDown = new Sprite(32, 0, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown1 = new Sprite(32, 0, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown2 = new Sprite(32, 0, 5, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillUp = new Sprite(32, 1, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp1 = new Sprite(32, 1, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp2 = new Sprite(32, 1, 5, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillRight = new Sprite(32, 2, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight1 = new Sprite(32, 2, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight2 = new Sprite(32, 2, 5, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillDownA = new Sprite(32, 3, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown1A = new Sprite(32, 3, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieDown2A = new Sprite(32, 3, 5, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillUpA = new Sprite(32, 4, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp1A = new Sprite(32, 4, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieUp2A = new Sprite(32, 4, 5, SpriteSheet.zombie_sheet);
+
+	public static Sprite zombieStillRightA = new Sprite(32, 5, 3, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight1A = new Sprite(32, 5, 4, SpriteSheet.zombie_sheet);
+	public static Sprite zombieRight2A = new Sprite(32, 5, 5, SpriteSheet.zombie_sheet);
+	///////////////////
 
 	public static Sprite ratStillDown = new Sprite(32, 0, 0, SpriteSheet.rat_sheet);
 	public static Sprite ratDown1 = new Sprite(32, 0, 1, SpriteSheet.rat_sheet);
@@ -201,14 +228,35 @@ public class Sprite {
 	public static Sprite floor = new Sprite(16, 0, 0, SpriteSheet.basement_tiles_sheet);
 
 	// BOAT
-	public static Sprite boat = new Sprite(5 * 32, 2 * 32, 0, 0, SpriteSheet.boat_sheet);
-	
-	public static Sprite boatN = new Sprite(2 * 32, 5 * 32, 3, 0, SpriteSheet.boat_sheet);
-	public static Sprite boatS = new Sprite(2 * 32, 5 * 32, 4, 0, SpriteSheet.boat_sheet);
-	public static Sprite boatNW = new Sprite(5 * 32, 2 * 32, 0, 0, SpriteSheet.boat_sheet);
+	public static Sprite boat = new Sprite(2 * 32, 1 * 32, 0, 0, SpriteSheet.boat_sheet);
+	public static Sprite paddleLR_0 = new Sprite(1 * 32, 1 * 32, 2, 0, SpriteSheet.boat_sheet);
+	public static Sprite paddleLR_1 = new Sprite(1 * 32, 1 * 32, 2, 1, SpriteSheet.boat_sheet);
+	public static Sprite paddleUD_0 = new Sprite(1 * 32, 1 * 32, 3, 0, SpriteSheet.boat_sheet);
+	public static Sprite paddleUD_1 = new Sprite(1 * 32, 1 * 32, 3, 1, SpriteSheet.boat_sheet);
 
-	public static Sprite boat1 = new Sprite(5 * 32, 2 * 32, 0, 1, SpriteSheet.boat_sheet);
-	public static Sprite boat2 = new Sprite(5 * 32, 2 * 32, 0, 2, SpriteSheet.boat_sheet);
+	public static Sprite playerPaddleDown = new Sprite(32, 7, 0, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleDown1 = new Sprite(32, 7, 1, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleDown2 = new Sprite(32, 7, 2, SpriteSheet.player_sheet);
+
+	public static Sprite playerPaddleUp = new Sprite(32, 8, 0, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleUp1 = new Sprite(32, 8, 1, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleUp2 = new Sprite(32, 8, 2, SpriteSheet.player_sheet);
+
+	public static Sprite playerPaddleRight = new Sprite(32, 9, 0, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleRight1 = new Sprite(32, 9, 1, SpriteSheet.player_sheet);
+	public static Sprite playerPaddleRight2 = new Sprite(32, 9, 2, SpriteSheet.player_sheet);
+
+	// public static Sprite boatN = new Sprite(2 * 32, 5 * 32, 3, 0,
+	// SpriteSheet.boat_sheet);
+	// public static Sprite boatS = new Sprite(2 * 32, 5 * 32, 4, 0,
+	// SpriteSheet.boat_sheet);
+	// public static Sprite boatNW = new Sprite(5 * 32, 2 * 32, 0, 0,
+	// SpriteSheet.boat_sheet);
+
+	// public static Sprite boat1 = new Sprite(5 * 32, 2 * 32, 0, 1,
+	// SpriteSheet.boat_sheet);
+	// public static Sprite boat2 = new Sprite(5 * 32, 2 * 32, 0, 2,
+	// SpriteSheet.boat_sheet);
 
 	public Sprite(int size, int x, int y, SpriteSheet sheet) {
 		this.sheet = sheet;

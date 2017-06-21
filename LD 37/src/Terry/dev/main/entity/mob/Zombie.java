@@ -19,6 +19,7 @@ public class Zombie extends Mob {
 	private int time = 0;
 	double xa = 0, ya = 0;
 	public int health;
+	public final int START_HEALTH;
 	private int cCol;
 	public static boolean moving = false;
 	private int col;
@@ -31,30 +32,35 @@ public class Zombie extends Mob {
 	public double yDir = ya;
 	private boolean canSeePlayer = true;
 	private boolean injured = false;
+	private boolean bloodyMouth = false;
+	private int animStep;
 
 	public Zombie(Level level) {
-		health = random.nextInt(40) + 20;
+		START_HEALTH = health = random.nextInt(40) + 20;
 		findZombieStartPos(level);
 		// this.x = SaveGame.read(lineNum);
 		// this.y = SaveGame.read(lineNum+1);
-		START_SPEED = Math.abs(random.nextDouble() + 0.1);
+		START_SPEED = Math.abs(random.nextDouble() -0.1);
+		animStep=(int) (25 - START_SPEED *12);
+		System.out.println(animStep); 
 		cCol = random.nextInt(4);
 		if (cCol == 0) col = 0x76A07B;
 		if (cCol == 1) col = 0x94837C;
 		if (cCol == 2) col = 0x676975;
 		if (cCol == 3) col = 0x60534B;
 		T_COL = col;
-		injured = random.nextBoolean();
+		injured = false;
 		// System.out.println(lineNum);
 	}
 
 	public Zombie(int x, int y, Level level) {
 		this.x = x;
 		this.y = y;
-		health = random.nextInt(100) + 50;
-		injured = random.nextBoolean();
+		START_HEALTH = health = random.nextInt(100) + 50;
+		injured = false;
 
 		START_SPEED = Math.abs(random.nextDouble() - 0.1);
+		animStep=(int) (25 - START_SPEED *20);
 		cCol = random.nextInt(4);
 		if (cCol == 0) col = 0x76A07B;
 		if (cCol == 1) col = 0x770039;
@@ -103,7 +109,7 @@ public class Zombie extends Mob {
 			List<Player> players = level.getPlayers(this, 150);
 			if (players.size() <= 0) playerInRange = false;
 
-			if (players.size() > 0 && canSeePlayer) {
+			if (players.size() > 0 && !level.getTile((int) (x / 16) + (int) xa, (int) (y / 16) + (int) ya).solid()) {
 				Player player = players.get(0);
 
 				// if (player.getX() < x && )
@@ -144,7 +150,7 @@ public class Zombie extends Mob {
 						Game.playSound("/sounds/zombie2.wav", -13.0f);
 					}
 				}
-			} else if (time % (random.nextInt(60) + 30) == 0 && !canSeePlayer) {
+			} else if (time % (random.nextInt(60) + 30) == 0) {
 				if (level.getTile((int) ((x / 16) + xDir), (int) y / 16).solid() || level.getTile((int) (x / 16), (int) ((y / 16) + yDir)).solid()) {
 					canSeePlayer = false;
 				} else {
@@ -197,6 +203,7 @@ public class Zombie extends Mob {
 		if (players.size() > 0) {
 			Player player = players.get(0);
 			if (time % 3 == 0) {
+				bloodyMouth = true;
 				player.hurt(damage);
 			}
 		}
@@ -204,6 +211,9 @@ public class Zombie extends Mob {
 
 	public void hurt(int damage) {
 		health -= damage;
+		if (health != START_HEALTH) {
+			injured = true;
+		}
 		knockBack();
 		if (time % 5 == 0) Game.playSound("/sounds/hurt.wav", -20.0f);
 		level.add(new ParticleEmitter((int) x, (int) y, 10, 10000, level, Sprite.bloodParticle));
@@ -239,118 +249,198 @@ public class Zombie extends Mob {
 		} else {
 			col = T_COL;
 		}
+		isInSight = true;
 		if (isInSight) {
-			if (injured) {
-				if (dir == 1) {
-					render.render(xx - 8, yy + 6, Sprite.shadow, false, false);
-				}
-				if (dir == 3) {
-					render.render(xx - 8, yy + 6, Sprite.shadow, false, true);
-				}
-				if (dir == 0) {
-					render.render(xx - 11, yy + 7, Sprite.shadow, false, false);
-				}
-				if (dir == 2) {
-					render.render(xx - 5, yy + 7, Sprite.shadow, false, false);
-				}
+			if (dir == 1) {
+				render.render(xx - 8, yy + 6, Sprite.shadow, false, false);
+			}
+			if (dir == 3) {
+				render.render(xx - 8, yy + 6, Sprite.shadow, false, true);
+			}
+			if (dir == 0) {
+				render.render(xx - 11, yy + 7, Sprite.shadow, false, false);
+			}
+			if (dir == 2) {
+				render.render(xx - 5, yy + 7, Sprite.shadow, false, false);
+			}
+			if (!bloodyMouth) {
+				if (injured) {
+					if (dir == 1) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUp, false, false, col);
+						}
+					}
+					if (dir == 3) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDown, false, false, col);
+						}
+					}
+					if (dir == 2) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, false, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, false, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
+						}
+					}
 
-				if (dir == 1) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1, false, false, col);
-					} else if (walking) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2, false, false, col);
-					} else {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUp, false, false, col);
+					if (dir == 0) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
+						}
+					}
+				} else {
+					if (dir == 1) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1A, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2A, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUpA, false, false, col);
+						}
+					}
+					if (dir == 3) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1A, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2A, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDownA, false, false, col);
+
+						}
+					}
+					if (dir == 2) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A, false, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, false, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A, false, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, false, false, col);
+						}
+					}
+					if (dir == 0) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A, true, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, true, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A, true, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, true, false, col);
+						}
 					}
 				}
 
-				if (dir == 3) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1, false, false, col);
-					} else if (walking) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2, false, false, col);
-					} else {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDown, false, false, col);
-
-					}
-				}
-
-				if (dir == 2) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, false, false, col);
-					} else if (walking && anim % 20 > 3) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
-					} else if (walking) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, false, false, col);
-					} else {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, false, false, col);
-
-					}
-				}
-
-				if (dir == 0) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2, true, false, col);
-					} else if (walking && anim % 20 > 3) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
-					} else if (walking) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1, true, false, col);
-					} else {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight, true, false, col);
-					}
-				}
 			} else {
-
-				if (dir == 1) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1A, false, false, col);
-					} else if (walking) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2A, false, false, col);
-					} else {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUpA, false, false, col);
+				if (injured) {
+					if (dir == 1) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2_bloody, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUp_bloody, false, false, col);
+						}
 					}
-				}
-
-				if (dir == 3) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1A, false, false, col);
-					} else if (walking) {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2A, false, false, col);
-					} else {
-						render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDownA, false, false, col);
-
+					if (dir == 3) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2_bloody, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDown_bloody, false, false, col);
+						}
 					}
-				}
-
-				if (dir == 2) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A, false, false, col);
-					} else if (walking && anim % 20 > 3) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, false, false, col);
-					} else if (walking) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A, false, false, col);
-					} else {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, false, false, col);
-
+					if (dir == 2) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2_bloody, false, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1_bloody, false, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight_bloody, false, false, col);
+						}
 					}
-				}
 
-				if (dir == 0) {
-					if (walking && anim % 20 > 10) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A, true, false, col);
-					} else if (walking && anim % 20 > 3) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, true, false, col);
-					} else if (walking) {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A, true, false, col);
-					} else {
-						render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA, true, false, col);
+					if (dir == 0) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2_bloody, true, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight_bloody, true, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1_bloody, true, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRight_bloody, true, false, col);
+						}
+					}
+				} else {
+					if (dir == 1) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp1A_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieUp2A_bloody, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillUpA_bloody, false, false, col);
+						}
+					}
+					if (dir == 3) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown1A_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieDown2A_bloody, false, false, col);
+						} else {
+							render.renderMob(xx - 16, yy - 16, Sprite.zombieStillDownA_bloody, false, false, col);
+
+						}
+					}
+					if (dir == 2) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A_bloody, false, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA_bloody, false, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A_bloody, false, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA_bloody, false, false, col);
+						}
+					}
+					if (dir == 0) {
+						if (walking && anim % animStep > 10) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight2A_bloody, true, false, col);
+						} else if (walking && anim % animStep > 3) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA_bloody, true, false, col);
+						} else if (walking) {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieRight1A_bloody, true, false, col);
+						} else {
+							render.renderMob((int) x - 16, (int) y - 16, Sprite.zombieStillRightA_bloody, true, false, col);
+						}
 					}
 				}
 			}
 		}
-		// Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28)
-		// + 3, 0x694A58, true);
-		// Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28)
-		// + 2, 0x9E7286, true);
 	}
+	// Font.draw(Integer.toString(health), render, (xx - 10) + 3, (yy - 28)
+	// + 3, 0x694A58, true);
+	// Font.draw(Integer.toString(health), render, (xx - 10) + 2, (yy - 28)
+	// + 2, 0x9E7286, true);
 }

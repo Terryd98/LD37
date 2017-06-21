@@ -9,6 +9,8 @@ public class Menu {
 	public Input input;
 	protected Game game;
 	protected int selected = 0;
+	protected boolean cursorCanMoveUp = true;
+	protected boolean cursorCanMoveDown = true;
 
 	public Menu() {
 	}
@@ -23,10 +25,10 @@ public class Menu {
 	}
 
 	public void selector() {
-		if (input.up.clicked) {
+		if (input.up.clicked&&cursorCanMoveUp) {
 			selected--;
 		}
-		if (input.down.clicked) {
+		if (input.down.clicked&&cursorCanMoveDown) {
 			selected++;
 		}
 
