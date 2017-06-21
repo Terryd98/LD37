@@ -50,7 +50,9 @@ public class Boat extends Mob {
 	public double playerY;
 	boolean canEnter = true;
 
-	int driftTime = 50;
+	int yDriftTime = 50;
+	int xDriftTime = 50;
+
 	public void tick() {
 		xa = 0;
 		ya = 0;
@@ -65,44 +67,45 @@ public class Boat extends Mob {
 			player.y = y;
 			this.input = player.input;
 			inputInitiated = true;
-			
-			if (!input.left.down && !input.right.down && driftTime > 0) {
+
+			if (!input.left.down && !input.right.down && xDriftTime > 0) {
 				if (xVel > -0) xVel -= 0.01;
 				if (xVel < -0) xVel += 0.01;
 				xa -= xVel;
-				if(driftTime >0) driftTime--;
+				if (xDriftTime > 0) xDriftTime--;
 			}
-			if (!input.up.down && !input.down.down&& driftTime > 0) {
+			if (!input.up.down && !input.down.down && yDriftTime > 0) {
 				if (yVel >= -0) yVel -= 0.01;
 				if (yVel <= -0) yVel += 0.01;
 				ya -= yVel;
-				if(driftTime >0) driftTime--;
+				if (yDriftTime > 0) yDriftTime--;
 			}
-			if(driftTime <= 0) {
-				xVel = 0;
+			if (yDriftTime <= 0) {
 				yVel = 0;
 			}
-			System.out.println(driftTime);			
+			if (xDriftTime <= 0) {
+				xVel = 0;
+			}
 			if (input.up.down) {
-				driftTime= 50;
+				yDriftTime = 50;
 				yVel += 0.05;
 				ya -= speed * yVel;
 				if (yVel >= 1) yVel = 1;
 			} else if (input.down.down) {
-				driftTime= 50;
+				yDriftTime = 50;
 
 				yVel += -0.05;
 				ya += speed * -yVel;
 				if (yVel <= -1) yVel = -1;
 			}
 			if (input.left.down) {
-				driftTime= 50;
+				xDriftTime = 50;
 
 				xVel += 0.05;
 				xa -= speed * xVel;
 				if (xVel >= 1) xVel = 1;
 			} else if (input.right.down) {
-				driftTime= 50;
+				xDriftTime = 50;
 
 				xVel += -0.05;
 				xa += speed * -xVel;
