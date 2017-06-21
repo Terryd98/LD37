@@ -303,6 +303,7 @@ public class Player extends Mob {
 			Game.shake = 0;
 			shooting = false;
 		}
+		cash = 5000;
 	}
 
 	private void tickShots() {

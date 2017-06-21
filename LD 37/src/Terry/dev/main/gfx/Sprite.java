@@ -229,6 +229,7 @@ public class Sprite {
 
 	// BOAT
 	public static Sprite boat = new Sprite(2 * 32, 1 * 32, 0, 0, SpriteSheet.boat_sheet);
+	public static Sprite boat1 = new Sprite(2 * 32, 1 * 32, 0, 1, SpriteSheet.boat_sheet);
 	public static Sprite paddleLR_0 = new Sprite(1 * 32, 1 * 32, 2, 0, SpriteSheet.boat_sheet);
 	public static Sprite paddleLR_1 = new Sprite(1 * 32, 1 * 32, 2, 1, SpriteSheet.boat_sheet);
 	public static Sprite paddleUD_0 = new Sprite(1 * 32, 1 * 32, 3, 0, SpriteSheet.boat_sheet);

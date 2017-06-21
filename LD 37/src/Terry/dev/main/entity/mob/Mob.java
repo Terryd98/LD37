@@ -135,15 +135,10 @@ public class Mob extends Entity {
 	}
 
 	public void moveBoat(double xa, double ya) {
-		if (xa < 0 && ya < 0) dir = 5;
-		if (xa > 0 && ya > 0) dir = 6;
-		if (xa > 0 && ya < 0) dir = 7;
-		if (xa < 0 && ya > 0) dir = 8;
-
-		if (xa < 0 && ya == 0) dir = 0;
-		if (xa == 0 && ya < 0) dir = 1;
-		if (xa > 0 && ya == 0) dir = 2;
-		if (xa == 0 && ya > 0) dir = 3;
+		if (xa < 0) dir = 0;
+		if (ya < 0) dir = 1;
+		if (xa > 0) dir = 2;
+		if (ya > 0) dir = 3;
 
 		if (playerCollision(xa, ya)) canMove = false;
 

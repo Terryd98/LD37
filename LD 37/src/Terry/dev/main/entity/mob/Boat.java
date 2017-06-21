@@ -27,21 +27,22 @@ public class Boat extends Mob {
 	public double yDir = ya;
 	public static boolean onBoat = false;
 	private Input input;
+	private double xVel, yVel = 0.2;
 	private Sprite sprite;
 	private boolean inputInitiated = false;
 
 	public Boat(Level level) {
 		health = random.nextInt(40) + 20;
 		findZombieStartPos(level);
-		START_SPEED = Math.abs(random.nextDouble() + 0.1);
+		START_SPEED = 1;
 		sprite = Sprite.boat;
 	}
 
-	public Boat(int x, int y, Level level) {
+	public Boat(double x, double y, Level level) {
 		this.x = x;
 		this.y = y;
 		health = random.nextInt(100) + 50;
-		START_SPEED = Math.abs(random.nextDouble() - 0.1);
+		START_SPEED = 1;
 		sprite = Sprite.boat;
 	}
 
@@ -49,14 +50,13 @@ public class Boat extends Mob {
 	public double playerY;
 	boolean canEnter = true;
 
+	int driftTime = 50;
 	public void tick() {
 		xa = 0;
 		ya = 0;
-		speed = 1;
-		if (level.levelSwitching) this.remove();
 		time++;
 		anim++;
-		List<Player> players = level.getPlayersOffseted(x + 50, y - 20, 60);
+		List<Player> players = level.getPlayersOffseted(x + 16, y - 10, 25);
 		int yz = 2;
 
 		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water && canEnter) {
@@ -65,19 +65,50 @@ public class Boat extends Mob {
 			player.y = y;
 			this.input = player.input;
 			inputInitiated = true;
+			
+			if (!input.left.down && !input.right.down && driftTime > 0) {
+				if (xVel > -0) xVel -= 0.01;
+				if (xVel < -0) xVel += 0.01;
+				xa -= xVel;
+				if(driftTime >0) driftTime--;
+			}
+			if (!input.up.down && !input.down.down&& driftTime > 0) {
+				if (yVel >= -0) yVel -= 0.01;
+				if (yVel <= -0) yVel += 0.01;
+				ya -= yVel;
+				if(driftTime >0) driftTime--;
+			}
+			if(driftTime <= 0) {
+				xVel = 0;
+				yVel = 0;
+			}
+			System.out.println(driftTime);			
 			if (input.up.down) {
-				ya -= speed;
+				driftTime= 50;
+				yVel += 0.05;
+				ya -= speed * yVel;
+				if (yVel >= 1) yVel = 1;
 			} else if (input.down.down) {
-				ya += speed;
-				yz = 2;
+				driftTime= 50;
+
+				yVel += -0.05;
+				ya += speed * -yVel;
+				if (yVel <= -1) yVel = -1;
 			}
 			if (input.left.down) {
-				xa -= speed;
-				yz = 5;
+				driftTime= 50;
+
+				xVel += 0.05;
+				xa -= speed * xVel;
+				if (xVel >= 1) xVel = 1;
 			} else if (input.right.down) {
-				xa += speed;
-				yz = 2;
+				driftTime= 50;
+
+				xVel += -0.05;
+				xa += speed * -xVel;
+				if (xVel <= -1) xVel = -1;
 			}
+			System.out.println(xVel + " | " + yVel);
 			onBoat = true;
 
 			// ya += 0.1;
@@ -148,11 +179,18 @@ public class Boat extends Mob {
 	public void render(Render render) {
 		int xx = (int) x - sprite.boat.width / 5;
 		int yy = (int) y - (sprite.height / 5);
+		if (anim % 50 > 25) {
+			yy = (int) y - (sprite.height / 5);
+			sprite = Sprite.boat1;
+		} else {
+			yy = (int) y - (sprite.height / 5) - 1;
+			sprite = Sprite.boat;
+		}
 
-		render.renderWH(xx, yy, Sprite.boat, false, false, false);
+		render.renderWH(xx, yy, sprite, false, false, false);
 		if (onBoat) {
-			
-			//paddle anim
+
+			// paddle anim
 			if (dir == 1 && moving) {
 				if (anim % 60 >= 40) {
 					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, true, false);
@@ -166,55 +204,61 @@ public class Boat extends Mob {
 			} else if (dir == 1) {
 				render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
 			}
-			
-			
+
 			////////////////////////////////// PLAYER ANIMATION ON BOAT
+			int yp = (int) y - Sprite.boat.height / 2;
+			if (anim % 50 > 25) {
+				yp = (int) y - Sprite.boat.height / 2;
+			} else {
+				yp = (int) y - Sprite.boat.height / 2 - 1;
+
+			}
 			if (dir == 0 && moving) {
 				if (anim % 60 > 40) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight1, true, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight1, true, false);
 				} else if (anim % 60 > 20) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight, true, false);
 				} else {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight, true, false);
 				}
 			} else if (dir == 0) {
-				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, true, false);
+				render.renderPlayer((int) x + 18, (int) yp, Sprite.playerPaddleRight, true, false);
 			}
 			if (dir == 1 && moving) {
 				if (anim % 60 > 40) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleUp, false, false);
 				} else if (anim % 60 > 20) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp1, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleUp1, false, false);
 				} else {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleUp, false, false);
 
 				}
 			} else if (dir == 1) {
-				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleUp, false, false);
+				render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleUp, false, false);
 			}
 
 			if (dir == 2 && moving) {
 				if (anim % 60 > 40) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight1, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight1, false, false);
 				} else if (anim % 60 > 20) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight, false, false);
 				} else {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight, false, false);
 				}
 			} else if (dir == 2) {
-				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleRight, false, false);
+				render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleRight, false, false);
 			}
 			if (dir == 3 && moving) {
 				if (anim % 60 > 40) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleDown, false, false);
 				} else if (anim % 60 > 20) {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown1, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleDown1, false, false);
 				} else {
-					render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+					render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleDown, false, false);
 
 				}
 			} else if (dir == 3) {
-				render.renderPlayer((int) x + 18, (int) y - Sprite.boat.height / 2, Sprite.playerPaddleDown, false, false);
+				render.renderPlayer((int) x + 18, yp, Sprite.playerPaddleDown, false, false);
 			}
 
 			////////////////////////////////////////////////////////// PADDLE
@@ -246,7 +290,7 @@ public class Boat extends Mob {
 			} else if (dir == 2) {
 				render.renderWH((int) x + 21, yy, Sprite.paddleLR_0, true, false, false);
 			}
-			//paddle anim
+			// paddle anim
 			if (dir == 3 && moving) {
 				if (anim % 60 >= 40) {
 					render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
@@ -260,7 +304,7 @@ public class Boat extends Mob {
 			} else if (dir == 3) {
 				render.renderWH((int) x + 25, yy - 5, Sprite.paddleUD_1, false, false, false);
 			}
-			
+
 		}
 	}
 }
