@@ -30,6 +30,7 @@ import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.gfx.SpriteSheet;
+import Terry.dev.main.gui.CraftingMenu;
 import Terry.dev.main.gui.HelpMenu;
 import Terry.dev.main.gui.InventoryMenu;
 import Terry.dev.main.gui.LootingMenu;
@@ -86,7 +87,7 @@ public class Game extends Canvas implements Runnable {
 		level.add(player);
 		// rat = new Rat(5 * 16, 2, level);
 		// level.add(rat);
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 0; i++) {
 			level.add(new Zombie(level));
 		}
 	}
@@ -216,6 +217,10 @@ public class Game extends Canvas implements Runnable {
 			setMenu(new ShopMenu());
 		}
 
+		//if (!titleMenu && !(menu instanceof LootingMenu) && !(menu instanceof ShopMenu) && !(menu instanceof CraftingMenu) && ) {
+		//	setMenu(new CraftingMenu());
+		//}
+
 		if (menu instanceof LootingMenu || menu instanceof ShopMenu || menu instanceof InventoryMenu) {
 			level.tick();
 		}
@@ -236,7 +241,6 @@ public class Game extends Canvas implements Runnable {
 				cursorSwitched = true;
 			}
 		} else {
-
 			if (cursorSwitched) {
 				Toolkit toolkit = Toolkit.getDefaultToolkit();
 				Image cursor = toolkit.getImage("res/cursor.png");
@@ -254,6 +258,17 @@ public class Game extends Canvas implements Runnable {
 			level.tick();
 			// levelTick();
 			Tile.tickCount++;
+		}
+
+		if (menu instanceof InventoryMenu) {
+			if (cursorSwitched) {
+				Toolkit toolkit = Toolkit.getDefaultToolkit();
+				Image cursor = toolkit.getImage("res/cursor.png");
+				Point p = new Point((16 / 2) + 1, (16 / 2) + 1);
+				Cursor customCursor = toolkit.createCustomCursor(cursor, p, "Cursor");
+				setCursor(customCursor);
+				cursorSwitched = false;
+			}
 		}
 		tick++;
 		if (player.addedCash > 0) {

@@ -39,7 +39,7 @@ public class LogEntity extends Entity {
 		time++;
 		List<Player> ps = level.getPlayers(this, 13);
 		if (ps.size() > 0) {
-			Player.addLog(amount);
+			Player.addLog(1);
 			removed = true;
 			level.remove(this);
 		}

@@ -81,7 +81,7 @@ public class Player extends Mob {
 		DrawerEntity drawer = new DrawerEntity(x, y, level);
 		level.add(drawer);
 		level.add(new Boat((int) x, (int) y - 100, level));
-		level.add(new WorkTableEntity(x, y + 50, level));
+		level.add(new WorkTableEntity(x, y + 100, level));
 	}
 
 	public Player(int x, int y, Input input, Level level) {
@@ -134,6 +134,11 @@ public class Player extends Mob {
 		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
 			cCentre.activated = true;
 		}
+		
+		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated) {
+			WorkTableEntity.activated = true;
+		}
+		
 		if (input.up.down && input.down.down && input.shift.down) cash++;
 
 		if (hasPistol && input.one.clicked) {
@@ -324,7 +329,7 @@ public class Player extends Mob {
 				reload = true;
 			}
 			if (PISTOL_AMMO <= 0) PISTOL_AMMO = 0;
-			if (PISTOL_AMMO > 0 && reload) {
+			if (PISTOL_AMMO > 0 && reload && !swimming) {
 				if (time % 20 == 0) {
 					PISTOL_CLIP++;
 					PISTOL_AMMO--;
@@ -334,7 +339,7 @@ public class Player extends Mob {
 			if (Input.getButton() == 1 && PISTOL_CLIP == 0) {
 				if (time % 5 == 0) Game.playSound("/sounds/outOfAmmo.wav", -10.0f);
 			}
-			if (Input.getButton() == 1 && pistol_fireRate == 0 && !trapToggled && armed) {
+			if (Input.getButton() == 1 && pistol_fireRate == 0 && !trapToggled && armed && !swimming) {
 				shooting = true;
 				reload = false;
 				if (PISTOL_CLIP <= 0) {

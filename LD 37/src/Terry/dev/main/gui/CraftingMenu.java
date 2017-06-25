@@ -1,5 +1,6 @@
 package Terry.dev.main.gui;
 
+import java.util.List;
 import java.util.Random;
 
 import Terry.dev.main.Game;
@@ -9,7 +10,7 @@ import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 
-public class InventoryMenu extends Menu {
+public class CraftingMenu extends Menu {
 
 	private String[] selections = { "return", "Volume" };
 	public Sprite sprite;
@@ -20,7 +21,7 @@ public class InventoryMenu extends Menu {
 
 	public boolean empty = false;
 
-	public InventoryMenu() {
+	public CraftingMenu() {
 		selected = 0;
 		sprite = Sprite.title;
 
@@ -35,6 +36,7 @@ public class InventoryMenu extends Menu {
 	}
 
 	public void tick() {
+		
 		time++;
 		if (selected >= selections.length - 1) selected = selections.length - 1;
 
@@ -114,9 +116,9 @@ public class InventoryMenu extends Menu {
 			
 		}
 
-		String inv = "INVENTORY";
-		Font.draw(inv, render, (16 * 2) - inv.length(), 25, 0x5E3F4E, false);
-		Font.draw(inv, render, (16 * 2) - inv.length(), 25 - 1, 0xDB76A5, false);
+		String crafting = "Crafting";
+		Font.draw(crafting, render, (16 * 2) - crafting.length(), 25, 0x5E3F4E, false);
+		Font.draw(crafting, render, (16 * 2) - crafting.length(), 25 - 1, 0xDB76A5, false);
 
 		int yE = 157;
 		if (empty && time % 55 < 50 / 2) {

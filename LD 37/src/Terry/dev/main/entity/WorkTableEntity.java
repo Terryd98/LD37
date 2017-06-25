@@ -15,6 +15,7 @@ public class WorkTableEntity extends Entity {
 
 	private Sprite sprite;
 	public static boolean solid = false;
+	public static boolean activated = false;
 	private int tick = 0;
 	public static boolean inRange = false;
 	public boolean inAir = false;
@@ -39,7 +40,7 @@ public class WorkTableEntity extends Entity {
 			inRange = true;      	
 		} else {
 			inRange = false;
-
+			activated = false;
 		}
 	}
 
