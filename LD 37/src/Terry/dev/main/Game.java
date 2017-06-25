@@ -8,8 +8,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -32,8 +30,11 @@ import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
 import Terry.dev.main.gfx.Sprite;
 import Terry.dev.main.gfx.SpriteSheet;
+import Terry.dev.main.gui.HelpMenu;
+import Terry.dev.main.gui.InventoryMenu;
 import Terry.dev.main.gui.LootingMenu;
 import Terry.dev.main.gui.Menu;
+import Terry.dev.main.gui.OptionsMenu;
 import Terry.dev.main.gui.ShopMenu;
 import Terry.dev.main.gui.TitleMenu;
 import Terry.dev.main.input.Input;
@@ -196,17 +197,27 @@ public class Game extends Canvas implements Runnable {
 
 	private int expo = 0;
 	private boolean cursorSwitched = false;
+	private boolean titleMenu = false;
 
 	public void tick() {
+		if (menu instanceof TitleMenu || menu instanceof HelpMenu || menu instanceof OptionsMenu) {
+			titleMenu = true;
+		} else {
+			titleMenu = false;
+		}
+
+		if (!(menu instanceof LootingMenu) && !(menu instanceof ShopMenu) && !titleMenu && Player.inventoryActivated) {
+			setMenu(new InventoryMenu());
+		}
+
 		if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
 			setMenu(new LootingMenu());
 		} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
 			setMenu(new ShopMenu());
 		}
 
-		if (menu instanceof LootingMenu || menu instanceof ShopMenu) {
+		if (menu instanceof LootingMenu || menu instanceof ShopMenu || menu instanceof InventoryMenu) {
 			level.tick();
-
 		}
 
 		// if (input.one.clicked && !levelSwitchExecuted) switchLevel();
@@ -337,35 +348,35 @@ public class Game extends Canvas implements Runnable {
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 
 		g.setColor(new Color(255, 255, 255, 5));
-if(player.flashLight){
-		if (player.dir == 1) {
-			int xPoints[] = { 0, getWidth(), getWidth() / 2 };
-			int yPoints[] = { 0, 0, getHeight() / 2, 0 };
-			int nPoints = 3;
-			g.fillPolygon(xPoints, yPoints, nPoints);
-		}
+		if (player.flashLight) {
+			if (player.dir == 1) {
+				int xPoints[] = { 0, getWidth(), getWidth() / 2 };
+				int yPoints[] = { 0, 0, getHeight() / 2, 0 };
+				int nPoints = 3;
+				g.fillPolygon(xPoints, yPoints, nPoints);
+			}
 
-		if (player.dir == 3) {
-			int xPoints[] = { 0, getWidth(), getWidth() / 2 };
-			int yPoints[] = { getHeight(), getHeight(), getHeight() / 2, getHeight() };
-			int nPoints = 3;
-			g.fillPolygon(xPoints, yPoints, nPoints);
-		}
-		
-		if (player.dir == 0) {
-			int xPoints[] = { 0, getWidth()/2, 0 };
-			int yPoints[] = { 0, getHeight()/2, getHeight(), 0 };
-			int nPoints = 3;
-			g.fillPolygon(xPoints, yPoints, nPoints);
-		}
+			if (player.dir == 3) {
+				int xPoints[] = { 0, getWidth(), getWidth() / 2 };
+				int yPoints[] = { getHeight(), getHeight(), getHeight() / 2, getHeight() };
+				int nPoints = 3;
+				g.fillPolygon(xPoints, yPoints, nPoints);
+			}
 
-		if (player.dir == 2) {
-			int xPoints[] = { getWidth(), getWidth()/2, getWidth() };
-			int yPoints[] = { 0, getHeight()/2, getHeight(), 0 };
-			int nPoints = 3;
-			g.fillPolygon(xPoints, yPoints, nPoints);
+			if (player.dir == 0) {
+				int xPoints[] = { 0, getWidth() / 2, 0 };
+				int yPoints[] = { 0, getHeight() / 2, getHeight(), 0 };
+				int nPoints = 3;
+				g.fillPolygon(xPoints, yPoints, nPoints);
+			}
+
+			if (player.dir == 2) {
+				int xPoints[] = { getWidth(), getWidth() / 2, getWidth() };
+				int yPoints[] = { 0, getHeight() / 2, getHeight(), 0 };
+				int nPoints = 3;
+				g.fillPolygon(xPoints, yPoints, nPoints);
+			}
 		}
-}
 
 		// BRIGHTNESS
 		if (dayNightCycle) {

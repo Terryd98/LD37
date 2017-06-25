@@ -70,6 +70,8 @@ public class Sprite {
 	public static Sprite GrenadeEntity = new Sprite(16, 7, 3, SpriteSheet.tiles_sheet);
 	public static Sprite KeyEntity = new Sprite(16, 5, 4, SpriteSheet.tiles_sheet);
 
+	public static Sprite workTable = new Sprite(16, 6, 4, SpriteSheet.tiles_sheet);
+	
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);

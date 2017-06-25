@@ -33,8 +33,8 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 		}
 
 		public void tick() {
-			
-			if (absorbs -1  < presses- 1) {
+
+			if (absorbs - 1 < presses - 1) {
 				absorbs++;
 				clicked = true;
 			} else {
@@ -65,6 +65,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 	public Key two = new Key();
 	public Key control = new Key();
 	public Key t = new Key();
+	public Key inventory = new Key();
 
 	public void releaseAll() {
 		for (int i = 0; i < keys.size(); i++) {
@@ -113,6 +114,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
 		if (ke.getKeyCode() == KeyEvent.VK_2) two.toggle(pressed);
 		if (ke.getKeyCode() == KeyEvent.VK_CONTROL) control.toggle(pressed);
 		if (ke.getKeyCode() == KeyEvent.VK_T) t.toggle(pressed);
+		if (ke.getKeyCode() == KeyEvent.VK_I) inventory.toggle(pressed);
 	}
 
 	public void keyTyped(KeyEvent ke) {

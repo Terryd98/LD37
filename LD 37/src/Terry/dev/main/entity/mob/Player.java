@@ -6,6 +6,7 @@ import Terry.dev.main.entity.CommandCentre;
 import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.GrenadeEntity;
 import Terry.dev.main.entity.Trap;
+import Terry.dev.main.entity.WorkTableEntity;
 import Terry.dev.main.entity.Emitter.ParticleEmitter;
 import Terry.dev.main.entity.gun.AssaultRifle;
 import Terry.dev.main.entity.gun.PistolBullet;
@@ -26,7 +27,9 @@ public class Player extends Mob {
 	public double speed = WALKING_SPEED;
 	public static int energy = 100;
 	public static int cash = 0;
+	public static int inv_logs = 0;
 	public static int addedCash = 0;
+	public static int addedLog = 0;
 	public static int addedAmmo = 0;
 	public int tickCount = 0;
 	private static boolean armed = true;
@@ -66,6 +69,7 @@ public class Player extends Mob {
 	public final int RELOAD_TIME = 100;
 	private boolean swimming = false;
 	public boolean flashLight = false;
+	public static boolean inventoryActivated = false;
 
 	public Player(Input input, Level level) {
 		this.input = input;
@@ -77,6 +81,7 @@ public class Player extends Mob {
 		DrawerEntity drawer = new DrawerEntity(x, y, level);
 		level.add(drawer);
 		level.add(new Boat((int) x, (int) y - 100, level));
+		level.add(new WorkTableEntity(x, y + 50, level));
 	}
 
 	public Player(int x, int y, Input input, Level level) {
@@ -113,7 +118,9 @@ public class Player extends Mob {
 	double xVel = 0.2;
 
 	public void tick() {
-
+		if (input.inventory.clicked && inventoryActivated == false) {
+			inventoryActivated = true;
+		}
 		if (input.t.clicked && !flashLight) {
 			flashLight = true;
 		} else if (input.t.clicked && flashLight) {
@@ -491,6 +498,13 @@ public class Player extends Mob {
 		cash += amount;
 		cashPickupTime = 40;
 		Game.cashY = 0;
+	}
+
+	public static void addLog(int amount) {
+		// Game.playSound("/sounds/Cash.wav", -15.0f);
+		// addedCash += amount;
+		inv_logs += amount;
+		// cashPickupTime = 40;
 	}
 
 	public static void addAmmo(int amount) {

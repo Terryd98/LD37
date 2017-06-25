@@ -82,9 +82,18 @@ public class TreeEntity extends Entity {
 		health -= 3;
 		if (health <= 0) {
 			int logs = random.nextInt(4);
-			if(logs == 0) logs ++;
-			if (TYPE == 0) level.add(new ParticleEmitter((int) x, (int) y - 10, logs, 2000, level, Sprite.logParticle));
-			else if (TYPE == 1) level.add(new ParticleEmitter((int) x, (int) y - 10, logs, 2000, level, Sprite.logParticle1));
+			if (logs == 0) logs++;
+			if (TYPE == 0) if (random.nextBoolean() == true) {
+				level.add(new LogEntity((int) x + random.nextInt(20), (int) y + random.nextInt(20), level, 0));
+			} else {
+				level.add(new LogEntity((int) x - random.nextInt(20), (int) y - random.nextInt(20), level, 0));
+
+			}
+			else if (TYPE == 1) if (random.nextBoolean() == true) {
+				level.add(new LogEntity((int) x + random.nextInt(20), (int) y + random.nextInt(20), level, 1));
+			} else {
+				level.add(new LogEntity((int) x - random.nextInt(20), (int) y - random.nextInt(20), level, 1));
+			}
 			level.remove(this);
 		}
 	}
