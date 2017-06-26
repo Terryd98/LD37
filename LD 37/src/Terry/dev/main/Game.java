@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import Terry.dev.main.entity.CommandCentre;
 import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.StairEntity;
+import Terry.dev.main.entity.WorkTableEntity;
 import Terry.dev.main.entity.mob.ChasingZombie;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.entity.mob.Rat;
@@ -211,17 +212,17 @@ public class Game extends Canvas implements Runnable {
 			setMenu(new InventoryMenu());
 		}
 
-		if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
-			setMenu(new LootingMenu());
-		} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
-			setMenu(new ShopMenu());
+		if (!titleMenu) {
+			if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
+				setMenu(new LootingMenu());
+			} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
+				setMenu(new ShopMenu());
+			} else if (!(menu instanceof CraftingMenu) && WorkTableEntity.activated) {
+				setMenu(new CraftingMenu());
+			}
 		}
 
-		//if (!titleMenu && !(menu instanceof LootingMenu) && !(menu instanceof ShopMenu) && !(menu instanceof CraftingMenu) && ) {
-		//	setMenu(new CraftingMenu());
-		//}
-
-		if (menu instanceof LootingMenu || menu instanceof ShopMenu || menu instanceof InventoryMenu) {
+		if (menu instanceof LootingMenu || menu instanceof ShopMenu || menu instanceof InventoryMenu || menu instanceof CraftingMenu) {
 			level.tick();
 		}
 
@@ -256,7 +257,6 @@ public class Game extends Canvas implements Runnable {
 			}
 			time++;
 			level.tick();
-			// levelTick();
 			Tile.tickCount++;
 		}
 

@@ -35,6 +35,7 @@ public class WorkTableEntity extends Entity {
 	}
 
 	public void tick() {
+		
 		List<Player> players = level.getPlayers(this, 25);
 		if (players.size() > 0) {
 			inRange = true;      	

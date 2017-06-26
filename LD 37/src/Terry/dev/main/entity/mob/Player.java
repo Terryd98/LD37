@@ -78,7 +78,7 @@ public class Player extends Mob {
 		y = SaveGame.read(1);
 		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x, y, level);
+		DrawerEntity drawer = new DrawerEntity(x-20, y, level);
 		level.add(drawer);
 		level.add(new Boat((int) x, (int) y - 100, level));
 		level.add(new WorkTableEntity(x, y + 100, level));
@@ -128,7 +128,6 @@ public class Player extends Mob {
 		}
 
 		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
-			System.out.println(22);
 			DrawerEntity.looting = true;
 		}
 		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
@@ -136,6 +135,7 @@ public class Player extends Mob {
 		}
 		
 		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated) {
+			System.out.println("IN RANGE");
 			WorkTableEntity.activated = true;
 		}
 		

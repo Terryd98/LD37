@@ -1,10 +1,9 @@
 package Terry.dev.main.gui;
 
-import java.util.List;
 import java.util.Random;
 
-import Terry.dev.main.Game;
-import Terry.dev.main.entity.DrawerEntity;
+import Terry.dev.main.entity.CommandCentre;
+import Terry.dev.main.entity.WorkTableEntity;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -37,6 +36,11 @@ public class CraftingMenu extends Menu {
 
 	public void tick() {
 		
+		if (WorkTableEntity.inRange && input.use.clicked) {
+			game.setMenu(null);
+			WorkTableEntity.activated = false;
+		}
+		
 		time++;
 		if (selected >= selections.length - 1) selected = selections.length - 1;
 
@@ -62,10 +66,6 @@ public class CraftingMenu extends Menu {
 		if (selected == 0) {
 		}
 
-		if (input.inventory.clicked) {
-			game.setMenu(null);
-			Player.inventoryActivated = false;
-		}
 	}
 
 	public void select(int selected) {
