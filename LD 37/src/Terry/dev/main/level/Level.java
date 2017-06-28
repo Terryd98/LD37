@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import Terry.dev.main.SaveGame;
+import Terry.dev.main.entity.DrawerEntity;
 import Terry.dev.main.entity.Entity;
 import Terry.dev.main.entity.KeyEntity;
 import Terry.dev.main.entity.TreeEntity;
@@ -93,6 +94,8 @@ public class Level {
 		ttpLevel();
 		spawnTrees(100000);
 		add(new KeyEntity(1700, 750, this));
+		add(new DrawerEntity(2732, 714, this));
+
 		// add(new StairEntity(0, 0, this, false));
 		if (Tile.VaultSpawned) add(new VaultEntity(this));
 	}

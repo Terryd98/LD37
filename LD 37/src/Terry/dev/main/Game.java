@@ -11,8 +11,12 @@ import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -207,17 +211,19 @@ public class Game extends Canvas implements Runnable {
 		} else {
 			titleMenu = false;
 		}
-
-		if (!(menu instanceof LootingMenu) && !(menu instanceof ShopMenu) && !titleMenu && Player.inventoryActivated) {
+		if (menu == null && !titleMenu && Player.inventoryActivated && !WorkTableEntity.activated && !CommandCentre.activated && !DrawerEntity.looting) {
+			System.out.println("PROBLEM");
 			setMenu(new InventoryMenu());
 		}
 
 		if (!titleMenu) {
-			if (!(menu instanceof LootingMenu) && DrawerEntity.looting) {
+			if (menu == null && DrawerEntity.looting) {
 				setMenu(new LootingMenu());
-			} else if (!(menu instanceof ShopMenu) && CommandCentre.activated) {
+			}
+			if (menu == null && CommandCentre.activated) {
 				setMenu(new ShopMenu());
-			} else if (!(menu instanceof CraftingMenu) && WorkTableEntity.activated) {
+			}
+			if (menu == null && WorkTableEntity.activated) {
 				setMenu(new CraftingMenu());
 			}
 		}
@@ -657,6 +663,16 @@ public class Game extends Canvas implements Runnable {
 		game.frame.setLocationRelativeTo(null);
 		game.frame.setVisible(true);
 		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		List<Image> icons = new ArrayList<Image>();
+		try {
+			icons.add(ImageIO.read(BufferedImage.class.getResource("/icon16.png")));
+			icons.add(ImageIO.read(BufferedImage.class.getResource("/icon32.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		game.frame.setIconImages(icons);
+
 		game.start();
 	}
 

@@ -18,7 +18,9 @@ public class WorkTableEntity extends Entity {
 	public static boolean activated = false;
 	private int tick = 0;
 	public static boolean inRange = false;
-	public boolean inAir = false;
+	public static boolean inAir = false;
+	public boolean carrying;
+	public static boolean pickupRange = false;
 
 	public WorkTableEntity(double x, double y, Level level) {
 		this.x = x;
@@ -36,7 +38,21 @@ public class WorkTableEntity extends Entity {
 
 	public void tick() {
 		
-		List<Player> players = level.getPlayers(this, 25);
+		List<Player> players = level.getPlayers(this, 40);
+		
+		List<Player> ps = level.getPlayers(this, 23);
+		if (ps.size() > 0) {
+			Player player = ps.get(0);
+			carrying = player.workTableCarrying ;
+			pickupRange = true;
+			if (player.workTableCarrying) {
+				x = player.x - 8;
+				y = player.y - 15;
+			}
+		} else {
+			pickupRange = false;
+		}
+		
 		if (players.size() > 0) {
 			inRange = true;      	
 		} else {

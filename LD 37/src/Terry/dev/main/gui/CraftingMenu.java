@@ -4,6 +4,7 @@ import java.util.Random;
 
 import Terry.dev.main.entity.CommandCentre;
 import Terry.dev.main.entity.WorkTableEntity;
+import Terry.dev.main.entity.mob.Boat;
 import Terry.dev.main.entity.mob.Player;
 import Terry.dev.main.gfx.Font;
 import Terry.dev.main.gfx.Render;
@@ -11,7 +12,7 @@ import Terry.dev.main.gfx.Sprite;
 
 public class CraftingMenu extends Menu {
 
-	private String[] selections = { "return", "Volume" };
+	private String[] selections = { "test1", "test2", "test3" };
 	public Sprite sprite;
 	private int time = 0;
 	private int anim = 0;
@@ -31,21 +32,21 @@ public class CraftingMenu extends Menu {
 	}
 
 	public void volume() {
-
 	}
 
 	public void tick() {
-		
 		if (WorkTableEntity.inRange && input.use.clicked) {
 			game.setMenu(null);
 			WorkTableEntity.activated = false;
 		}
-		
+
 		time++;
 		if (selected >= selections.length - 1) selected = selections.length - 1;
 
 		selector();
-		if (input.space.clicked) select(selected);
+		if (input.space.clicked) {
+			select(selected);
+		}
 
 		if (time % 10 == 5) anim++;
 		if (anim > 3) anim = 0;
@@ -68,15 +69,21 @@ public class CraftingMenu extends Menu {
 
 	}
 
+	boolean canCraftRaft = false;
+
 	public void select(int selected) {
-		if (selected == 0) volume();
+		if (selected == 0 && canCraftRaft) craftRaft();
 		if (selected == 1) returnB();
+	}
+
+	private void craftRaft() {
+		Player.inv_logs -= raftLogs;
+		Player.craftRaft = true;
 	}
 
 	public static final int SELECT_TIME = 200;
 
 	int yp = 16;
-	int selected = 1;
 
 	// selected = 0 - Play
 	// selected = 1 - options
@@ -109,30 +116,63 @@ public class CraftingMenu extends Menu {
 				render.renderIcon(6 * 16 + 10, 16 * i + 22, Sprite.guiSide, true, false, false);
 			}
 		}
-		if (Player.inv_logs > 0) {
-			render.renderIcon(16, 16 * 9, Sprite.logParticle, false, false, false);
-			Font.draw(Integer.toString(Player.inv_logs), render, 16+20, 16 * 9 +7, 0x363636, false);
-			Font.draw(Integer.toString(Player.inv_logs), render, 16+20, 16 * 9+6, 0xEFF589, false);
-			
+		for (int i = 0; i < 6; i++) {
+			render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false, false, false);
 		}
+
+		String raft = "Raft";
+		int ya = 22 + 16;
+		Font.draw(raft, render, 16 * 1, ya, 0x363636, false);
+		Font.draw(raft, render, 16 * 1, ya - 1, 0xFFD400, false);
+
+		String test1 = "test1";
+		Font.draw(test1, render, 16 * 1, ya + 16, 0x363636, false);
+		Font.draw(test1, render, 16 * 1, ya + 16 - 1, 0xFFD400, false);
+
+		String test2 = "test2";
+		Font.draw(test2, render, 16 * 1, ya + 32, 0x363636, false);
+		Font.draw(test2, render, 16 * 1, ya + 32 - 1, 0xFFD400, false);
 
 		String crafting = "Crafting";
 		Font.draw(crafting, render, (16 * 2) - crafting.length(), 25, 0x5E3F4E, false);
 		Font.draw(crafting, render, (16 * 2) - crafting.length(), 25 - 1, 0xDB76A5, false);
 
-		int yE = 157;
-		if (empty && time % 55 < 50 / 2) {
-			Font.draw("Empty!", render, 37, yE + 1, 0x7E305C, false);
-			Font.draw("Empty!", render, 37, yE, 0xEF358C, false);
-		} else if (empty) {
-			Font.draw("Empty!", render, 37, yE + 3, 0x7E305C, false);
-			Font.draw("Empty!", render, 37, yE + 2, 0xEF358C, false);
-		}
-
 		if (selected == 0) {
+			yp = 32;
+			showRaftRecipe(render, ya);
 		}
 
 		if (selected == 1) {
+			yp = 48;
+
 		}
+
+		if (selected == 2) {
+			yp = 64;
+		}
+	}
+
+	int raftLogs = 5;
+
+	private void showRaftRecipe(Render render, int y) {
+		render.renderIcon(16 * 7 - 1, y - 5, Sprite.guiSide, true, true, false);
+		render.renderIcon(16 * 7 + 4, y - 5, Sprite.guiSide, true, true, false);
+		render.renderIcon(16 * 7 + 9, y - 5, Sprite.guiSide, true, true, false);
+		render.renderIcon(16 * 7 + 14, y - 5, Sprite.guiSide, true, true, false);
+		render.renderIcon(16 * 7 + 17, y - 5, Sprite.guiSide, true, true, false);
+		render.renderIcon(16 * 7 - 4, y - 5, sprite.logParticle, false, false, false);
+
+		if (Player.inv_logs >= raftLogs) {
+			canCraftRaft = true;
+			Font.draw(Integer.toString(raftLogs), render, 16 * 7, y - 3, 0xFFD400, false);
+		} else {
+			canCraftRaft = false;
+			Font.draw(Integer.toString(raftLogs), render, 16 * 7, y - 3, 0x363636, false);
+
+		}
+
+		Font.draw("have", render, 16 * 7 + 5, y - 12, 0xDB76A5, false);
+		Font.draw(Integer.toString(Player.inv_logs), render, 16 * 7 + 15, y - 3, 0xDB76A5, false);
+
 	}
 }

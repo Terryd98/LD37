@@ -55,9 +55,9 @@ public class CommandCentre extends Entity {
 		List<Player> ps = level.getPlayers(this, 23);
 		if (ps.size() > 0) {
 			Player player = ps.get(0);
-			carrying = player.carrying;
+			carrying = player.cCentreCarrying ;
 			pickupRange = true;
-			if (player.carrying) {
+			if (player.cCentreCarrying ) {
 				x = player.x - 8;
 				y = player.y - 15;
 			}

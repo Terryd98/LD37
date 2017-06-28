@@ -52,20 +52,44 @@ public class Boat extends Mob {
 
 	int yDriftTime = 50;
 	int xDriftTime = 50;
+	private boolean onLand = false;
+	public static boolean carryingBoat = false;
 
 	public void tick() {
 		xa = 0;
 		ya = 0;
 		time++;
-		anim++;
 		List<Player> players = level.getPlayersOffseted(x + 16, y - 10, 25);
-		int yz = 2;
-
-		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water && canEnter) {
+		int yz = 0;
+		
+		if (players.size() > 0) {
 			Player player = players.get(0);
+			this.input = player.input;
+			if (level.getTile((int) x / 16, (int) (y / 16) + yz) != Tile.water) {
+				onBoat = false;
+				xVel = 0;
+				yVel = 0;
+				if (input.space.down) {
+					onLand = true;
+					carryingBoat = true;
+					x = player.x+5;
+					y = player.y;
+				}else {
+					carryingBoat = false;
+				}
+			}else {
+				carryingBoat = false;
+			}
+		}
+
+		anim++;
+		if (players.size() > 0 && level.getTile((int) x / 16, (int) (y / 16) + yz) == Tile.water && canEnter) {
+			onLand = false;
+			Player player = players.get(0);
+			this.input = player.input;
+
 			player.x = x;
 			player.y = y;
-			this.input = player.input;
 			inputInitiated = true;
 
 			if (!input.left.down && !input.right.down && xDriftTime > 0) {
@@ -128,6 +152,7 @@ public class Boat extends Mob {
 		} else if (players.size() < 1) {
 			canEnter = true;
 			onBoat = false;
+
 		}
 
 		if (xa != 0 || ya != 0) {
@@ -182,12 +207,16 @@ public class Boat extends Mob {
 	public void render(Render render) {
 		int xx = (int) x - sprite.boat.width / 5;
 		int yy = (int) y - (sprite.height / 5);
+		if(onLand) {
+			sprite = Sprite.boat;
+		}else{
 		if (anim % 50 > 25) {
 			yy = (int) y - (sprite.height / 5);
 			sprite = Sprite.boat1;
 		} else {
 			yy = (int) y - (sprite.height / 5) - 1;
 			sprite = Sprite.boat;
+		}
 		}
 
 		render.renderWH(xx, yy, sprite, false, false, false);

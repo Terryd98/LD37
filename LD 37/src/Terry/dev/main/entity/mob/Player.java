@@ -36,7 +36,8 @@ public class Player extends Mob {
 	private static final double WALKING_SPEED = 1;
 	private static final double RUNNING_SPEED = 1.5;
 	public static int score = 0;
-	public boolean carrying = false;
+	public boolean cCentreCarrying = false;
+	public boolean workTableCarrying = false;
 	private int time = 0;
 	private Trap trap;
 	public CommandCentre cCentre;
@@ -70,6 +71,7 @@ public class Player extends Mob {
 	private boolean swimming = false;
 	public boolean flashLight = false;
 	public static boolean inventoryActivated = false;
+	public static boolean craftRaft = false;
 
 	public Player(Input input, Level level) {
 		this.input = input;
@@ -78,9 +80,6 @@ public class Player extends Mob {
 		y = SaveGame.read(1);
 		cCentre = new CommandCentre((int) x + 8, (int) y, level);
 		level.add(cCentre);
-		DrawerEntity drawer = new DrawerEntity(x-20, y, level);
-		level.add(drawer);
-		level.add(new Boat((int) x, (int) y - 100, level));
 		level.add(new WorkTableEntity(x, y + 100, level));
 	}
 
@@ -118,7 +117,12 @@ public class Player extends Mob {
 	double xVel = 0.2;
 
 	public void tick() {
-		if (input.inventory.clicked && inventoryActivated == false) {
+		if (craftRaft) {
+			level.add(new Boat(x, y, level));
+			craftRaft = false;
+		}
+
+		if (input.inventory.clicked && inventoryActivated == false && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated) {
 			inventoryActivated = true;
 		}
 		if (input.t.clicked && !flashLight) {
@@ -127,18 +131,18 @@ public class Player extends Mob {
 			flashLight = false;
 		}
 
-		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
+		if (DrawerEntity.inRange && input.use.clicked && !trapToggled && !inventoryActivated) {
 			DrawerEntity.looting = true;
 		}
-		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
+		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting && !inventoryActivated) {
 			cCentre.activated = true;
 		}
-		
-		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated) {
+
+		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated && !inventoryActivated) {
 			System.out.println("IN RANGE");
 			WorkTableEntity.activated = true;
 		}
-		
+
 		if (input.up.down && input.down.down && input.shift.down) cash++;
 
 		if (hasPistol && input.one.clicked) {
@@ -152,16 +156,27 @@ public class Player extends Mob {
 
 		}
 
-		if (!trapToggled && input.space.down && energy >= 2 && cCentre.pickupRange && !cCentre.activated && !DrawerEntity.looting) {
-			carrying = true;
+		if (!trapToggled && input.space.down&& !WorkTableEntity.inAir &&energy >= 2 && cCentre.pickupRange && !cCentre.activated && !DrawerEntity.looting) {
+			cCentreCarrying = true;
 			armed = false;
 			if (anim % 10 == 0) energy--;
-
 			cCentre.inAir = true;
 		} else {
 			armed = true;
-			carrying = false;
+			cCentreCarrying = false;
 			cCentre.inAir = false;
+		}
+		
+		if (!trapToggled && input.space.down&& !cCentre.inAir && energy >= 2 && WorkTableEntity.pickupRange && !WorkTableEntity.activated && !DrawerEntity.looting) {
+			workTableCarrying = true;
+			armed = false;
+			if (anim % 10 == 0) energy--;
+
+			WorkTableEntity.inAir = true;
+		} else {
+			armed = true;
+			workTableCarrying = false;
+			WorkTableEntity.inAir = false;
 		}
 
 		if (level.getTile((int) (x) / 16, (int) (y + 16) / 16) == Tile.flower) {
@@ -172,7 +187,7 @@ public class Player extends Mob {
 		if (input.downArrow.clicked) placeDir = 3;
 		if (input.leftArrow.clicked) placeDir = 0;
 		if (input.rightArrow.clicked) placeDir = 2;
-		if (trapToggled || carrying || cCentre.activated || swimming || hasKey) {
+		if (trapToggled || workTableCarrying || cCentreCarrying || cCentre.activated || WorkTableEntity.activated || swimming || hasKey) {
 			armed = false;
 		} else {
 			armed = true;
@@ -183,7 +198,7 @@ public class Player extends Mob {
 		} else if (trapToggled && input.trap.clicked) {
 			trapToggled = false;
 		}
-		if (input.space.clicked && trapToggled && !carrying) {
+		if (input.space.clicked && trapToggled && !workTableCarrying || !cCentreCarrying ) {
 			place();
 		}
 
@@ -197,13 +212,13 @@ public class Player extends Mob {
 		if (energy <= 0) energy = 0;
 		if (energy >= 100) energy = 100;
 
-		if (energy < 100 && ((!running && walking) || (!running && !walking)) && !carrying && anim % 15 == 0) {
+		if (energy < 100 && ((!running && walking) || (!running && !walking)) && !workTableCarrying || !cCentreCarrying  && anim % 15 == 0) {
 			if (still) energy += 5;
 
 			energy++;
 		}
 
-		if (!carrying && !swimming && input.shift.down && energy > 0) {
+		if (!workTableCarrying || !cCentreCarrying  && !swimming && input.shift.down && energy > 0) {
 			speed = RUNNING_SPEED;
 			if (running && anim % 5 == 0) energy--;
 		} else {
@@ -211,11 +226,11 @@ public class Player extends Mob {
 		}
 
 		double xa = 0, ya = 0;
-		if (input.control.down) speed /= 2;
+		if (input.control.down || Boat.carryingBoat) speed /= 2;
 
 		if (Boat.onBoat) {
 			swimming = false;
-			carrying = false;
+			workTableCarrying = cCentreCarrying  = false;
 			armed = false;
 		}
 
@@ -226,8 +241,8 @@ public class Player extends Mob {
 			swimming = false;
 		}
 
-		if (!cCentre.activated && !DrawerEntity.looting) {
-			if (carrying) {
+		if (!cCentre.activated && !DrawerEntity.looting && !WorkTableEntity.activated) {
+			if (workTableCarrying || cCentreCarrying ) {
 				running = false;
 				walking = true;
 				speed = 0.7;
@@ -264,7 +279,7 @@ public class Player extends Mob {
 		}
 
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
-			carrying = false;
+			workTableCarrying = cCentreCarrying  = false;
 		}
 		if (xa < 0) playerDir = 0;
 		if (xa > 0) playerDir = 2;
@@ -315,7 +330,6 @@ public class Player extends Mob {
 			Game.shake = 0;
 			shooting = false;
 		}
-		cash = 5000;
 	}
 
 	private void tickShots() {
@@ -779,6 +793,10 @@ public class Player extends Mob {
 
 		///////////////////////////////////////////
 		// if (cCentre.activated) cCentre.renderGui(render);
+	}
+
+	public void craftRaft() {
+		level.add(new Boat((int) x, (int) y - 100, level));
 	}
 
 }
