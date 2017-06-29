@@ -26,6 +26,7 @@ public class Sprite {
 	public static Sprite treeTrunk1 = new Sprite(16, 10, 2, SpriteSheet.tiles_sheet);
 	public static Sprite logParticle1 = new Sprite(16, 11, 2, SpriteSheet.tiles_sheet);
 	public static Sprite logParticle = new Sprite(16, 12, 2, SpriteSheet.tiles_sheet);
+	public static Sprite sapling = new Sprite(16, 11, 3, SpriteSheet.tiles_sheet);
 
 	public static Sprite stairs = new Sprite(16, 13, 2, SpriteSheet.tiles_sheet);
 	public static Sprite Vault_Unconnected = new Sprite(16, 14, 2, SpriteSheet.tiles_sheet);
@@ -42,7 +43,8 @@ public class Sprite {
 
 	public static Sprite guiCorner = new Sprite(16, 0, 7, SpriteSheet.tiles_sheet);
 	public static Sprite guiTop = new Sprite(16, 1, 7, SpriteSheet.tiles_sheet);
-	public static Sprite guiFull = new Sprite(16, 1, 8, SpriteSheet.tiles_sheet);
+	public static Sprite guiSelector = new Sprite(16, 1, 8, SpriteSheet.tiles_sheet);
+	public static Sprite guiFull = new Sprite(16, 2, 8, SpriteSheet.tiles_sheet);
 	public static Sprite guiSide = new Sprite(16, 0, 8, SpriteSheet.tiles_sheet);
 
 	public static Sprite command_centre_on = new Sprite(16, 6, 0, SpriteSheet.tiles_sheet);
@@ -71,7 +73,7 @@ public class Sprite {
 	public static Sprite KeyEntity = new Sprite(16, 5, 4, SpriteSheet.tiles_sheet);
 
 	public static Sprite workTable = new Sprite(16, 6, 4, SpriteSheet.tiles_sheet);
-	
+
 	public static Sprite rottenHead = new Sprite(16, 3, 0, SpriteSheet.tiles_sheet);
 	public static Sprite rottenArm = new Sprite(16, 11, 0, SpriteSheet.tiles_sheet);
 	public static Sprite blood = new Sprite(16, 12, 0, SpriteSheet.tiles_sheet);

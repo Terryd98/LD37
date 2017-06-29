@@ -139,7 +139,7 @@ public class LootingMenu extends Menu {
 
 		// render.renderRect(3, yp-2, 100, 16, 0x626262);
 		{
-			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x6B6B6B, false);
+			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x848484, false);
 			for (int i = 0; i < 6; i++) {
 				// render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false,
 				// false, false);

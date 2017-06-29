@@ -94,7 +94,7 @@ public class CraftingMenu extends Menu {
 		int yy = 185;
 		int gap = 15;
 		{
-			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x6B6B6B, false);
+			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x848484, false);
 			render.renderIcon(-6, 6, Sprite.guiCorner, false, false, false);
 			render.renderIcon((7 * 16) - 6, 6, Sprite.guiCorner, true, false, false);
 
@@ -117,7 +117,7 @@ public class CraftingMenu extends Menu {
 			}
 		}
 		for (int i = 0; i < 6; i++) {
-			render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false, false, false);
+			render.renderIcon(10 + i * 16, yp, Sprite.guiSelector, false, false, false);
 		}
 
 		String raft = "Raft";

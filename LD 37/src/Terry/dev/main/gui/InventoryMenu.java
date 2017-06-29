@@ -11,12 +11,13 @@ import Terry.dev.main.gfx.Sprite;
 
 public class InventoryMenu extends Menu {
 
-	private String[] selections = { "return", "Volume" };
+	// private String[] selections = { "return", "Volume" };
 	public Sprite sprite;
 	private int time = 0;
 	private int anim = 0;
 	private int drop = 140;
 	private Random random = new Random();
+	private int selections = 0;
 
 	public boolean empty = false;
 
@@ -36,11 +37,12 @@ public class InventoryMenu extends Menu {
 
 	public void tick() {
 		time++;
-		if (selected >= selections.length - 1) selected = selections.length - 1;
-
+		selections = 3;
+		if (selected >= selections) selected = selections;
+		if (!Player.inventoryActivated) game.setMenu(null);
 		selector();
 		if (input.space.clicked) select(selected);
-
+//System.out.println(selected);
 		if (time % 10 == 5) anim++;
 		if (anim > 3) anim = 0;
 		if (anim == 0) sprite = Sprite.title;
@@ -57,9 +59,6 @@ public class InventoryMenu extends Menu {
 				drop += 10;
 			}
 		}
-		if (selected == 0) {
-		}
-
 		if (input.inventory.clicked) {
 			game.setMenu(null);
 			Player.inventoryActivated = false;
@@ -85,7 +84,7 @@ public class InventoryMenu extends Menu {
 		int yy = 185;
 		int gap = 15;
 		{
-			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x6B6B6B, false);
+			render.renderRect(5, 11, 6 * 16, 9 * 16, 0x848484, false);
 			render.renderIcon(-6, 6, Sprite.guiCorner, false, false, false);
 			render.renderIcon((7 * 16) - 6, 6, Sprite.guiCorner, true, false, false);
 
@@ -108,29 +107,34 @@ public class InventoryMenu extends Menu {
 			}
 		}
 		if (Player.inv_logs > 0) {
-			render.renderIcon(16, 16 * 9, Sprite.logParticle, false, false, false);
-			Font.draw(Integer.toString(Player.inv_logs), render, 16+20, 16 * 9 +7, 0x363636, false);
-			Font.draw(Integer.toString(Player.inv_logs), render, 16+20, 16 * 9+6, 0xEFF589, false);
-			
+			addSelection();
+			render.renderIcon(16, 16 * 2, Sprite.logParticle, false, false, false);
+			Font.draw(Integer.toString(Player.inv_logs), render, 16 + 20, 16 * 2 + 7, 0x363636, false);
+			Font.draw(Integer.toString(Player.inv_logs), render, 16 + 20, 16 * 2 + 6, 0xEFF589, false);
 		}
+		if (Player.inv_saplings > 0) {
+			render.renderIcon(16, 16 * 3, Sprite.sapling, false, false, false);
+			Font.draw(Integer.toString(Player.inv_saplings), render, 16 + 20, 16 * 3 + 7, 0x363636, false);
+			Font.draw(Integer.toString(Player.inv_saplings), render, 16 + 20, 16 * 3 + 6, 0xEFF589, false);
 
+		}
 		String inv = "INVENTORY";
 		Font.draw(inv, render, (16 * 2) - inv.length(), 25, 0x5E3F4E, false);
 		Font.draw(inv, render, (16 * 2) - inv.length(), 25 - 1, 0xDB76A5, false);
 
-		int yE = 157;
-		if (empty && time % 55 < 50 / 2) {
-			Font.draw("Empty!", render, 37, yE + 1, 0x7E305C, false);
-			Font.draw("Empty!", render, 37, yE, 0xEF358C, false);
-		} else if (empty) {
-			Font.draw("Empty!", render, 37, yE + 3, 0x7E305C, false);
-			Font.draw("Empty!", render, 37, yE + 2, 0xEF358C, false);
+		for (int i = 0; i < 6; i++) {
+			render.renderIcon(10 + i * 16, yp, Sprite.guiSelector, false, false, false);
 		}
-
 		if (selected == 0) {
+			yp = 16;
 		}
 
 		if (selected == 1) {
+			yp = 32;
 		}
 	}
+
+	private void addSelection() {
+	}
+
 }

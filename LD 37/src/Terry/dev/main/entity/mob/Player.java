@@ -28,6 +28,7 @@ public class Player extends Mob {
 	public static int energy = 100;
 	public static int cash = 0;
 	public static int inv_logs = 0;
+	public static int inv_saplings = 0;
 	public static int addedCash = 0;
 	public static int addedLog = 0;
 	public static int addedAmmo = 0;
@@ -131,14 +132,17 @@ public class Player extends Mob {
 			flashLight = false;
 		}
 
-		if (DrawerEntity.inRange && input.use.clicked && !trapToggled && !inventoryActivated) {
+		if (DrawerEntity.inRange && input.use.clicked && !trapToggled) {
+			inventoryActivated = false;
 			DrawerEntity.looting = true;
 		}
-		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting && !inventoryActivated) {
+		if (cCentre.inRange && input.use.clicked && !cCentre.activated && !trapToggled && !DrawerEntity.looting) {
+			inventoryActivated = false;
 			cCentre.activated = true;
 		}
 
-		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated && !inventoryActivated) {
+		if (WorkTableEntity.inRange && input.use.clicked && !WorkTableEntity.activated && !trapToggled && !DrawerEntity.looting && !cCentre.activated ) {
+			inventoryActivated = false;
 			System.out.println("IN RANGE");
 			WorkTableEntity.activated = true;
 		}
@@ -170,7 +174,7 @@ public class Player extends Mob {
 		if (!trapToggled && input.space.down&& !cCentre.inAir && energy >= 2 && WorkTableEntity.pickupRange && !WorkTableEntity.activated && !DrawerEntity.looting) {
 			workTableCarrying = true;
 			armed = false;
-			if (anim % 10 == 0) energy--;
+			if (anim % 10 == 0 ) energy--;
 
 			WorkTableEntity.inAir = true;
 		} else {
@@ -209,22 +213,23 @@ public class Player extends Mob {
 		}
 		anim++;
 		time++;
-		if (energy <= 0) energy = 0;
-		if (energy >= 100) energy = 100;
 
-		if (energy < 100 && ((!running && walking) || (!running && !walking)) && !workTableCarrying || !cCentreCarrying  && anim % 15 == 0) {
-			if (still) energy += 5;
-
-			energy++;
+		if (energy < 100 && ((!running && walking) || (!running && !walking)) && (!workTableCarrying || !cCentreCarrying ) && anim % 20 == 0) {
+			if(still) energy+= 3;
+energy++;
 		}
 
-		if (!workTableCarrying || !cCentreCarrying  && !swimming && input.shift.down && energy > 0) {
+		if ((!workTableCarrying || !cCentreCarrying)  && !swimming && input.shift.down && energy > 0) {
 			speed = RUNNING_SPEED;
+			System.out.println(speed);
+
 			if (running && anim % 5 == 0) energy--;
 		} else {
 			speed = WALKING_SPEED;
 		}
 
+		if (energy <= 0) energy = 0;
+		if (energy >= 100) energy = 100;
 		double xa = 0, ya = 0;
 		if (input.control.down || Boat.carryingBoat) speed /= 2;
 
@@ -241,7 +246,7 @@ public class Player extends Mob {
 			swimming = false;
 		}
 
-		if (!cCentre.activated && !DrawerEntity.looting && !WorkTableEntity.activated) {
+		if (!cCentre.activated && !DrawerEntity.looting && !WorkTableEntity.activated && !inventoryActivated) {
 			if (workTableCarrying || cCentreCarrying ) {
 				running = false;
 				walking = true;
@@ -277,7 +282,6 @@ public class Player extends Mob {
 				}
 			}
 		}
-
 		if (level.getTile((int) x / 16, (int) y / 16) == Tile.water) {
 			workTableCarrying = cCentreCarrying  = false;
 		}
@@ -525,6 +529,12 @@ public class Player extends Mob {
 		inv_logs += amount;
 		// cashPickupTime = 40;
 	}
+	public static void addSapling(int amount) {
+		// Game.playSound("/sounds/Cash.wav", -15.0f);
+		// addedCash += amount;
+		inv_saplings += amount;
+		// cashPickupTime = 40;
+	}
 
 	public static void addAmmo(int amount) {
 		Game.playSound("/sounds/reload.wav", -15.0f);
@@ -549,13 +559,7 @@ public class Player extends Mob {
 				Game.firstSpawn = false;
 			}
 		}
-		if (trapToggled || cCentre.activated) {
-
-			render.renderIcon(5, render.height - 20, Sprite.spikeIcon, false, false, false);
-			String msg = Integer.toString(traps);
-			Font.draw(msg, render, 25, render.height - 15, 0x363636, false);
-			Font.draw(msg, render, 25, render.height - 16, 0xEF358C, false);
-		}
+		
 		if (placeDir == 0) {
 			if (trapToggled) {
 				int xs = (int) (x / 16) - 2;

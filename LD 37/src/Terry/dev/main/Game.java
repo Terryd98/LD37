@@ -51,7 +51,7 @@ import Terry.dev.main.level.Tile;
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 400, HEIGHT = WIDTH / 16 * 11;
+	public static final int WIDTH = 400, HEIGHT = WIDTH / 16 * 12;
 	public static int SCALE = 3;
 	private JFrame frame;
 	private Thread thread;
@@ -326,7 +326,7 @@ public class Game extends Canvas implements Runnable {
 		}
 
 		// if (xScroll < 0) xScroll = 0;
-		// if (yScroll < 0) yScroll = 0;
+		// if (yScroll < 0) yScroll 0;
 		// if (xScroll >= level.width * 16 - render.width - 16) xScroll =
 		// level.width * 16 - render.width - 16;
 		// if (yScroll >= level.height * 16 - render.height+ 30) yScroll =
@@ -421,152 +421,6 @@ public class Game extends Canvas implements Runnable {
 
 	}
 
-	public void renderGui() {
-		if (player.hasPistol) {
-			render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOff, false, false, false);
-			if (player.pistol) {
-				render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOn, false, false, false);
-			}
-
-		}
-		if (player.hasAssaultRifle) {
-			render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOff, false, false, false);
-			if (player.assaultRifle) {
-				render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOn, false, false, false);
-			}
-		}
-		int xx = (int) Math.abs(player.x);
-		int yy = (int) Math.abs(player.y);
-		Font.draw("Energy:", render, (render.width - 82), render.height - 10, 0x363636, false);
-		Font.draw("Energy:", render, (render.width - 82), render.height - 11, 0xEFF589, false);
-
-		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 10, 0x7E305C, false);
-		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 11, 0xEF358C, false);
-
-		Font.draw("Cash:", render, (render.width - 82), render.height - 20, 0x363636, false);
-		Font.draw("Cash:", render, (render.width - 82), render.height - 21, 0xEFF589, false);
-
-		Font.draw(Integer.toString(player.cash), render, (render.width - 42), render.height - 20, 0x7E305C, false);
-		Font.draw(Integer.toString(player.cash), render, (render.width - 42), render.height - 21, 0xEF358C, false);
-
-		if (player.addedCash > 0) {
-			if (player.cashPickupTime > 0) {
-				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 20, 0x7E305C, false);
-				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 21, 0xEF358C, false);
-			} else {
-				player.cashPickupTime = 0;
-				player.addedCash = 0;
-			}
-		}
-
-		if (player.addedAmmo > 0) {
-			if (player.ammoPickupTime > 0) {
-				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 240, 0x7E305C, false);
-				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 241, 0xEF358C, false);
-			} else {
-				player.ammoPickupTime = 0;
-				player.addedAmmo = 0;
-			}
-		}
-
-		render.renderRect(0, 0, Game.getWWidth(), 13, 0x303030, false);
-		render.renderRect(0, 0, Game.getWWidth(), 12, 0x848484, false);
-
-		if (player.hasKey) render.renderIcon(WIDTH / 2, -3, Sprite.KeyEntity, false, false, false);
-
-		if (player.pistol) {/////////////////////////////////////////
-			if (player.PISTOL_CLIP > 0) {
-
-				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-			}
-
-			if (player.PISTOL_CLIP <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
-				}
-			}
-
-			if (player.PISTOL_AMMO <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
-				}
-			}
-			if (player.PISTOL_AMMO > 0) {
-				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-			}
-		}
-		if (player.assaultRifle) {//////////////////////////////////////////////
-			if (player.ASSAULT_RIFLE_CLIP > 0) {
-
-				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-			}
-
-			if (player.ASSAULT_RIFLE_CLIP <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x7E305C, false);
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), 2, 0xB1B564, false);
-				}
-			}
-
-			if (player.ASSAULT_RIFLE_AMMO <= 0) {
-				if (time % 40 > 20) {
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-				} else {
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x5C5E38, false);
-					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xB1B564, false);
-				}
-			}
-			if (player.ASSAULT_RIFLE_AMMO > 0) {
-				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 3, 0x7E305C, false);
-				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, 2, 0xEF358C, false);
-			}
-		}
-
-		if (!player.dead && Game.finalLevel) {
-			player.finalMessageTime++;
-			if (player.finalMessageTime < 10000) {
-
-				String msg = "She is dead! aaaand so am i!";
-				Font.draw(msg, render, xx - msg.length() * 4, yy - 30, 0x7E305C, true);
-			}
-		}
-
-		if (!player.dead && Game.infiniLevel) {
-			player.finalMessageTime++;
-			if (player.finalMessageTime < 10000) {
-				String msg = "you survived! thats surp..ehhmazing!";
-				String msg2 = "see how high you can get your score!";
-				Font.draw(msg, render, xx - msg.length() * 4, yy - 40, 0x7E305C, true);
-				Font.draw(msg2, render, xx - msg.length() * 4 + 2, yy - 30, 0x7E305C, true);
-			}
-		}
-
-		Font.draw("Ammo:", render, (render.width - 20) - 65, 3, 0x363636, false);
-		Font.draw("Ammo:", render, (render.width - 20) - 65, 2, 0xEFF589, false);
-
-		Font.draw("Health:", render, 3, 3, 0x363636, false);
-		Font.draw("Health:", render, 2, 2, 0xEFF589, false);
-
-		Font.draw(Integer.toString(player.health), render, 3 + 57, 3, 0x363636, false);
-		Font.draw(Integer.toString(player.health), render, 2 + 57, 2, 0xEF358C, false);
-
-	}
-
 	int lvl = 0;
 
 	private void levelTick() {
@@ -651,6 +505,151 @@ public class Game extends Canvas implements Runnable {
 			}
 
 		}
+	}
+
+	public void renderGui() {
+		for (int i = 0; i < render.width / 16; i++) {
+			render.renderIcon(16 * i, render.height - 32, Sprite.guiTop, false, false, false);
+			render.renderIcon(16 * i, render.height - 16, Sprite.guiFull, false, false, false);
+		}
+
+		if (player.trapToggled || player.cCentre.activated) {
+			render.renderIcon(5, render.height - 20, Sprite.spikeIcon, false, false, false);
+			String msg = Integer.toString(player.traps);
+			Font.draw(msg, render, 25, render.height - 15, 0x363636, false);
+			Font.draw(msg, render, 25, render.height - 16, 0xEF358C, false);
+		}
+
+		if (player.hasPistol) {
+			render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOff, false, false, false);
+			if (player.pistol) {
+				render.renderIcon(render.width - 19, render.height - 40, Sprite.pistolIconOn, false, false, false);
+			}
+
+		}
+		if (player.hasAssaultRifle) {
+			render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOff, false, false, false);
+			if (player.assaultRifle) {
+				render.renderIcon(render.width - 19, render.height - 60, Sprite.assaultRifleIconOn, false, false, false);
+			}
+		}
+		int xx = (int) Math.abs(player.x);
+		int yy = (int) Math.abs(player.y);
+		if (player.addedCash > 0) {
+			if (player.cashPickupTime > 0) {
+				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 20, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(player.addedCash), render, (render.width - 115), render.height - (cashY) - 21, 0xEF358C, false);
+			} else {
+				player.cashPickupTime = 0;
+				player.addedCash = 0;
+			}
+		}
+
+		if (player.addedAmmo > 0) {
+			if (player.ammoPickupTime > 0) {
+				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 240, 0x7E305C, false);
+				Font.draw("+" + Integer.toString(player.addedAmmo), render, (render.width - 50), render.height - (ammoY) - 241, 0xEF358C, false);
+			} else {
+				player.ammoPickupTime = 0;
+				player.addedAmmo = 0;
+			}
+		}
+
+		if (player.hasKey) render.renderIcon(WIDTH / 2, -3, Sprite.KeyEntity, false, false, false);
+
+		if (player.pistol) {/////////////////////////////////////////
+			if (player.PISTOL_CLIP > 0) {
+
+				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+				Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 20, 0xEF358C, false);
+			}
+
+			if (player.PISTOL_CLIP <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 20, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.PISTOL_CLIP), render, (render.width - 17), render.height - 20, 0xB1B564, false);
+				}
+			}
+
+			if (player.PISTOL_AMMO <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xB1B564, false);
+				}
+			}
+			if (player.PISTOL_AMMO > 0) {
+				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+				Font.draw(Integer.toString(player.PISTOL_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xEF358C, false);
+			}
+		}
+		if (player.assaultRifle) {//////////////////////////////////////////////
+			if (player.ASSAULT_RIFLE_CLIP > 0) {
+
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 20, 0xEF358C, false);
+			}
+
+			if (player.ASSAULT_RIFLE_CLIP <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 20, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_CLIP), render, (render.width - 17), render.height - 20, 0xB1B564, false);
+				}
+			}
+
+			if (player.ASSAULT_RIFLE_AMMO <= 0) {
+				if (time % 40 > 20) {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xEF358C, false);
+				} else {
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+					Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xB1B564, false);
+				}
+			}
+			if (player.ASSAULT_RIFLE_AMMO > 0) {
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 19, 0x363636, false);
+				Font.draw(Integer.toString(player.ASSAULT_RIFLE_AMMO) + ";", render, (render.width - 20) - 25, render.height - 20, 0xEF358C, false);
+			}
+		}
+
+		if (!player.dead && Game.finalLevel) {
+			player.finalMessageTime++;
+			if (player.finalMessageTime < 10000) {
+
+				String msg = "She is dead! aaaand so am i!";
+				Font.draw(msg, render, xx - msg.length() * 4, yy - 30, 0x7E305C, true);
+			}
+		}
+
+		Font.draw("Ammo:", render, (render.width - 20) - 65, render.height - 19, 0x363636, false);
+		Font.draw("Ammo:", render, (render.width - 20) - 65, render.height - 20, 0xEFF589, false);
+
+		Font.draw("Health:", render, 3, render.height - 19, 0x363636, false);
+		Font.draw("Health:", render, 3, render.height - 20, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.health), render, 3 + 57, render.height - 19, 0x363636, false);
+		Font.draw(Integer.toString(player.health), render, 3 + 57, render.height - 20, 0xEF358C, false);
+
+		Font.draw("Energy:", render, (render.width - 82), render.height - 8, 0x363636, false);
+		Font.draw("Energy:", render, (render.width - 82), render.height - 9, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 8, 0x363636, false);
+		Font.draw(Integer.toString(player.energy), render, (render.width - 26), render.height - 9, 0xEF358C, false);
+
+		Font.draw("Cash:", render, 3, render.height - 8, 0x363636, false);
+		Font.draw("Cash:", render, 3, render.height - 9, 0xEFF589, false);
+
+		Font.draw(Integer.toString(player.cash), render, 3 + 41, render.height - 8, 0x363636, false);
+		Font.draw(Integer.toString(player.cash), render, 3 + 41, render.height - 9, 0xEF358C, false);
+
 	}
 
 	public static void main(String[] args) {

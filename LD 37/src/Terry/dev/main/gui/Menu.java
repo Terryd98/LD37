@@ -30,6 +30,7 @@ public class Menu {
 		}
 		if (input.down.clicked&&cursorCanMoveDown) {
 			selected++;
+
 		}
 
 		if (selected <= 0) {

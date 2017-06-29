@@ -108,7 +108,7 @@ public class ShopMenu extends Menu {
 	public static int trap_price = 50;
 
 	public void render(Render render) {
-		render.renderRect(5, 11, 6 * 16, 9 * 16, 0x6B6B6B, false);
+		render.renderRect(5, 11, 6 * 16, 9 * 16, 0x848484, false);
 
 		render.renderIcon(-6, 6, Sprite.guiCorner, false, false, false);
 		render.renderIcon((7 * 16) - 6, 6, Sprite.guiCorner, true, false, false);
@@ -135,7 +135,7 @@ public class ShopMenu extends Menu {
 		Font.draw("SHOP", render, 16 * 2 + 10, 25 - 1, 0xDB76A5, false);
 
 		for (int i = 0; i < 6; i++) {
-			render.renderIcon(10 + i * 16, yp, Sprite.guiFull, false, false, false);
+			render.renderIcon(10 + i * 16, yp, Sprite.guiSelector, false, false, false);
 		}
 		int ammoY = 23 + 16;
 		if (Player.cash >= ammo_price) {
